@@ -1,2 +1,2 @@
 # flow-ai-tools
-Tools useful for developing on on Flow with AI
+Tools useful for developing on Flow with AI
