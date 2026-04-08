@@ -1,0 +1,31 @@
+{
+	"name": "cadence",
+	"description": "Skills for writing secure, correct, and idiomatic Cadence smart contracts on the Flow blockchain — covering language fundamentals, token standards, DeFi actions, security auditing, and project setup",
+	"version": "1.0.0",
+	"author": {
+		"name": "Flow Foundation",
+		"url": "https://github.com/onflow"
+	},
+	"homepage": "https://github.com/onflow/flow-ai-tools",
+	"repository": "https://github.com/onflow/flow-ai-tools",
+	"keywords": [
+		"cadence",
+		"flow",
+		"blockchain",
+		"smart-contracts",
+		"nft",
+		"fungible-token",
+		"defi",
+		"security",
+		"entitlements",
+		"resources",
+		"capabilities",
+		"transactions",
+		"fcl",
+		"audit",
+		"code-review",
+		"vulnerabilities",
+		"scaffold",
+		"generate"
+	]
+}

@@ -1,0 +1,40 @@
+{
+	"name": "flow-claude-code-plugins",
+	"owner": {
+		"name": "Flow Foundation"
+	},
+	"metadata": {
+		"description": "Claude Code plugins for the Flow blockchain ecosystem",
+		"version": "1.0.0",
+		"pluginRoot": "./plugins"
+	},
+	"plugins": [
+		{
+			"name": "cadence",
+			"source": "./plugins/cadence",
+			"description": "Skills for writing secure, correct, and idiomatic Cadence smart contracts on the Flow blockchain — covering language fundamentals, token standards, DeFi actions, and project setup",
+			"version": "1.0.0",
+			"author": {
+				"name": "Flow Foundation"
+			},
+			"homepage": "https://github.com/onflow/flow-ai-tools",
+			"repository": "https://github.com/onflow/flow-ai-tools",
+			"keywords": [
+				"cadence",
+				"flow",
+				"blockchain",
+				"smart-contracts",
+				"nft",
+				"fungible-token",
+				"defi",
+				"security",
+				"entitlements",
+				"resources",
+				"capabilities",
+				"transactions",
+				"fcl"
+			],
+			"category": "blockchain"
+		}
+	]
+}
