@@ -30,7 +30,8 @@ Read the relevant reference file based on your task:
 | Interfaces, intersection types | [interfaces.md](references/interfaces.md) |
 | Account storage, keys, capabilities | [accounts.md](references/accounts.md) |
 | References, authorized refs | [references.md](references/references.md) |
-| Access control, entitlements | [access-control.md](references/access-control.md) |
+| Access modifiers, visibility rules | [access-control.md](references/access-control.md) |
+| Entitlements, mappings, Identity, sets | [entitlements.md](references/entitlements.md) |
 | Capabilities, security model | [capabilities.md](references/capabilities.md) |
 | Pre/post conditions, `before()` | [conditions.md](references/conditions.md) |
 | Security best practices | [security-best-practices.md](references/security-best-practices.md) |

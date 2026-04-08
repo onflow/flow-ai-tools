@@ -1,4 +1,4 @@
-# Cadence Access Control and Entitlements
+# Cadence Access Control
 
 ## Core Philosophy: Secure by Default
 Default to private, explicitly grant access. All fields and functions start restrictive.
@@ -8,7 +8,7 @@ Default to private, explicitly grant access. All fields and functions start rest
 1. `access(self)` — Private to current scope only
 2. `access(contract)` — Visible within declaring contract only
 3. `access(account)` — Visible to all contracts in the same account
-4. `access(Entitlement)` — Requires specific entitlement
+4. `access(Entitlement)` — Requires specific entitlement (see [entitlements.md](entitlements.md))
 5. `access(all)` — Public access (use sparingly)
 
 ## Rules
@@ -37,51 +37,23 @@ access(all) fun deposit(from: @{FungibleToken.Vault}) { }
 access(all) fun setBalance(newBalance: UFix64) { self.balance = newBalance }
 ```
 
-### Rule 3: Entitlements for Privileged Access
-
-Entitlement names should be a verb (what it grants) or noun (who should have it), capitalized.
+### Rule 3: Use Entitlements for Privileged Operations
+Any function that modifies state or performs a privileged action must use entitlements, not `access(all)`. See [entitlements.md](entitlements.md) for declaration syntax, sets, and mappings.
 
 ```cadence
-access(all) entitlement Admin
-access(all) entitlement Withdraw
-access(all) entitlement Mint
-
 access(Admin) fun updateSettings(newConfig: Config) { }
 access(Withdraw) fun withdraw(amount: UFix64): @{FungibleToken.Vault} { }
 ```
 
-### Rule 4: Mixed-Access Resources
-Use entitlements to separate public and privileged operations:
+### Rule 4: Protect Composite-Typed Fields
+Resources, structs, and capabilities stored as fields MUST be `access(self)` — even as `let` constants. The underlying object remains mutable through its functions.
 
 ```cadence
-access(all) resource Vault {
-    access(self) var balance: UFix64
-    access(all) view fun getBalance(): UFix64 { return self.balance }
-    access(all) fun deposit(from: @{FungibleToken.Vault}) { /* ... */ }
-    access(Withdraw) fun withdraw(amount: UFix64): @{FungibleToken.Vault} { /* ... */ }
-    access(Admin) fun forceSetBalance(newBalance: UFix64) { self.balance = newBalance }
-}
-```
+// ❌ CRITICAL: Anyone can copy this capability
+access(all) let adminCapability: Capability<&Admin>
 
-### Rule 5: Built-in Mutability Entitlements
-- `Insert` — Add elements
-- `Remove` — Delete elements
-- `Mutate` — Both insert and remove
-
-```cadence
-access(Insert) fun addItem(_ item: @NFT) { }
-access(Remove) fun removeItem(id: UInt64): @NFT { }
-access(Mutate) fun replaceItem(id: UInt64, with: @NFT): @NFT { }
-```
-
-## Entitlement Combinators
-
-```cadence
-// Conjunction (requires ALL)
-access(Admin, Withdraw) fun adminWithdraw(): @{FungibleToken.Vault} { }
-
-// Disjunction (requires ANY)
-access(Admin | Owner) fun privilegedAction() { }
+// ✅ CORRECT
+access(self) let adminCapability: Capability<&Admin>
 ```
 
 ## Critical Security Warnings
@@ -105,45 +77,10 @@ let vaultCap = account.capabilities.storage
 account.capabilities.publish(vaultCap, at: /public/vault)
 ```
 
-## Common Patterns
-
-### Public View + Entitled Mutate
-```cadence
-access(all) resource Counter {
-    access(self) var count: UInt64
-    access(all) view fun getCount(): UInt64 { return self.count }
-    access(Increment) fun increment() { self.count = self.count + 1 }
-    access(Admin) fun reset() { self.count = 0 }
-}
-```
-
-### Interface with Entitlements
-```cadence
-access(all) resource interface VaultInterface {
-    access(all) view fun getBalance(): UFix64
-    access(Deposit) fun deposit(from: @{FungibleToken.Vault})
-    access(Withdraw) fun withdraw(amount: UFix64): @{FungibleToken.Vault}
-}
-```
-
-### Admin Resource with Multiple Entitlements
-```cadence
-access(all) entitlement Configure
-access(all) entitlement Pause
-
-access(all) resource ProtocolManager {
-    access(self) var isPaused: Bool
-    access(Pause) fun pause() { self.isPaused = true }
-    access(Pause) fun unpause() { self.isPaused = false }
-    access(Configure) fun updateConfig(newConfig: Config) { self.config = newConfig }
-    access(Admin) fun emergencyShutdown() { /* ... */ }
-}
-```
-
 ## Checklist
 - [ ] All fields use `access(self)` or `access(contract)` unless explicitly needed
+- [ ] Composite-typed fields (resources, structs, capabilities) are always `access(self)`
 - [ ] View functions use `access(all)` appropriately
-- [ ] Privileged operations use entitlements
+- [ ] Privileged operations use entitlements (see [entitlements.md](entitlements.md))
 - [ ] No secrets stored in any access level fields
-- [ ] Capabilities only expose intended reference types
-- [ ] Entitlements are defined at contract level before use
+- [ ] Capabilities only expose non-entitled reference types publicly
