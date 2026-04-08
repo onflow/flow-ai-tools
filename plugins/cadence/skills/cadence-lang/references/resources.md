@@ -78,13 +78,17 @@ import "Burner"
 Burner.burn(<-vault)
 ```
 
-### Use `defer` for Panic-Safe Cleanup
-`defer` runs on ALL exit paths including panics — preferred for DeFi/vault handling:
+### Handle Resources Before Panics
+Cadence does NOT have `defer`. You must explicitly handle resources before any operation that could panic:
 ```cadence
 fun process(vault: @{FungibleToken.Vault}) {
-    defer { destroy vault }  // Runs even if panic occurs below
-    assert(vault.balance == 0.0, message: "Transfer incomplete")
+    let balance = vault.balance
+    if balance != 0.0 {
+        destroy vault
+        panic("Transfer incomplete: balance is ".concat(balance.toString()))
+    }
     doWork()
+    destroy vault
 }
 ```
 

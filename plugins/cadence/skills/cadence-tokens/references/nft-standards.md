@@ -73,29 +73,37 @@ token: @{NonFungibleToken.NFT}
 Each `.cdc` file MUST contain exactly ONE top-level contract declaration. Supporting structs, resources, and interfaces must be nested within the contract.
 
 ## Secure Capability Management
+
+Admin and minting resources must NEVER be publicly accessible. Only existing admins can create new minters.
+
 ```cadence
 access(all) contract MyAsset {
+    access(all) entitlement Mint
+
     access(all) resource Admin {
-        access(all) fun createNewThing(): @NonFungibleToken.NFT { /* ... */ }
+        access(Mint) fun mintNFT(): @NonFungibleToken.NFT { /* ... */ }
+        access(Mint) fun createMinter(): @Minter { return <- create Minter() }
     }
 
-    access(all) resource interface PublicMinter {
-        access(all) fun mintNFT(): @NonFungibleToken.NFT
-    }
-
-    access(all) resource Minter: PublicMinter {
-        access(all) fun mintNFT(): @NonFungibleToken.NFT { /* ... */ }
+    access(all) resource Minter {
+        access(Mint) fun mintNFT(): @NonFungibleToken.NFT { /* ... */ }
     }
 
     init() {
+        // Admin stored privately — NO public capability
         self.account.storage.save(<- create Admin(), to: /storage/myAssetAdmin)
-        self.account.storage.save(<- create Minter(), to: /storage/myAssetPublicMinter)
-        self.account.capabilities.publish(
-            self.account.capabilities.storage.issue<&Minter>(/storage/myAssetPublicMinter),
-            at: /public/myAssetPublicMinter
-        )
+        // No public minter capability — minting is admin-only
     }
 }
+```
+
+**Anti-pattern** — never publish minting capabilities publicly:
+```cadence
+// ❌ INSECURE: Anyone can borrow and mint unlimited NFTs
+self.account.capabilities.publish(
+    self.account.capabilities.storage.issue<&Minter>(/storage/minter),
+    at: /public/minter
+)
 ```
 
 ## Standardized Event Emission

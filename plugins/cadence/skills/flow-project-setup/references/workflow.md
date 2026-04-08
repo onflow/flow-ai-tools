@@ -29,7 +29,7 @@ flow scripts execute cadence/scripts/verify-deployment.cdc
 
 ### Verification Script
 ```cadence
-import MyContract from 0xYOUR_ADDRESS
+import "MyContract"
 
 access(all) fun main(): {String: String} {
     let result: {String: String} = {}

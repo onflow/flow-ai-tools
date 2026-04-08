@@ -127,7 +127,7 @@ Naming improvements, documentation, minor style issues.
 
 ### Resources
 - [ ] ALL code paths handle resources (move or destroy)
-- [ ] Resources handled before panic calls (or `defer` used)
+- [ ] Resources explicitly handled before panic calls (Cadence does NOT have `defer`)
 - [ ] Move operator `<-` used consistently
 
 ### Transactions

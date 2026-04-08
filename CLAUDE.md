@@ -28,7 +28,7 @@ plugins/
         .claude-plugin/
             plugin.json         # Plugin metadata (name, version, author, keywords)
         skills/
-            cadence-lang/       # Cadence language fundamentals (13 references)
+            cadence-lang/       # Cadence language fundamentals (14 references)
             cadence-tokens/     # NFT/FT token development (2 references)
             cadence-defi-actions/ # DeFi Actions framework (5 references)
             cadence-audit/      # Security audit & review (2 references)

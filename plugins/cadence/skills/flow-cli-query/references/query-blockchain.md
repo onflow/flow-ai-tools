@@ -87,18 +87,28 @@ flow scripts execute <script.cdc> [args...] [--args-json '[{"type":"...","value"
 | [flow-evm-bridge](https://github.com/onflow/flow-evm-bridge) | Bridge contracts (Cadence ↔ EVM) | Bridge state, onboarded assets |
 
 ### Standard Mainnet Addresses
+These are the mainnet addresses for standard contracts (configure in `flow.json`):
+
+| Contract | Mainnet Address |
+|----------|----------------|
+| FungibleToken | `0xf233dcee88fe0abe` |
+| FlowToken | `0x1654653399040a61` |
+| NonFungibleToken | `0x1d7e57aa55817448` |
+| MetadataViews | `0x1d7e57aa55817448` |
+
+Use string imports in code — addresses are resolved via `flow.json`:
 ```cadence
-import FungibleToken from 0xf233dcee88fe0abe
-import FlowToken from 0x1654653399040a61
-import NonFungibleToken from 0x1d7e57aa55817448
-import MetadataViews from 0x1d7e57aa55817448
+import "FungibleToken"
+import "FlowToken"
+import "NonFungibleToken"
+import "MetadataViews"
 ```
 
 ### Pattern: Write Script, Execute, Clean Up
 ```bash
 cat > /tmp/query.cdc << 'EOF'
-import FungibleToken from 0xf233dcee88fe0abe
-import FlowToken from 0x1654653399040a61
+import "FungibleToken"
+import "FlowToken"
 
 access(all) fun main(address: Address): UFix64 {
     let account = getAccount(address)

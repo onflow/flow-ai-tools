@@ -12,15 +12,15 @@ access(self) var registeredModules: {String: Address}
 access(self) var moduleContracts: {String: String}
 access(self) var moduleOrder: [String]
 
-access(all) fun registerModule(moduleType: String, contractAddress: Address, contractName: String) { }
+access(account) fun registerModule(moduleType: String, contractAddress: Address, contractName: String) { }
 access(all) view fun getModuleFactory(moduleType: String): &{TraitModule}? { }
 ```
 
 ### NFT Resource with Traits
 ```cadence
 access(all) resource NFT {
-    access(all) var traits: @{String: {TraitModule.Trait}}
-    access(all) var nftUUID: UInt64
+    access(self) var traits: @{String: {TraitModule.Trait}}
+    access(all) let nftUUID: UInt64
     access(self) var lastEvolutionTimestamp: UFix64
     access(self) var accumulatedEP: UFix64
 }
@@ -29,7 +29,7 @@ access(all) resource NFT {
 ### Lazy Trait Initialization
 Initialize traits on-demand to save gas:
 ```cadence
-access(all) fun ensureTraitExists(traitType: String): Bool {
+access(contract) fun ensureTraitExists(traitType: String): Bool {
     if self.traits.containsKey(traitType) { return true }
     if let factory = EvolvingCreatureNFT.getModuleFactory(moduleType: traitType) {
         let defaultTrait <- factory.createDefaultTrait(nftUUID: self.uuid)
@@ -57,9 +57,9 @@ Core contract hosts `reproduceSexual()` and `reproduceAsexual()` functions that 
 access(all) resource interface Trait {
     access(all) view fun getRawValue(): AnyStruct
     access(all) view fun getValueAsString(): String
-    access(all) fun updateValue(newValue: AnyStruct)
+    access(contract) fun updateValue(newValue: AnyStruct)
     access(all) view fun getDisplayName(): String
-    access(all) fun evolveAccumulative(seeds: {String: UInt64}, steps: UInt64, nftOwner: Address?, nftUUID: UInt64): AnyStruct?
+    access(contract) fun evolveAccumulative(seeds: {String: UInt64}, steps: UInt64, nftOwner: Address?, nftUUID: UInt64): AnyStruct?
     access(all) view fun canEvolve(): Bool
 }
 ```
@@ -91,11 +91,17 @@ access(all) fun createMitosisChild(parentTrait: &{TraitModule.Trait}, seed: UInt
 ### Basic Vault with Entitlements
 ```cadence
 import "FungibleToken"
+import "Burner"
 
 access(all) contract MyToken: FungibleToken {
     access(all) entitlement Withdraw
 
     access(all) var totalSupply: UFix64
+
+    access(all) event TokensMinted(amount: UFix64)
+    access(all) event TokensBurned(amount: UFix64)
+    access(all) event TokensDeposited(amount: UFix64, to: Address?)
+    access(all) event TokensWithdrawn(amount: UFix64, from: Address?)
 
     access(all) resource Vault: FungibleToken.Vault {
         access(self) var balance: UFix64
@@ -103,17 +109,28 @@ access(all) contract MyToken: FungibleToken {
         access(all) view fun getBalance(): UFix64 { return self.balance }
 
         access(all) fun deposit(from: @{FungibleToken.Vault}) {
-            self.balance = self.balance + from.balance
-            destroy from
+            let amount = from.balance
+            Burner.burn(<-from)
+            self.balance = self.balance + amount
+            emit TokensDeposited(amount: amount, to: self.owner?.address)
         }
 
         access(Withdraw) fun withdraw(amount: UFix64): @{FungibleToken.Vault} {
             pre { self.balance >= amount: "Insufficient balance" }
             self.balance = self.balance - amount
+            emit TokensWithdrawn(amount: amount, from: self.owner?.address)
             return <- create Vault(balance: amount)
         }
 
         init(balance: UFix64) { self.balance = balance }
+    }
+
+    access(all) resource Minter {
+        access(all) fun mintTokens(amount: UFix64): @Vault {
+            MyToken.totalSupply = MyToken.totalSupply + amount
+            emit TokensMinted(amount: amount)
+            return <- create Vault(balance: amount)
+        }
     }
 
     access(all) fun createEmptyVault(): @Vault {
@@ -122,6 +139,7 @@ access(all) contract MyToken: FungibleToken {
 
     init() {
         self.totalSupply = 0.0
+        self.account.storage.save(<- create Minter(), to: /storage/myTokenMinter)
     }
 }
 ```

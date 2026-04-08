@@ -48,7 +48,7 @@ plugins/
         skills/
             cadence-lang/
                 SKILL.md    # Cadence language guide
-                references/ # 13 reference files
+                references/ # 14 reference files
             cadence-tokens/
                 SKILL.md    # Token development guide
                 references/ # 2 reference files

@@ -121,13 +121,17 @@ if !someCondition() {
 }
 ```
 
-### Practice 17b: Use `defer` for Panic-Safe Resource Cleanup
-`defer` runs on ALL exit paths including panics — preferred for DeFi/vault handling:
+### Practice 17b: Always Handle Resources Before Panic-Prone Code
+Cadence does NOT have `defer`. Explicitly move or destroy resources before any operation that could panic:
 ```cadence
 fun process(vault: @{FungibleToken.Vault}) {
-    defer { destroy vault }  // Runs on any exit, including panics
-    assert(vault.balance == 0.0, message: "Transfer incomplete")
-    doWork()  // Even if this panics, vault is destroyed
+    let balance = vault.balance
+    if balance != 0.0 {
+        destroy vault
+        panic("Transfer incomplete: balance is ".concat(balance.toString()))
+    }
+    doWork()
+    destroy vault
 }
 ```
 

@@ -28,7 +28,7 @@ prepare → pre → post → execute
 ### Resource Safety
 - Handle resources in ALL code paths (moves, panics, conditionals)
 - Validate transfers: confirm vault balance is 0 before destruction
-- Use `defer { destroy vault }` for panic-safe cleanup
+- Handle resources before any panic-prone operations (Cadence does NOT have `defer`)
 - Always nil-check capability borrows
 
 ### General

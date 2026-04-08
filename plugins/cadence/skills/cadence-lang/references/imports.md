@@ -18,11 +18,11 @@ import 0x1234567890abcdef
 ```
 - Not portable across networks, imports ALL public declarations
 
-### Method 3: Selective Imports
+### Method 3: Selective Imports (from file path)
 ```cadence
 import MyContract from "./contracts/MyContract.cdc"
-import FungibleToken from 0x1234567890abcdef
 ```
+> **Note:** `import X from 0xADDRESS` is valid syntax but not recommended. Prefer string imports (`import "X"`) for portable, network-agnostic code.
 
 ## Rules
 
