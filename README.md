@@ -20,7 +20,7 @@ Then install individual plugins:
 
 | Plugin | Description | Skills | Category |
 |--------|-------------|--------|----------|
-| **flow-dev** | Flow blockchain development | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup` | blockchain |
+| **flow-dev** | Flow blockchain development | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup`, `flow-dev-setup` | blockchain |
 
 ### flow-dev
 
@@ -35,6 +35,7 @@ Skills for developing on the Flow blockchain:
 | `cadence-scaffold` | Interactive code generation: scaffold production-ready contracts, transactions, and DeFi transactions with proper security patterns |
 | `flow-react-sdk` | React frontend development: FlowProvider setup, Cadence hooks (query, mutate, auth, events), Cross-VM hooks (EVM bridging, batch transactions), UI components (Connect, TransactionButton, NftCard) |
 | `flow-project-setup` | Flow project configuration: flow.json setup, FCL frontend integration, CLI workflow, deployment, debugging, gas optimization, testnet validation |
+| `flow-dev-setup` | Development environment setup: Flow CLI installation, emulator, VS Code extension, testing framework, dev wallet, frontend SDKs (FCL/React), EVM tooling (Hardhat/Foundry/Remix) |
 
 ## Repository Structure
 
@@ -67,6 +68,9 @@ plugins/
             flow-project-setup/
                 SKILL.md    # Project setup guide
                 references/ # 2 reference files
+            flow-dev-setup/
+                SKILL.md    # Dev environment setup guide
+                references/ # 7 reference files
 ```
 
 ## Contributing
