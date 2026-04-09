@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working in this repository.
 
 ## Project Overview
 
-This repository is a **Claude Code plugin marketplace** for the [Flow blockchain](https://github.com/onflow) ecosystem. It hosts the `cadence` plugin, which provides domain-specific skills that help Claude Code write better, more secure Cadence smart contract code on Flow.
+This repository hosts **AI tools** for the [Flow blockchain](https://github.com/onflow) ecosystem — Claude Code plugins with domain-specific skills that help write better, more secure Cadence smart contract code on Flow.
 
 **Target users**: Cadence/Flow developers who install this marketplace into Claude Code to get specialized assistance with smart contract development, auditing, querying, and deployment.
 
@@ -24,7 +24,7 @@ This design keeps Claude's context efficient: metadata is always present, the sk
 .claude-plugin/
     marketplace.json            # Marketplace catalog (registers all plugins)
 plugins/
-    cadence/
+    flow-dev/
         .claude-plugin/
             plugin.json         # Plugin metadata (name, version, author, keywords)
         skills/
@@ -70,7 +70,7 @@ Every skill requires YAML frontmatter with:
 - All Cadence code examples must follow Cadence 1.0 syntax
 
 ### Adding a new skill
-1. Create `plugins/cadence/skills/<skill-name>/SKILL.md` with frontmatter
+1. Create `plugins/flow-dev/skills/<skill-name>/SKILL.md` with frontmatter
 2. Create `references/` subdirectory with topic-focused reference files
 3. Update this routing table and the README.md plugin catalog
 4. Ensure the description includes trigger phrases AND non-trigger redirects

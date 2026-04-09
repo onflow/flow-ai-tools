@@ -1,30 +1,30 @@
-# Flow Claude Code Plugins
+# Flow AI Tools
 
-A [Claude Code](https://claude.ai/code) plugin marketplace for the [Flow blockchain](https://github.com/onflow) ecosystem. These plugins provide domain-specific skills that help Claude Code write better Cadence and Flow code.
+AI tools for the [Flow blockchain](https://github.com/onflow) ecosystem. These [Claude Code](https://claude.ai/code) plugins provide domain-specific skills that help Claude Code write better Cadence and Flow code.
 
 ## Installation
 
 Add this marketplace to Claude Code:
 
 ```bash
-/plugin marketplace add onflow/flow-claude-code-plugins
+/plugin marketplace add onflow/flow-ai-tools
 ```
 
 Then install individual plugins:
 
 ```bash
-/plugin install cadence@flow-claude-code-plugins
+/plugin install flow-dev@flow-ai-tools
 ```
 
 ## Available Plugins
 
 | Plugin | Description | Skills | Category |
 |--------|-------------|--------|----------|
-| **cadence** | Cadence smart contract development on Flow | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup` | blockchain |
+| **flow-dev** | Flow blockchain development | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup` | blockchain |
 
-### cadence
+### flow-dev
 
-Skills for writing secure, correct, and idiomatic Cadence code on the Flow blockchain:
+Skills for developing on the Flow blockchain:
 
 | Skill | Description |
 |-------|-------------|
@@ -42,7 +42,7 @@ Skills for writing secure, correct, and idiomatic Cadence code on the Flow block
 .claude-plugin/
     marketplace.json        # Marketplace catalog
 plugins/
-    cadence/
+    flow-dev/
         .claude-plugin/
             plugin.json     # Plugin metadata
         skills/
