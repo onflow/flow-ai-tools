@@ -24,3 +24,10 @@ Build NFT and FT contracts that conform to Flow's standard interfaces for market
 |------|-----------|
 | NFT interface conformance, required functions, MetadataViews, paths, events | [nft-standards.md](references/nft-standards.md) |
 | Modular NFT design, trait systems, FT patterns, advanced architectures | [token-patterns.md](references/token-patterns.md) |
+
+## Companion Skills
+
+- **`cadence-lang`** — Always consult for access control, entitlements, resource handling, and security patterns when building token contracts. Token code must follow all Cadence security rules.
+- **`cadence-scaffold`** — Use to generate a token contract from scratch with proper structure.
+- **`cadence-audit`** — Use to review token contracts for security vulnerabilities before deployment.
+- **`flow-project-setup`** — Use for deploying token contracts and configuring flow.json dependencies.

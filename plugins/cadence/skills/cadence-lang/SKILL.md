@@ -39,3 +39,14 @@ Read the relevant reference file based on your task:
 | Design patterns | [design-patterns.md](references/design-patterns.md) |
 
 For security-sensitive tasks, also read `security-best-practices.md` and `anti-patterns.md`.
+
+## Companion Skills
+
+This skill provides the language foundation. Other skills build on it:
+
+- **`cadence-tokens`** — Use alongside this skill when building NFT/FT contracts. Token contracts must follow all rules here plus token-specific standards.
+- **`cadence-defi-actions`** — Use alongside when composing DeFi transactions. DeFi code requires strict resource handling from this skill.
+- **`cadence-audit`** — Use to verify code follows the security rules and patterns documented here.
+- **`cadence-scaffold`** — Use to generate contracts/transactions that follow these rules by default.
+- **`flow-cli`** — Use to deploy and test the Cadence code written with this skill's guidance.
+- **`flow-react-sdk`** — Use when the Cadence scripts/transactions will be called from React hooks.

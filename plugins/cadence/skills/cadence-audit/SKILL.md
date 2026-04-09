@@ -45,4 +45,8 @@ When auditing a full project:
 | [audit-checklist.md](references/audit-checklist.md) | Full security, bugs, quality, DeFi, optimization checklists |
 | [review-format.md](references/review-format.md) | Structured output format, severity levels, verdict criteria |
 
-For language rules referenced during audit, see the `cadence-lang` skill.
+## Companion Skills
+
+- **`cadence-lang`** — Essential during audits. Consult for access control rules, entitlement patterns, resource safety, anti-patterns, and design patterns. Every audit finding should reference the specific Cadence rule being violated.
+- **`cadence-tokens`** — Consult when auditing NFT/FT contracts for standard compliance (NonFungibleToken interface, MetadataViews requirements).
+- **`cadence-defi-actions`** — Consult when auditing DeFi transactions for connector safety rules, vault handling, and type validation.

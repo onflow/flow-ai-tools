@@ -2,6 +2,8 @@
 
 All hooks return TanStack Query results (`data`, `isLoading`, `error`, `refetch`). Mutation hooks return `mutate`, `mutateAsync`, `isPending`, `error`, `data`.
 
+> **Important:** The Cadence code passed to `useFlowQuery` and `useFlowMutate` must follow Cadence language rules. Consult the `cadence-lang` skill for access control, entitlements, resource handling, and pre/post conditions. Test scripts/transactions with `flow-cli` skill before integrating into React.
+
 ## Authentication
 
 ### useFlowCurrentUser

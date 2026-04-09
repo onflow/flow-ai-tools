@@ -37,3 +37,10 @@ function App() {
 | Cadence hooks: query, mutate, auth, events, accounts, blocks, NFT metadata | [hooks.md](references/hooks.md) |
 | Cross-VM hooks: EVM batch tx, token/NFT bridging, cross-chain balances | [cross-vm.md](references/cross-vm.md) |
 | UI components: Connect, TransactionButton, TransactionDialog, NftCard | [components.md](references/components.md) |
+
+## Companion Skills
+
+- **`cadence-lang`** — Consult when writing Cadence scripts/transactions used in `useFlowQuery` and `useFlowMutate`. The Cadence code passed to hooks must follow all language rules (access control, entitlements, resource handling).
+- **`flow-project-setup`** — Consult for `flow.json` configuration that FlowProvider loads via `flowJson` prop. Contract addresses and network config must be aligned.
+- **`flow-cli`** — Use to test scripts and transactions via CLI before integrating them into React hooks.
+- **`cadence-tokens`** — Consult when using `useFlowNftMetadata` or building NFT/FT frontends for the correct MetadataViews and collection paths.

@@ -30,3 +30,10 @@ Claim → Zap → Stake: Read [workflows.md](references/workflows.md) for comple
 | Transaction templates and AI generation guide | [templates.md](references/templates.md) |
 
 For any DeFi transaction, always read `safety-testing.md` for invariants.
+
+## Companion Skills
+
+- **`cadence-lang`** — Always consult for resource handling rules, entitlements, capability security, and pre/post conditions. DeFi transactions must follow all Cadence safety patterns — especially resource cleanup and capability validation.
+- **`cadence-audit`** — Use to review DeFi transactions before deployment. DeFi code requires extra scrutiny on vault handling and capability validation.
+- **`flow-cli`** — Use to deploy and test DeFi transactions via CLI.
+- **`flow-project-setup`** — Use for configuring contract dependencies and deployment targets.

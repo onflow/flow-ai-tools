@@ -115,3 +115,5 @@ Lean towards oversharing metadata. Include all key identifiers (nftID, itemID, r
 
 ## Explicit Resource Handling
 Every resource (`@`) must have a clear destination: moved to storage, returned, or explicitly destroyed. Incorrect handling leads to resource loss or inconsistent states.
+
+> **See also:** `cadence-lang` skill → `resources.md` for resource rules, `access-control.md` for visibility rules, `entitlements.md` for entitlement patterns on token operations.

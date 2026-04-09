@@ -117,3 +117,5 @@ If the contract is a fungible token, also:
 ## Post-Generation
 
 After generating, add inline comments explaining security decisions for each access modifier and entitlement choice.
+
+> **See also:** `cadence-lang` skill → `access-control.md` and `entitlements.md` for access rules, `design-patterns.md` for naming and storage patterns, `anti-patterns.md` for what to avoid. For NFT contracts, see `cadence-tokens` skill → `nft-standards.md`. Use `cadence-audit` skill to review generated code before deployment. Use `flow-cli` skill to deploy with `flow accounts add-contract`.

@@ -30,4 +30,10 @@ All generated code must follow:
 5. Events for significant state changes
 6. Complete `init()` with all state initialized
 
-For full language rules, reference the `cadence-lang` skill.
+## Companion Skills
+
+- **`cadence-lang`** — Always consult when generating code. Every scaffolded contract and transaction must follow Cadence access control, entitlement, resource safety, and design pattern rules.
+- **`cadence-tokens`** — Consult when scaffolding NFT or FT contracts for standard interface requirements and MetadataViews.
+- **`cadence-defi-actions`** — Consult when scaffolding DeFi transactions for connector APIs and safety rules.
+- **`cadence-audit`** — Run an audit on generated code to verify it follows security best practices before the user deploys.
+- **`flow-cli`** — Use to deploy and test scaffolded contracts and transactions.

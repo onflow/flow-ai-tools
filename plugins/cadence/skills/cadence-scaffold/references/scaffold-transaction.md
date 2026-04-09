@@ -108,3 +108,5 @@ After generating, add inline comments explaining:
 - Why each entitlement was chosen
 - What each phase does
 - Security rationale for access patterns
+
+> **See also:** `cadence-lang` skill → `transactions.md` for phase rules, `entitlements.md` for account entitlement patterns, `conditions.md` for pre/post condition syntax, `capabilities.md` for capability setup patterns. Use `flow-cli` skill to test with `flow transactions send`.

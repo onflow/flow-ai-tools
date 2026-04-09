@@ -25,3 +25,10 @@ flow test              # Run tests
 |------|-----------|
 | flow.json, FCL config, contract addresses, dependencies, CLI commands | [configuration.md](references/configuration.md) |
 | Dev workflow, deployment, debugging, gas optimization, testnet validation | [workflow.md](references/workflow.md) |
+
+## Companion Skills
+
+- **`cadence-lang`** — Consult for Cadence language rules when debugging contract compilation errors or transaction failures. Understanding access control and resource handling is essential for diagnosing deployment issues.
+- **`flow-cli`** — Consult for detailed CLI command syntax, flags, and account management operations used during the development workflow.
+- **`flow-react-sdk`** — Consult when integrating the deployed project with a React frontend via FCL.
+- **`cadence-audit`** — Run an audit before deploying to testnet/mainnet as part of the validation checklist.

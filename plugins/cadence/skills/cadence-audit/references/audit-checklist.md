@@ -152,3 +152,17 @@ For each finding, document:
 4. **Impact**: What could go wrong
 5. **Recommendation**: How to fix it
 6. **Code**: Before/after examples
+
+## Cross-Skill References for Auditing
+
+When auditing, consult these `cadence-lang` references for the specific rules being checked:
+- **Access control** → `access-control.md` and `entitlements.md`
+- **Resource handling** → `resources.md`
+- **Capability security** → `capabilities.md`
+- **Anti-patterns** → `anti-patterns.md`
+- **Design patterns** → `design-patterns.md`
+- **Pre/post conditions** → `conditions.md`
+- **Security rules** → `security-best-practices.md`
+
+For token-specific audits, consult `cadence-tokens` skill → `nft-standards.md`.
+For DeFi transaction audits, consult `cadence-defi-actions` skill → `safety-testing.md`.

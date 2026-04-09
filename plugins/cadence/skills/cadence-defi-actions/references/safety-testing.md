@@ -126,3 +126,5 @@ Must validate complete workflows: deploy contracts → setup pools → advance t
 let events = Test.eventsOfType(Type<DeFiActions.EventType>())
 Test.expect(events.length, Test.equal(expectedCount))
 ```
+
+> **See also:** `cadence-lang` skill → `resources.md` for resource destruction rules, `security-best-practices.md` for capability validation patterns, `conditions.md` for pre/post condition syntax. Use `cadence-audit` skill to review DeFi transactions before deployment.
