@@ -3,7 +3,7 @@ name: cadence-scaffold
 description: |
   Generate production-ready Cadence smart contracts, transactions, and DeFi transactions from scratch following security-first standards. Scaffolds secure code with proper access control, entitlements, events, storage paths, and phase discipline.
   TRIGGER when: creating new Cadence contracts, generating transactions, scaffolding DeFi transactions, building smart contracts from scratch, "generate contract", "create transaction", "scaffold", "new contract", "new transaction", "build a contract for", "write me a contract", "help me create a", "template for", "boilerplate", "starter contract", "create an NFT contract", "generate a transfer transaction".
-  DO NOT TRIGGER when: reviewing or auditing existing code (use cadence-audit), asking about Cadence syntax or language rules (use cadence-lang), querying blockchain data (use flow-cli-query), configuring flow.json (use flow-project-setup).
+  DO NOT TRIGGER when: reviewing or auditing existing code (use cadence-audit), asking about Cadence syntax or language rules (use cadence-lang), configuring flow.json (use flow-project-setup).
 ---
 
 # Cadence Code Scaffold

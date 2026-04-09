@@ -3,7 +3,7 @@ name: cadence-defi-actions
 description: |
   Guide for composing DeFi transactions using the DeFiActions framework on Flow. Covers Source, Sink, Swapper, and SwapSource interfaces, IncrementFi staking/pool connectors, Zapper for LP token conversion, AutoBalancer for threshold-based rebalancing, and transaction templates for restaking and auto-balancing workflows.
   TRIGGER when: writing DeFi transactions, using DeFiActions connectors, composing Source/Sink/Swapper chains, restaking rewards, auto-balancing, "claim and restake", "stake rewards", "LP tokens", "swap and deposit", "DeFiActions", "SwapSource", "PoolSink", "PoolRewardsSource", "Zapper", "IncrementFi", "pool liquidity", "autobalancer", "connector composition".
-  DO NOT TRIGGER when: asking about general Cadence syntax (use cadence-lang), building NFT/FT contracts (use cadence-tokens), setting up flow.json (use flow-project-setup), auditing code (use cadence-audit), querying blockchain data (use flow-cli-query).
+  DO NOT TRIGGER when: asking about general Cadence syntax (use cadence-lang), building NFT/FT contracts (use cadence-tokens), setting up flow.json (use flow-project-setup), auditing code (use cadence-audit).
 ---
 
 # DeFi Actions Framework

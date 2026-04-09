@@ -20,7 +20,7 @@ Then install individual plugins:
 
 | Plugin | Description | Skills | Category |
 |--------|-------------|--------|----------|
-| **cadence** | Cadence smart contract development on Flow | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-cli-query`, `flow-project-setup` | blockchain |
+| **cadence** | Cadence smart contract development on Flow | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup` | blockchain |
 
 ### cadence
 
@@ -34,7 +34,6 @@ Skills for writing secure, correct, and idiomatic Cadence code on the Flow block
 | `cadence-audit` | Smart contract audit and review: security vulnerabilities, severity-rated findings, structured review format, project-wide audit workflow |
 | `cadence-scaffold` | Interactive code generation: scaffold production-ready contracts, transactions, and DeFi transactions with proper security patterns |
 | `flow-react-sdk` | React frontend development: FlowProvider setup, Cadence hooks (query, mutate, auth, events), Cross-VM hooks (EVM bridging, batch transactions), UI components (Connect, TransactionButton, NftCard) |
-| `flow-cli-query` | Querying on-chain data: Flow CLI commands (accounts, blocks, events, transactions, Cadence scripts) and FindLabs historical API (transfer history, NFT holdings, tax reports, node delegation, EVM data) |
 | `flow-project-setup` | Flow project configuration: flow.json setup, FCL frontend integration, CLI workflow, deployment, debugging, gas optimization, testnet validation |
 
 ## Repository Structure
@@ -65,9 +64,6 @@ plugins/
             flow-react-sdk/
                 SKILL.md    # React SDK guide
                 references/ # 4 reference files
-            flow-cli-query/
-                SKILL.md    # Blockchain query guide
-                references/ # 2 reference files
             flow-project-setup/
                 SKILL.md    # Project setup guide
                 references/ # 2 reference files

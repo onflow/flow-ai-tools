@@ -3,7 +3,7 @@ name: cadence-audit
 description: |
   Comprehensive audit and review skill for Cadence smart contracts on the Flow blockchain. Identifies security vulnerabilities, bugs, code quality issues, and optimization opportunities. Produces severity-rated findings (Critical/High/Medium/Low) with actionable fixes.
   TRIGGER when: auditing, reviewing, or improving Cadence code, checking for security issues, performing code review on .cdc files, looking for anti-patterns or vulnerabilities, optimizing smart contract code, "review cadence", "audit cadence", "check cadence security", "validate cadence contract", "review my .cdc file", "security review", "code review", "find vulnerabilities", "check this contract", "is this code secure", "audit my project".
-  DO NOT TRIGGER when: writing new contracts from scratch (use cadence-scaffold), asking about Cadence syntax or patterns (use cadence-lang), building token contracts (use cadence-tokens), composing DeFi transactions (use cadence-defi-actions), querying blockchain data (use flow-cli-query).
+  DO NOT TRIGGER when: writing new contracts from scratch (use cadence-scaffold), asking about Cadence syntax or patterns (use cadence-lang), building token contracts (use cadence-tokens), composing DeFi transactions (use cadence-defi-actions).
 ---
 
 # Cadence Smart Contract Audit

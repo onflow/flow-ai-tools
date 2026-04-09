@@ -33,7 +33,6 @@ plugins/
             cadence-defi-actions/ # DeFi Actions framework (5 references)
             cadence-audit/      # Security audit & review (2 references)
             cadence-scaffold/   # Code generation templates (3 references)
-            flow-cli-query/     # Blockchain data queries (2 references)
             flow-project-setup/ # Project config & deployment (2 references)
 README.md                       # Installation instructions and plugin catalog
 ```
@@ -49,7 +48,7 @@ When a developer asks for help, use this table to determine which skill(s) to ac
 | Compose DeFi transactions (restaking, swaps, AutoBalancer) | `cadence-defi-actions` | `cadence-lang` |
 | Review or audit existing Cadence code | `cadence-audit` | `cadence-lang` |
 | Generate a new contract, transaction, or DeFi tx from scratch | `cadence-scaffold` | `cadence-lang`, `cadence-tokens` |
-| Query on-chain data (accounts, events, balances, history) | `flow-cli-query` | |
+| Build React frontend on Flow | `flow-react-sdk` | |
 | Set up a Flow project, configure flow.json, deploy | `flow-project-setup` | |
 
 ## Key Conventions

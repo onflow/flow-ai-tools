@@ -3,7 +3,7 @@ name: flow-react-sdk
 description: |
   Guide for building React applications on the Flow blockchain using @onflow/react-sdk. Covers FlowProvider setup, Cadence hooks (useFlowQuery, useFlowMutate, useFlowCurrentUser, useFlowEvents), Cross-VM hooks for EVM bridging and batch transactions, and UI components (Connect, TransactionButton, TransactionDialog, NftCard). Built on TanStack Query with TypeScript support.
   TRIGGER when: building React apps on Flow, using @onflow/react-sdk, setting up FlowProvider, using Flow React hooks, "useFlowQuery", "useFlowMutate", "useFlowCurrentUser", "Connect component", "TransactionButton", "wallet connect react", "react flow app", "FCL React", "flow react hooks", "bridge tokens react", "cross-vm react", "NftCard", "useFlowEvents", "how to query Flow from React", "authenticate user in React".
-  DO NOT TRIGGER when: writing Cadence contracts (use cadence-lang), configuring flow.json without React (use flow-project-setup), querying blockchain via CLI (use flow-cli-query), building non-React frontends or backends, auditing code (use cadence-audit).
+  DO NOT TRIGGER when: writing Cadence contracts (use cadence-lang), configuring flow.json without React (use flow-project-setup), building non-React frontends or backends, auditing code (use cadence-audit).
 ---
 
 # Flow React SDK
