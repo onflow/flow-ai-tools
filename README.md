@@ -33,6 +33,7 @@ Skills for writing secure, correct, and idiomatic Cadence code on the Flow block
 | `cadence-defi-actions` | DeFi transaction composition using the DeFiActions framework: Source/Sink/Swapper interfaces, IncrementFi connectors, restaking workflows, AutoBalancer |
 | `cadence-audit` | Smart contract audit and review: security vulnerabilities, severity-rated findings, structured review format, project-wide audit workflow |
 | `cadence-scaffold` | Interactive code generation: scaffold production-ready contracts, transactions, and DeFi transactions with proper security patterns |
+| `flow-react-sdk` | React frontend development: FlowProvider setup, Cadence hooks (query, mutate, auth, events), Cross-VM hooks (EVM bridging, batch transactions), UI components (Connect, TransactionButton, NftCard) |
 | `flow-cli-query` | Querying on-chain data: Flow CLI commands (accounts, blocks, events, transactions, Cadence scripts) and FindLabs historical API (transfer history, NFT holdings, tax reports, node delegation, EVM data) |
 | `flow-project-setup` | Flow project configuration: flow.json setup, FCL frontend integration, CLI workflow, deployment, debugging, gas optimization, testnet validation |
 
@@ -61,6 +62,9 @@ plugins/
             cadence-scaffold/
                 SKILL.md    # Code generation guide
                 references/ # 3 reference files
+            flow-react-sdk/
+                SKILL.md    # React SDK guide
+                references/ # 4 reference files
             flow-cli-query/
                 SKILL.md    # Blockchain query guide
                 references/ # 2 reference files

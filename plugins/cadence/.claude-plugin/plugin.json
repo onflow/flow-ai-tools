@@ -26,6 +26,11 @@
 		"code-review",
 		"vulnerabilities",
 		"scaffold",
-		"generate"
+		"generate",
+		"react",
+		"frontend",
+		"hooks",
+		"cross-vm",
+		"evm"
 	]
 }
