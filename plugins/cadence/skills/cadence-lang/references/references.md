@@ -18,8 +18,8 @@ let ref: &MyResource = &resource as &MyResource
 Use `auth()` for references with entitlements:
 
 ```cadence
-access(all) entitlement Owner
-access(all) entitlement Admin
+entitlement Owner
+entitlement Admin
 
 let vault <- create Vault(balance: 100.0)
 

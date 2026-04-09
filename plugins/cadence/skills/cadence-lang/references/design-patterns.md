@@ -95,9 +95,11 @@ let controller = signer.capabilities.storage.issue<&Vault>(/storage/vault)
 ```
 
 ## Pattern 11: Capability Revocation
-Store controllers and delete when access should be removed:
+Store controller IDs and delete when access should be removed:
 ```cadence
-signer.capabilities.storage.delete(capabilityID)
+let controller = signer.capabilities.storage
+    .getController(byCapabilityID: capabilityID)
+controller?.delete()  // Invalidates all copies of this capability
 ```
 
 ## Pattern 12: Resource Wrapper

@@ -91,10 +91,12 @@ transaction(amount: UFix64, recipient: Address) {
 }
 ```
 
+**Note:** `result` is only available in **function** post-conditions — it refers to the return value. Transactions don't return values, so `result` is not available in transaction post-conditions. Use `before()` and field comparisons instead.
+
 ## View Context Restrictions
 
 Conditions are read-only:
-- **Allowed**: Reading fields, calling view functions, boolean operations, comparisons, `before()`, `result`
+- **Allowed**: Reading fields, calling view functions, boolean operations, comparisons, `before()`, `result` (functions only)
 - **Not allowed**: Modifying fields, calling non-view functions, resource operations, emitting events
 
 ## Conditions in Interfaces

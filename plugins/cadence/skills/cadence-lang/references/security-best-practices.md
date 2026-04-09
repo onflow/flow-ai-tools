@@ -83,7 +83,7 @@ access(all) fun safe(vaultCap: Capability<auth(Withdraw) &Vault>) { }
 ```cadence
 auth(BorrowValue) &Account                          // Read-only
 auth(BorrowValue, SaveValue) &Account                // Read + write
-auth(BorrowValue, IssueStorageCapabilityController) &Account  // Cap issuance
+auth(BorrowValue, StorageCapabilities) &Account  // Cap issuance
 ```
 
 ## Type Safety

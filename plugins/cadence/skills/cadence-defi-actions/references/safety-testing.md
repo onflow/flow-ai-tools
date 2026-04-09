@@ -75,7 +75,7 @@ let vaultType = CompositeType(vaultTypeString)
 ```cadence
 auth(BorrowValue) &Account                          // Read storage
 auth(BorrowValue, SaveValue) &Account                // Most transactions
-auth(BorrowValue, SaveValue, IssueStorageCapabilityController) &Account  // Setup
+auth(BorrowValue, SaveValue, StorageCapabilities) &Account  // Setup
 ```
 
 ## Quick Checklist

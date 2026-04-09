@@ -17,7 +17,7 @@ transaction(pid: UInt64) {
     let swapSource: SwapConnectors.SwapSource
     let expectedStakeIncrease: UFix64
 
-    prepare(acct: auth(BorrowValue, SaveValue, IssueStorageCapabilityController) &Account) {
+    prepare(acct: auth(BorrowValue, SaveValue, StorageCapabilities) &Account) {
         self.pool = IncrementFiStakingConnectors.borrowPool(pid: pid)
             ?? panic("Pool with ID \(pid) not found")
         self.startingStake = self.pool.getUserInfo(address: acct.address)?.stakingAmount

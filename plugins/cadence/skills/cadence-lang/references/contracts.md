@@ -63,7 +63,7 @@ Define behavioral contracts. Events and interfaces in contract interfaces are th
 
 ```cadence
 access(all) contract interface TokenInterface {
-    access(all) entitlement Withdraw
+    entitlement Withdraw
     access(all) event TokensWithdrawn(amount: UFix64, from: Address?)
 
     access(all) resource interface Provider {
@@ -107,17 +107,26 @@ let contractRef = account.contracts.borrow<&MyContract>(name: "MyContract")
 
 ## Contract Upgrade Rules
 
-### Safe Upgrades
-- Add new functions freely
-- Modify function implementations
-- Preserve field order and types
+### Valid Changes (Allowed)
+- Add, change, or delete functions (signatures, bodies, access modifiers)
+- Remove existing fields
+- Reorder fields
+- Change field access modifiers
+- Add interface conformance to structs/resources
+- Add new struct/resource/interface/enum declarations
+- Add enum cases at the END of existing cases
+- Modify events and constructors freely
 
-### Unsafe (NOT Allowed)
-```cadence
-// ❌ Cannot reorder fields
-// ❌ Cannot change field types
-// ❌ Cannot remove fields
-```
+### Invalid Changes (NOT Allowed)
+- Adding new fields (the initializer doesn't re-run on update, so new fields have no value)
+- Changing the type of an existing field (causes deserialization errors)
+- Removing existing struct/resource/interface/enum declarations
+- Renaming declarations
+- Changing declaration types (e.g., struct to resource)
+- Removing interface conformance from structs/resources
+- Reordering, renaming, or removing enum cases
+- Adding enum cases in the middle (only at the end)
+- Removing contracts that contain enum declarations
 
 ## Best Practices
 

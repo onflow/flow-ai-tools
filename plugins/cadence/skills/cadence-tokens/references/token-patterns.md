@@ -94,7 +94,7 @@ import "FungibleToken"
 import "Burner"
 
 access(all) contract MyToken: FungibleToken {
-    access(all) entitlement Withdraw
+    entitlement Withdraw
 
     access(all) var totalSupply: UFix64
 

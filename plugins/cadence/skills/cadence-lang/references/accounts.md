@@ -46,7 +46,7 @@ auth(CopyValue) &Account      // copy()
 
 ### Issue and Publish
 ```cadence
-prepare(signer: auth(IssueStorageCapabilityController, PublishCapability) &Account) {
+prepare(signer: auth(StorageCapabilities, Capabilities) &Account) {
     let controller = signer.capabilities.storage
         .issue<&Resource>(/storage/resource)
     controller.setTag("Public read-only access")
@@ -67,8 +67,8 @@ if let ref = cap.borrow() {
 // Get controllers for a path
 let controllers = account.capabilities.storage.getControllers(forPath: /storage/resource)
 
-// Delete capability
-signer.capabilities.storage.delete(controller.capabilityID)
+// Delete capability (call delete on the controller directly)
+controller.delete()
 
 // Retarget to new path (storage caps only)
 controller.retarget(/storage/newPath)
@@ -122,15 +122,19 @@ signer.inbox.unpublish<&MyResource>(name: name, recipient: recipientAddress)
 
 ### Fine-Grained
 ```cadence
-auth(SaveValue) &Account                    // Save to storage
-auth(LoadValue) &Account                    // Load from storage
-auth(BorrowValue) &Account                  // Borrow reference
-auth(IssueStorageCapabilityController) &Account  // Issue cap
-auth(PublishCapability) &Account             // Publish cap
-auth(AddKey) &Account                        // Add key
-auth(RevokeKey) &Account                     // Revoke key
-auth(Contracts) &Account                     // Contract ops
-auth(Inbox) &Account                         // Inbox ops
+auth(SaveValue) &Account              // Save to storage
+auth(LoadValue) &Account              // Load from storage
+auth(BorrowValue) &Account            // Borrow reference
+auth(CopyValue) &Account              // Copy struct values
+auth(StorageCapabilities) &Account    // Issue/get storage cap controllers
+auth(AccountCapabilities) &Account    // Issue/get account cap controllers
+auth(AddKey) &Account                 // Add key
+auth(RevokeKey) &Account              // Revoke key
+auth(AddContract) &Account            // Deploy contract
+auth(UpdateContract) &Account         // Update contract
+auth(RemoveContract) &Account         // Remove contract
+auth(PublishInboxCapability) &Account  // Publish to inbox
+auth(ClaimInboxCapability) &Account    // Claim from inbox
 ```
 
 ### Coarse-Grained
@@ -138,13 +142,15 @@ auth(Inbox) &Account                         // Inbox ops
 auth(Storage) &Account       // All storage ops
 auth(Capabilities) &Account  // All capability ops
 auth(Keys) &Account          // All key ops
+auth(Contracts) &Account     // All contract ops
+auth(Inbox) &Account         // All inbox ops
 ```
 
 ### Common Combinations
 ```cadence
-auth(BorrowValue) &Account                                          // Read-only
-auth(BorrowValue, SaveValue) &Account                               // Read + write
-auth(BorrowValue, IssueStorageCapabilityController, PublishCapability) &Account  // Setup
+auth(BorrowValue) &Account                                    // Read-only
+auth(BorrowValue, SaveValue) &Account                          // Read + write
+auth(BorrowValue, SaveValue, StorageCapabilities) &Account     // + cap issuance
 ```
 
 ## Creating New Accounts

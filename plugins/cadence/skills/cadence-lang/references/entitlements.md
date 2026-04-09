@@ -5,9 +5,9 @@ Entitlements provide fine-grained permission control for accessing members throu
 ## Declaring Entitlements
 
 ```cadence
-access(all) entitlement Admin
-access(all) entitlement Withdraw
-access(all) entitlement Mint
+entitlement Admin
+entitlement Withdraw
+entitlement Mint
 ```
 
 Entitlement names should be a verb (what it grants) or noun (who should have it), capitalized. Entitlements share the same namespace as types and can be imported from other contracts (`C.E`).
@@ -150,11 +150,9 @@ auth(Storage) &Account          // All storage operations
 
 ### Capabilities
 ```cadence
-auth(IssueStorageCapabilityController) &Account
-auth(IssueAccountCapabilityController) &Account
-auth(PublishCapability) &Account
-auth(UnpublishCapability) &Account
-auth(Capabilities) &Account     // All capability operations
+auth(StorageCapabilities) &Account   // Issue/get storage capability controllers
+auth(AccountCapabilities) &Account   // Issue/get account capability controllers
+auth(Capabilities) &Account          // All capability operations
 ```
 
 ### Keys and Contracts
@@ -162,14 +160,25 @@ auth(Capabilities) &Account     // All capability operations
 auth(AddKey) &Account           // Add key
 auth(RevokeKey) &Account        // Revoke key
 auth(Keys) &Account             // All key operations
+auth(AddContract) &Account      // Deploy contract
+auth(UpdateContract) &Account   // Update contract
+auth(RemoveContract) &Account   // Remove contract
 auth(Contracts) &Account        // All contract operations
+```
+
+### Inbox
+```cadence
+auth(PublishInboxCapability) &Account    // Publish to inbox
+auth(UnpublishInboxCapability) &Account  // Unpublish from inbox
+auth(ClaimInboxCapability) &Account      // Claim from inbox
+auth(Inbox) &Account                     // All inbox operations
 ```
 
 ### Common Transaction Combinations
 ```cadence
-auth(BorrowValue) &Account                                          // Read-only
-auth(BorrowValue, SaveValue) &Account                               // Read + write
-auth(BorrowValue, SaveValue, IssueStorageCapabilityController) &Account  // + cap issuance
+auth(BorrowValue) &Account                                    // Read-only
+auth(BorrowValue, SaveValue) &Account                          // Read + write
+auth(BorrowValue, SaveValue, StorageCapabilities) &Account     // + cap issuance
 ```
 
 ## Entitlements on References vs Capabilities

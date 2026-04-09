@@ -78,7 +78,7 @@ Admin and minting resources must NEVER be publicly accessible. Only existing adm
 
 ```cadence
 access(all) contract MyAsset {
-    access(all) entitlement Mint
+    entitlement Mint
 
     access(all) resource Admin {
         access(Mint) fun mintNFT(): @NonFungibleToken.NFT { /* ... */ }

@@ -48,7 +48,7 @@ transaction(pid: UInt64) {
     let swapSource: SwapConnectors.SwapSource
     let expectedStakeIncrease: UFix64
 
-    prepare(acct: auth(BorrowValue, SaveValue, IssueStorageCapabilityController) &Account) {
+    prepare(acct: auth(BorrowValue, SaveValue, StorageCapabilities) &Account) {
         // Create operation ID — passed to all connectors for traceability
         let operationID = DeFiActions.createUniqueIdentifier()
 

@@ -46,7 +46,10 @@ if let ref = getAccount(address)
 
 ### Phase 4: Revoke
 ```cadence
-account.capabilities.storage.delete(controller.capabilityID)
+// Get the controller, then delete it
+let controller = account.capabilities.storage
+    .getController(byCapabilityID: capabilityID)
+controller?.delete()
 // All copies of this capability become invalid
 ```
 
@@ -84,11 +87,10 @@ let controller = account.capabilities.storage
     .issue<&MyResource>(/storage/myResource)
 account.storage.save(controller, to: /storage/myResourceController)
 
-// Later: revoke
-if let ctrl = account.storage.borrow<&StorageCapabilityController>
-    (from: /storage/myResourceController) {
-    account.capabilities.storage.delete(ctrl.capabilityID)
-}
+// Later: revoke by getting controller and calling delete()
+let ctrl = account.capabilities.storage
+    .getController(byCapabilityID: controller.capabilityID)
+ctrl?.delete()
 ```
 
 ### Tag Capabilities

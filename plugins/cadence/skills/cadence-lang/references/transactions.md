@@ -45,7 +45,7 @@ transaction(amount: UFix64, recipient: Address) {
 - Minimize logic — only account-access operations
 
 ```cadence
-prepare(signer: auth(BorrowValue, SaveValue, IssueStorageCapabilityController) &Account) {
+prepare(signer: auth(BorrowValue, SaveValue, StorageCapabilities) &Account) {
     self.vault = signer.storage.borrow<&{FungibleToken.Vault}>(from: /storage/vault)
         ?? panic("Could not borrow FungibleToken Vault reference from /storage/vault")
 }
@@ -76,6 +76,7 @@ pre {
 ### Phase 4: `post` (Post-conditions)
 - Verifies expected results AFTER execute
 - Can use `before()` to reference pre-execution values
+- **`result` is NOT available** — transactions don't return values. Use `before()` and field comparisons instead.
 
 ```cadence
 post {
@@ -114,7 +115,7 @@ auth(BorrowValue) &Account
 auth(BorrowValue, SaveValue) &Account
 
 // Storage and capabilities
-auth(BorrowValue, SaveValue, IssueStorageCapabilityController) &Account
+auth(BorrowValue, SaveValue, StorageCapabilities) &Account
 
 // Contract deployment
 auth(Contracts) &Account
@@ -161,7 +162,7 @@ transaction(amount: UFix64, to: Address) {
 ### Resource Setup
 ```cadence
 transaction() {
-    prepare(signer: auth(SaveValue, IssueStorageCapabilityController, PublishCapability) &Account) {
+    prepare(signer: auth(SaveValue, StorageCapabilities, Capabilities) &Account) {
         let resource <- MyContract.createResource()
         signer.storage.save(<-resource, to: /storage/myResource)
         let cap = signer.capabilities.storage.issue<&MyContract.Resource>(/storage/myResource)

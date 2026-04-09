@@ -41,8 +41,8 @@ access(all) contract <Name> {
     access(all) let PublicPath: PublicPath
 
     // ── Entitlements ──
-    access(all) entitlement Admin
-    access(all) entitlement Withdraw
+    entitlement Admin
+    entitlement Withdraw
 
     // ── Resource Interfaces ──
     access(all) resource interface PublicInterface {

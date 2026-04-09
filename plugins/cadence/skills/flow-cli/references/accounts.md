@@ -123,7 +123,7 @@ flow accounts update-contract ./FungibleToken.cdc --show-diff --signer alice --n
 
 **Extra flag**: `--show-diff` displays differences between current and updated contract.
 
-**Upgrade rules**: Preserve field order/types. Can add functions, modify logic. Cannot remove/rename fields or change struct definitions. See `cadence-lang` skill → `contracts.md` for full upgrade rules.
+**Upgrade rules**: Can add/change/delete functions, remove fields, reorder fields. Cannot add new fields (init won't re-run), change field types, or remove struct/resource declarations. See `cadence-lang` skill → `contracts.md` for full upgrade rules.
 
 ## Remove Contract (Emulator Only)
 

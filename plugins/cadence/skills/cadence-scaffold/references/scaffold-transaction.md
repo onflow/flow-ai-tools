@@ -22,7 +22,7 @@ prepare → pre → post → execute
 ### Entitlement Discipline
 - `auth(BorrowValue)` — read-only
 - `auth(BorrowValue, SaveValue)` — read + write
-- `auth(BorrowValue, SaveValue, IssueStorageCapabilityController, PublishCapability)` — setup
+- `auth(BorrowValue, SaveValue, StorageCapabilities, Capabilities)` — setup
 - Never: `auth(Storage, Contracts, Keys)` unless explicitly required
 
 ### Resource Safety
@@ -84,7 +84,7 @@ transaction(amount: UFix64, recipient: Address) {
 import "MyContract"
 
 transaction() {
-    prepare(signer: auth(SaveValue, BorrowValue, IssueStorageCapabilityController, PublishCapability) &Account) {
+    prepare(signer: auth(SaveValue, BorrowValue, StorageCapabilities, Capabilities) &Account) {
         // Check if already set up
         if signer.storage.borrow<&MyContract.Collection>(from: MyContract.StoragePath) != nil {
             return  // Already initialized

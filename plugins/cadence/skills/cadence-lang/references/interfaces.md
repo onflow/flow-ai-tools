@@ -39,7 +39,7 @@ access(all) resource Vault: Provider, Receiver {
 ### Contract Interfaces
 ```cadence
 access(all) contract interface FungibleTokenStandard {
-    access(all) entitlement Withdraw
+    entitlement Withdraw
     access(all) resource interface Provider {
         access(Withdraw) fun withdraw(amount: UFix64): @Vault
     }

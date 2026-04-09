@@ -91,19 +91,23 @@ access(all) fun evolvePartial(maxSteps: UInt64) {
 
 ## Contract Updates & Versioning
 
-### Safe Updates
+### Valid Updates
 ```bash
 flow project deploy --network=testnet --update
 ```
-- Add new functions ✅
-- Modify function logic ✅
-- Add new contract-level fields ✅
+- Add, change, or delete functions ✅
+- Remove existing fields ✅
+- Reorder fields ✅
+- Change field access modifiers ✅
+- Add new type declarations ✅
+- Modify events and constructors ✅
 
-### Requires New Version (V2)
-- Changing resource/struct field definitions ❌
-- Modifying `init()` signature ❌
-- Removing/renaming functions ❌
-- Changing event definitions ❌
+### NOT Allowed (requires migration or new contract)
+- Adding new fields ❌ (init doesn't re-run on update)
+- Changing field types ❌ (deserialization errors)
+- Removing struct/resource/interface declarations ❌
+- Removing interface conformance ❌
+- Reordering/removing enum cases ❌
 
 ### Lazy Initialization for New Fields
 ```cadence
