@@ -2,7 +2,17 @@
 
 AI tools for the [Flow blockchain](https://github.com/onflow) ecosystem. These [Claude Code](https://claude.ai/code) plugins provide domain-specific skills that help Claude Code write better Cadence and Flow code.
 
-## Installation
+## Quick Start
+
+Set up your entire Flow development environment with one command:
+
+```bash
+sh -ci "$(curl -fsSL https://raw.githubusercontent.com/onflow/flow-ai-tools/main/install.sh)"
+```
+
+This installs the **Flow CLI**, configures the **Cadence MCP** server for Claude Code, and adds the **flow-dev** plugin with all its skills.
+
+## Manual Installation
 
 Add this marketplace to Claude Code:
 
