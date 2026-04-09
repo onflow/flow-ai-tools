@@ -125,7 +125,8 @@ install_flow_plugin() {
     if ! has claude; then
         warn "Claude Code CLI not found — skipping"
         printf "      After installing Claude Code, run inside a Claude Code session:\n"
-        printf "      ${BOLD}/install-plugin onflow/flow-ai-tools${NC}\n"
+        printf "      ${BOLD}/plugin marketplace add onflow/flow-ai-tools${NC}\n"
+        printf "      ${BOLD}/plugin install flow-dev@flow-ai-tools${NC}\n"
         return 0
     fi
 
@@ -171,11 +172,15 @@ install_flow_plugin() {
         fi
     fi
 
-    # Fall back to manual instructions if anything failed
+    # Fall back to manual instructions for anything that didn't get set up
     if [ "$MARKETPLACE_EXISTS" != true ] || [ "$PLUGIN_EXISTS" != true ]; then
-        warn "Automatic plugin install not available"
-        printf "      Run inside a Claude Code session:\n"
-        printf "      ${BOLD}/install-plugin onflow/flow-ai-tools${NC}\n"
+        warn "Run the remaining step(s) inside a Claude Code session:"
+        if [ "$MARKETPLACE_EXISTS" != true ]; then
+            printf "      ${BOLD}/plugin marketplace add onflow/flow-ai-tools${NC}\n"
+        fi
+        if [ "$PLUGIN_EXISTS" != true ]; then
+            printf "      ${BOLD}/plugin install flow-dev@flow-ai-tools${NC}\n"
+        fi
     fi
 }
 
