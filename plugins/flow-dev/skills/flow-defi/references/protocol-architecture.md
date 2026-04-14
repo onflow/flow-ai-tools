@@ -121,16 +121,4 @@ access(all) fun getRandomSeed(blockHeight: UInt64): [UInt8] {
 
 **DeFi applications:** Fair lottery/raffle contracts, randomized NFT drops, prediction market resolution.
 
----
-
-## Security Event: Cadence v1.8.8 Type Confusion (December 2025)
-
-A type confusion vulnerability in the Cadence runtime (v1.8.8) was discovered and exploited on mainnet on December 26–27, 2025. The vulnerability allowed resource duplication via incorrect type assertion handling, enabling an attacker to drain approximately $3.9M from affected contracts. The Flow network was briefly paused; the vulnerability was patched in v1.8.9.
-
-**What developers should know:**
-- The exploit occurred on mainnet; all contracts running on v1.8.8 were at risk
-- The network was paused and the vulnerability patched in v1.8.9+; current mainnet is safe
-- Audit checklist: review any code that performs `x as? ConcreteType` on values from external contracts, especially across contract upgrade boundaries
-- Source: Flow Foundation security disclosure, December 2025
-
 > **See also:** `defi-primitives.md` for building blocks (lending models, AMM selection). `cadence-defi-actions` skill for writing the Cadence transaction code that powers these protocols.
