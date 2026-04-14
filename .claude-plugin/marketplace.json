@@ -1,18 +1,18 @@
 {
-	"name": "flow-claude-code-plugins",
+	"name": "flow-ai-tools",
 	"owner": {
 		"name": "Flow Foundation"
 	},
 	"metadata": {
-		"description": "Claude Code plugins for the Flow blockchain ecosystem",
+		"description": "AI tools for the Flow blockchain ecosystem",
 		"version": "1.0.0",
 		"pluginRoot": "./plugins"
 	},
 	"plugins": [
 		{
-			"name": "cadence",
-			"source": "./plugins/cadence",
-			"description": "Skills for writing secure, correct, and idiomatic Cadence smart contracts on the Flow blockchain — covering language fundamentals, token standards, DeFi actions, and project setup",
+			"name": "flow-dev",
+			"source": "./plugins/flow-dev",
+			"description": "Skills for developing on the Flow blockchain — covering Cadence language fundamentals, token standards, DeFi actions, security auditing, and project setup",
 			"version": "1.0.0",
 			"author": {
 				"name": "Flow Foundation"

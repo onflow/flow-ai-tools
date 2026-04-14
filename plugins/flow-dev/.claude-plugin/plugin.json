@@ -1,6 +1,6 @@
 {
-	"name": "cadence",
-	"description": "Skills for writing secure, correct, and idiomatic Cadence smart contracts on the Flow blockchain — covering language fundamentals, token standards, DeFi actions, security auditing, and project setup",
+	"name": "flow-dev",
+	"description": "Skills for developing on the Flow blockchain — covering Cadence language fundamentals, token standards, DeFi actions, security auditing, and project setup",
 	"version": "1.0.0",
 	"author": {
 		"name": "Flow Foundation",
