@@ -35,6 +35,11 @@
 - Are state changes made before external calls?
 - Are inputs validated before any effects?
 
+### Component Communication
+- Map trust boundaries and threat zones: what can each caller do, and what should they be prevented from doing?
+- Enforce the Principle of Least Authority at every component boundary — each caller gets only the minimum entitlements it needs
+- Every cross-contract call is a trust boundary: check assumptions about what other contracts do and return, don't assume they behave as expected
+
 ### Emergency Controls
 - Is there an option to disable critical functionality in emergencies?
 - Can admin pause/unpause the contract?
@@ -57,6 +62,11 @@
 - Could any loop cause DoS if given unexpected input?
 - Are loop bounds checked?
 
+### Error-Induced DoS
+- Could a panic or revert in a shared code path block critical functionality for all users?
+- Could an attacker deliberately trigger a panic (e.g., via crafted input) to freeze a function others depend on?
+- Are error paths bounded — no error condition should cause unbounded computation before panicking?
+
 ### Number Operations
 - All number type operations perform under/overflow checks (e.g., `UInt8.max + 1` panics)
 - Number type conversion functions panic if out of range
@@ -76,10 +86,10 @@
 - Do comments explain intent, not just what the code does?
 
 ### Naming
-- Use descriptive names (not abbreviations): `recipientAddress` not `addr`
-- Use plural names for arrays/dictionaries: `accounts` not `account`
-- Does the function name match its logic?
-- Use argument labels for functions with many parameters
+- Use descriptive names (not abbreviations): `recipientAddress` not `addr` — see [design-patterns: descriptive names](https://cadence-lang.org/docs/design-patterns#use-descriptive-names-for-fields-paths-functions-and-variables)
+- Use plural names for arrays/dictionaries: `accounts` not `account` — see [design-patterns: plural names](https://cadence-lang.org/docs/design-patterns#plural-names-for-arrays-and-maps-are-preferable)
+- Does the function name accurately match its logic? A mismatch between name and behavior is a logic bug waiting to happen
+- Use argument labels when defining functions with many parameters to improve call-site readability
 
 ### Access Modifiers
 - Can the field be `let` instead of `var`?
@@ -91,10 +101,11 @@
   - `access(all)` only for genuinely public APIs
 
 ### Patterns and Anti-Patterns
-- Follow Cadence design patterns (named constants, report structs, borrow over load/save)
-- Avoid anti-patterns (public admin creation, state modification in struct init, public capability fields)
+- Follow Cadence design patterns: [cadence-lang.org/docs/design-patterns](https://cadence-lang.org/docs/design-patterns)
+- Avoid anti-patterns: [cadence-lang.org/docs/anti-patterns](https://cadence-lang.org/docs/anti-patterns)
+- Follow project development standards: [cadence-lang.org/docs/project-development-tips](https://cadence-lang.org/docs/project-development-tips)
 - No debug code, TODOs, or commented-out logic in critical paths
-- Use constants instead of magic numbers (use built-in like `UInt128.max` where possible)
+- Use constants instead of magic numbers (use built-in like `UInt128.max` where possible) — see [design-patterns: named value fields](https://cadence-lang.org/docs/design-patterns#use-named-value-fields-for-constants-instead-of-hard-coding)
 
 ### Expressions and Logic
 - Expressions passed to logical/comparison operators should not have side-effects
@@ -175,3 +186,13 @@ When auditing, consult these `cadence-lang` references for the specific rules be
 
 For token-specific audits, consult `cadence-tokens` skill → `nft-standards.md`.
 For DeFi transaction audits, consult `cadence-defi-actions` skill → `safety-testing.md`.
+
+## Official Cadence Documentation
+
+Always link findings to the authoritative source:
+- **Design patterns** → https://cadence-lang.org/docs/design-patterns
+- **Anti-patterns** → https://cadence-lang.org/docs/anti-patterns
+- **Security best practices** → https://cadence-lang.org/docs/security-best-practices
+- **Project development tips** → https://cadence-lang.org/docs/project-development-tips
+- **Linter** → https://developers.flow.com/build/tools/flow-cli/lint
+- **Storage optimization** → https://cadence-lang.org/docs/design-patterns#avoid-unnecessary-load-and-save-storage-operations-prefer-in-place-mutations

@@ -34,9 +34,13 @@ When auditing a full project:
 - Can the field be `let` instead of `var`?
 - Can the function be `view`?
 - Can access be more restrictive (`access(self)`, entitled)?
+- Does the function name accurately match its logic?
+- Use argument labels for functions with many parameters
 - Are inputs validated with pre-conditions?
 - Are results verified with post-conditions?
 - Are error messages descriptive with interpolated values?
+- Use `if let` instead of nil-check + force-unwrap (`!`)
+- Comment the *why*, not just the *what*
 
 ## Navigation
 
