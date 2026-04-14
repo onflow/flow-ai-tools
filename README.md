@@ -70,7 +70,7 @@ plugins/
                 references/ # 2 reference files
             flow-dev-setup/
                 SKILL.md    # Dev environment setup guide
-                references/ # 7 reference files
+                references/ # 8 reference files
 ```
 
 ## Contributing

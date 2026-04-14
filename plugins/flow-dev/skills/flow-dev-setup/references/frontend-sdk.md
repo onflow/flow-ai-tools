@@ -16,20 +16,17 @@ Flow provides two main options for frontend integration: the **React SDK** (reco
 npm install @onflow/react-sdk
 ```
 
-### Configure
+### Minimal Setup
 ```typescript
 import { FlowProvider } from '@onflow/react-sdk';
 import flowJson from '../flow.json';
-
-const network = process.env.NEXT_PUBLIC_FLOW_NETWORK || 'testnet';
 
 function App() {
   return (
     <FlowProvider
       config={{
-        accessNodeUrl: networkConfigs[network].accessNodeUrl,
-        flowNetwork: network,
-        discoveryWallet: networkConfigs[network].discoveryWallet,
+        accessNodeUrl: 'https://rest-testnet.onflow.org',
+        flowNetwork: 'testnet',
         appDetailTitle: 'My App',
       }}
       flowJson={flowJson}
@@ -40,6 +37,13 @@ function App() {
 }
 ```
 
+Common access node URLs:
+- Emulator: `http://127.0.0.1:8888`
+- Testnet: `https://rest-testnet.onflow.org`
+- Mainnet: `https://rest-mainnet.onflow.org`
+
+For full React SDK documentation including hooks and components, see the `flow-react-sdk` skill.
+
 ## Option 2: FCL (Any Framework)
 
 ### Install
@@ -47,54 +51,17 @@ function App() {
 npm install @onflow/fcl
 ```
 
-Requires `@onflow/fcl` >= 1.0.0.
-
-### Configure
+### Minimal Setup
 ```typescript
 import { config } from '@onflow/fcl';
 import flowJSON from '../flow.json';
 
-const networkConfigs = {
-  emulator: {
-    'flow.network': 'emulator',
-    'accessNode.api': 'http://127.0.0.1:8888',
-    'discovery.wallet': 'http://localhost:8701/fcl/authn',
-  },
-  testnet: {
-    'flow.network': 'testnet',
-    'accessNode.api': 'https://rest-testnet.onflow.org',
-    'discovery.wallet': 'https://fcl-discovery.onflow.org/testnet/authn',
-  },
-  mainnet: {
-    'flow.network': 'mainnet',
-    'accessNode.api': 'https://rest-mainnet.onflow.org',
-    'discovery.wallet': 'https://fcl-discovery.onflow.org/authn',
-  },
-};
-
-const network = process.env.NEXT_PUBLIC_FLOW_NETWORK || 'testnet';
-config({ ...networkConfigs[network], 'app.detail.title': 'My App' }).load({ flowJSON });
-```
-
-## Network Reference
-
-| Network | Access Node (REST) | Wallet Discovery |
-|---------|-------------------|------------------|
-| Emulator | `http://127.0.0.1:8888` | `http://localhost:8701/fcl/authn` |
-| Testnet | `https://rest-testnet.onflow.org` | `https://fcl-discovery.onflow.org/testnet/authn` |
-| Mainnet | `https://rest-mainnet.onflow.org` | `https://fcl-discovery.onflow.org/authn` |
-
-## Environment Variables
-
-```bash
-# .env.development
-NEXT_PUBLIC_FLOW_NETWORK=emulator
-
-# .env.staging
-NEXT_PUBLIC_FLOW_NETWORK=testnet
-
-# .env.production
-NEXT_PUBLIC_FLOW_NETWORK=mainnet
+config({
+  'flow.network': 'testnet',
+  'accessNode.api': 'https://rest-testnet.onflow.org',
+  'discovery.wallet': 'https://fcl-discovery.onflow.org/testnet/authn',
+  'app.detail.title': 'My App',
+}).load({ flowJSON });
 ```
 
 ## Local Development
@@ -103,5 +70,5 @@ For local frontend testing against the emulator, you also need the **dev wallet*
 
 ## Documentation
 
-- React SDK: https://developers.flow.com/tools/clients/fcl-js
+- React SDK: https://developers.flow.com/tools/clients/react-sdk
 - FCL reference: https://developers.flow.com/tools/clients/fcl-js

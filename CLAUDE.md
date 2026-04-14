@@ -34,7 +34,7 @@ plugins/
             cadence-audit/      # Security audit & review (2 references)
             cadence-scaffold/   # Code generation templates (3 references)
             flow-project-setup/ # Project config & deployment (2 references)
-            flow-dev-setup/     # Dev environment setup (7 references)
+            flow-dev-setup/     # Dev environment setup (8 references)
 README.md                       # Installation instructions and plugin catalog
 ```
 

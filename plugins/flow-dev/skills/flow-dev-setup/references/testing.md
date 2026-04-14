@@ -52,7 +52,7 @@ access(all) fun setup() {
 }
 
 access(all) fun testIncrement() {
-    let result = executeScript("import Counter from 0x0000000000000007; access(all) fun main(): Int { return Counter.count }")
+    let result = Test.executeScript(code: "import Counter from 0x0000000000000007; access(all) fun main(): Int { return Counter.count }", args: [])
     Test.expect(result, Test.beSucceeded())
     Test.assertEqual(0, result.returnValue! as! Int)
 }
