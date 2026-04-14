@@ -24,6 +24,7 @@ Build NFT and FT contracts that conform to Flow's standard interfaces for market
 |------|-----------|
 | NFT interface conformance, required functions, MetadataViews, paths, events | [nft-standards.md](references/nft-standards.md) |
 | Modular NFT design, trait systems, FT patterns, advanced architectures | [token-patterns.md](references/token-patterns.md) |
+| Advanced NFT: TraitModule full spec, lazy init ❌/✅, genetic systems, common mistakes | [nft-advanced.md](references/nft-advanced.md) |
 
 ## Companion Skills
 

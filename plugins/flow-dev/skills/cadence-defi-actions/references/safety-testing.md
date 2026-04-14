@@ -10,7 +10,7 @@ import FungibleToken from 0x123  // ❌ COMPILE ERROR
 ```
 
 ### Transaction Layout Order
-Write blocks in this order for reviewability: `prepare` → `pre` → `post` → `execute`
+Write blocks in this order: `prepare` → `pre` → `execute` → `post`
 
 ### Single Expression in Pre/Post (BLOCKING)
 ```cadence
@@ -25,7 +25,7 @@ pre { let isValid = amount > 0.0; isValid: "msg" }
 For restaking: derive `expectedStakeIncrease` from connector quotes:
 ```cadence
 post {
-    self.pool.getUserInfo(address: self.userCertificateCap.address)!.stakingAmount
+    self.pool.getUserInfo(address: self.userCertificateCap.address)?.stakingAmount ?? 0.0
         >= self.startingStake + self.expectedStakeIncrease:
         "Restaked amount below expected"
 }

@@ -57,9 +57,11 @@ Core contract hosts `reproduceSexual()` and `reproduceAsexual()` functions that 
 access(all) resource interface Trait {
     access(all) view fun getRawValue(): AnyStruct
     access(all) view fun getValueAsString(): String
-    access(contract) fun updateValue(newValue: AnyStruct)
+    access(all) fun updateValue(newValue: AnyStruct)
     access(all) view fun getDisplayName(): String
-    access(contract) fun evolveAccumulative(seeds: {String: UInt64}, steps: UInt64, nftOwner: Address?, nftUUID: UInt64): AnyStruct?
+    // @discardableResult: callers (e.g. EvolvingNFT) may discard the return value
+    @discardableResult
+    access(all) fun evolveAccumulative(seeds: {String: UInt64}, steps: UInt64, nftOwner: Address?, nftUUID: UInt64): AnyStruct?
     access(all) view fun canEvolve(): Bool
 }
 ```
