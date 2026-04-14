@@ -34,6 +34,7 @@ plugins/
             cadence-audit/      # Security audit & review (2 references)
             cadence-scaffold/   # Code generation templates (3 references)
             flow-project-setup/ # Project config & deployment (2 references)
+            flow-dev-setup/     # Dev environment setup (8 references)
 README.md                       # Installation instructions and plugin catalog
 ```
 
@@ -50,6 +51,7 @@ When a developer asks for help, use this table to determine which skill(s) to ac
 | Generate a new contract, transaction, or DeFi tx from scratch | `cadence-scaffold` | `cadence-lang`, `cadence-tokens` |
 | Build React frontend on Flow | `flow-react-sdk` | |
 | Set up a Flow project, configure flow.json, deploy | `flow-project-setup` | |
+| Install dev tools (Flow CLI, emulator, VS Code, EVM tooling) | `flow-dev-setup` | `flow-project-setup` |
 
 ## Key Conventions
 
