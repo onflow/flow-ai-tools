@@ -2,7 +2,7 @@
 name: flow-cli
 description: |
   Complete reference for the Flow CLI — the command-line tool for developing, testing, and deploying on the Flow blockchain. Covers project initialization, account management, contract deployment, transaction sending, script execution, dependency management, key generation, scheduled transactions, and emulator usage.
-  TRIGGER when: using the Flow CLI, running flow commands, "flow accounts get", "flow accounts create", "flow init", "flow project deploy", "flow scripts execute", "flow transactions send", "flow test", "flow emulator", "flow keys generate", "flow dependencies install", "flow schedule", "flow accounts fund", "deploy contract to testnet", "how to create a Flow account", "check account balance on Flow", "run cadence script", "send a transaction", "flow accounts add-contract", "flow accounts staking-info".
+  TRIGGER when: using the Flow CLI, running flow commands, "flow accounts get", "flow accounts create", "flow init", "flow project deploy", "flow scripts execute", "flow transactions send", "flow test", "flow emulator", "flow keys generate", "flow dependencies install", "flow accounts fund", "deploy contract to testnet", "how to create a Flow account", "check account balance on Flow", "run cadence script", "send a transaction", "flow accounts add-contract", "flow accounts staking-info".
   DO NOT TRIGGER when: writing Cadence contract code (use cadence-lang), building React frontends (use flow-react-sdk), composing DeFi transactions in Cadence (use cadence-defi-actions), auditing code (use cadence-audit).
 ---
 
@@ -23,9 +23,11 @@ flow test                # Run tests
 
 | Task | Reference |
 |------|-----------|
-| Full command list, global flags, output options | [commands-overview.md](references/commands-overview.md) |
+| Full command list, global flags, output options, MCP server | [commands-overview.md](references/commands-overview.md) |
 | Account commands: get, create, fund, staking, contracts | [accounts.md](references/accounts.md) |
 | Project commands: init, generate, deploy, test, deps, config | [project.md](references/project.md) |
+| Query blockchain: accounts, blocks, events, transactions, scripts | [query-blockchain.md](references/query-blockchain.md) |
+| Ready-to-use Cadence script recipes (balance, staking, NFT, EVM) | [cadence-scripts.md](references/cadence-scripts.md) |
 
 ## Key Principles
 

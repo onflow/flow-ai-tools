@@ -132,6 +132,17 @@ flow dependencies list
 flow dependencies discover
 ```
 
+### Short Alias: `flow deps`
+
+```bash
+# Same as flow dependencies install
+flow deps install testnet://8a4dce54554b225d.NumberFormatter
+flow deps install mainnet://f233dcee88fe0abe.FungibleToken
+
+# List installed dependencies
+flow deps list
+```
+
 ## Configuration Management
 
 ```bash
@@ -149,22 +160,6 @@ flow config remove deployment testnet my-account MyToken
 flow config validate
 ```
 
-## Scheduled Transactions
-
-```bash
-# Setup scheduler resource (one-time per account)
-flow schedule setup --network testnet --signer my-account
-
-# List scheduled transactions
-flow schedule list my-account --network testnet
-
-# Get details for specific scheduled tx
-flow schedule get 123 --network testnet
-
-# Cancel a scheduled transaction
-flow schedule cancel 123 --network testnet --signer my-account
-```
-
 ## Key Management
 
 ```bash
@@ -179,6 +174,8 @@ flow keys derive <private-key>
 ```
 
 ## Emulator
+
+> **Deprecated:** `flow dev` and `flow run` are deprecated. Use `flow emulator` directly for local development.
 
 ```bash
 # Start emulator

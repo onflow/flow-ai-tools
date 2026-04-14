@@ -30,7 +30,7 @@ Then install individual plugins:
 
 | Plugin | Description | Skills | Category |
 |--------|-------------|--------|----------|
-| **flow-dev** | Flow blockchain development | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup`, `flow-dev-setup` | blockchain |
+| **flow-dev** | Flow blockchain development | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics` | blockchain |
 
 ### flow-dev
 
@@ -45,7 +45,10 @@ Skills for developing on the Flow blockchain:
 | `cadence-scaffold` | Interactive code generation: scaffold production-ready contracts, transactions, and DeFi transactions with proper security patterns |
 | `flow-react-sdk` | React frontend development: FlowProvider setup, Cadence hooks (query, mutate, auth, events), Cross-VM hooks (EVM bridging, batch transactions), UI components (Connect, TransactionButton, NftCard) |
 | `flow-project-setup` | Flow project configuration: flow.json setup, FCL frontend integration, CLI workflow, deployment, debugging, gas optimization, testnet validation |
+| `flow-cli` | Flow CLI reference: full command list, account management, query blockchain (accounts/blocks/events/transactions), Cadence script recipes, MCP server setup |
 | `flow-dev-setup` | Development environment setup: Flow CLI installation, emulator, VS Code extension, testing framework, dev wallet, frontend SDKs (FCL/React), EVM tooling (Hardhat/Foundry/Remix) |
+| `flow-defi` | Flow DeFi architecture: COAs, MEV-free EVM, cross-VM atomicity, lending health factor/kink models, AMM type selection, liquidity bootstrapping benchmarks, veFLOW, Merkl, ecosystem map |
+| `flow-tokenomics` | Token economics: Fisher Equation, Nash equilibrium, proven patterns (Real Yield/Buyback/veToken) with failure case studies, TGE 12-week playbook, DAO governance attack vectors, Howey Test, MiCA compliance |
 
 ## Repository Structure
 
@@ -78,9 +81,18 @@ plugins/
             flow-project-setup/
                 SKILL.md    # Project setup guide
                 references/ # 2 reference files
+            flow-cli/
+                SKILL.md    # CLI reference guide
+                references/ # 6 reference files
             flow-dev-setup/
                 SKILL.md    # Dev environment setup guide
                 references/ # 8 reference files
+            flow-defi/
+                SKILL.md    # DeFi architecture guide
+                references/ # 4 reference files
+            flow-tokenomics/
+                SKILL.md    # Tokenomics guide
+                references/ # 5 reference files
 ```
 
 ## Contributing

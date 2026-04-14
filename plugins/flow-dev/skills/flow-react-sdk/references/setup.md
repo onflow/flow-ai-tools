@@ -19,7 +19,7 @@ function Root() {
   return (
     <FlowProvider
       config={{
-        accessNodeUrl: 'https://access-mainnet.onflow.org',
+        accessNodeUrl: 'https://rest-mainnet.onflow.org',
         flowNetwork: 'mainnet',
         appDetailTitle: 'My On Chain App',
         appDetailIcon: 'https://example.com/icon.png',
@@ -46,7 +46,7 @@ export default function FlowProviderWrapper({ children }: { children: React.Reac
   return (
     <FlowProvider
       config={{
-        accessNodeUrl: 'https://access-mainnet.onflow.org',
+        accessNodeUrl: 'https://rest-mainnet.onflow.org',
         flowNetwork: 'mainnet',
         appDetailTitle: 'My On Chain App',
       }}
@@ -98,7 +98,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ```tsx
 // Mainnet
-config={{ accessNodeUrl: 'https://access-mainnet.onflow.org', flowNetwork: 'mainnet' }}
+config={{ accessNodeUrl: 'https://rest-mainnet.onflow.org', flowNetwork: 'mainnet' }}
 
 // Testnet
 config={{ accessNodeUrl: 'https://access-testnet.onflow.org', flowNetwork: 'testnet' }}

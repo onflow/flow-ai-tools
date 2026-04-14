@@ -18,6 +18,7 @@
 ### Capability Security
 - Are public capabilities issued without entitlements?
 - Are entitled capabilities stored privately (never published)?
+- Are pre-existing capabilities checked before issuance to avoid proliferation? (Principle of Least Authority: issue minimum entitlements needed)
 - Are controllers stored for later revocation?
 - Is `borrow()` used with optional handling (never force unwrap `!`)?
 
@@ -37,6 +38,14 @@
 ### Emergency Controls
 - Is there an option to disable critical functionality in emergencies?
 - Can admin pause/unpause the contract?
+
+### Transactions
+- Is transaction code reviewed with the same rigor as contracts?
+- Does `prepare` only access account storage and capabilities (no business logic)?
+- Is all business logic in `execute` (not `prepare`)?
+- Are requested entitlements minimal for the operation (Principle of Least Authority)?
+- Are `pre`/`post` conditions used where they add safety guarantees?
+- Does each `pre`/`post` condition evaluate to a single boolean expression (no side effects, no assignments, no control flow inside a condition)?
 
 ## Bug Detection
 

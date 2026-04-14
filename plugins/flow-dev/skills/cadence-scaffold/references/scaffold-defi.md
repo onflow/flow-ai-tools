@@ -89,7 +89,8 @@ transaction(pid: UInt64) {
     }
 
     post {
-        self.pool.getUserInfo(address: self.userCertificateCap.address)!.stakingAmount
+        // Optional chaining avoids a panic if getUserInfo returns nil (safer than force-unwrap)
+        self.pool.getUserInfo(address: self.userCertificateCap.address)?.stakingAmount ?? 0.0
             >= self.startingStake + self.expectedStakeIncrease:
             "Restake below expected amount"
     }

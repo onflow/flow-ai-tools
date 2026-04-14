@@ -83,19 +83,25 @@ iex "& { $(irm 'https://raw.githubusercontent.com/onflow/flow-cli/master/install
 | `flow config remove <type> <name>` | Remove config entry |
 | `flow config validate` | Validate flow.json |
 
-### Scheduled Transactions
-| Command | Purpose |
-|---------|---------|
-| `flow schedule setup` | Initialize scheduler resource |
-| `flow schedule list <account>` | List scheduled transactions |
-| `flow schedule get <id>` | Get scheduled tx details |
-| `flow schedule cancel <id>` | Cancel scheduled tx |
-
 ### Development
 | Command | Purpose |
 |---------|---------|
 | `flow emulator` | Start local emulator |
 | `flow cadence lint` | Lint Cadence code |
+| `flow mcp` | Start LSP-powered MCP server for Cadence development in Claude Code |
+
+### Signatures
+| Command | Purpose |
+|---------|---------|
+| `flow signatures generate <message> --signer <account>` | Sign a message with an account's key |
+| `flow signatures verify <hex-message> <hex-sig> <pub-key>` | Verify a message signature |
+
+### FLIX (Flow Interaction Templates)
+| Command | Purpose |
+|---------|---------|
+| `flow flix execute <id-or-name>` | Execute a FLIX template |
+| `flow flix package <name>` | Package transactions into FLIX format |
+| `flow flix generate <txFile>` | Generate FLIX template from transaction |
 
 ## Global Flags
 
@@ -133,3 +139,34 @@ flow accounts get 0x1234 --output json --save account.json --network mainnet
 --network testnet     # Testnet — access.devnet.nodes.onflow.org:9000
 --network mainnet     # Mainnet — access.mainnet.nodes.onflow.org:9000
 ```
+
+## MCP Server Setup
+
+Add Flow's LSP-powered MCP server to Claude Code for real-time Cadence language intelligence:
+
+```bash
+claude mcp add cadence-mcp -- flow mcp
+```
+
+Exposed tools inside Claude Code:
+
+| Tool | Description |
+|------|-------------|
+| `cadence_check` | Check Cadence file for compile errors |
+| `cadence_hover` | Type information at cursor position |
+| `cadence_definition` | Go to definition |
+| `cadence_symbols` | List all symbols in a file |
+| `cadence_completion` | Code completions |
+| `get_contract_source` | Get deployed contract source by name |
+| `get_contract_code` | Get contract code by address and name |
+| `cadence_execute_script` | Execute a Cadence script |
+| `cadence_code_review` | Review Cadence code for issues |
+
+Requires: Flow CLI installed, `flow mcp` available in PATH.
+
+## Deprecated Commands
+
+| Command | Status | Replacement |
+|---------|--------|-------------|
+| `flow dev` | Deprecated | Use emulator directly: `flow emulator` |
+| `flow run` | Deprecated alias | Was alias for `flow dev` |

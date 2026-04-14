@@ -63,7 +63,7 @@ transaction(pid: UInt64) {
 
     execute {
         let poolSink = IncrementFiStakingConnectors.PoolSink(
-            pid: pid, staker: self.userCertificateCap.address, uniqueID: nil
+            pid: pid, staker: self.userCertificateCap.address, uniqueID: operationID
         )
         let vault <- self.swapSource.withdrawAvailable(maxAmount: poolSink.minimumCapacity())
         poolSink.depositCapacity(from: &vault as auth(FungibleToken.Withdraw) &{FungibleToken.Vault})

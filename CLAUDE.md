@@ -29,12 +29,16 @@ plugins/
             plugin.json         # Plugin metadata (name, version, author, keywords)
         skills/
             cadence-lang/       # Cadence language fundamentals (14 references)
-            cadence-tokens/     # NFT/FT token development (2 references)
+            cadence-tokens/     # NFT/FT token development (3 references)
             cadence-defi-actions/ # DeFi Actions framework (5 references)
             cadence-audit/      # Security audit & review (2 references)
             cadence-scaffold/   # Code generation templates (3 references)
             flow-project-setup/ # Project config & deployment (2 references)
+            flow-cli/           # Flow CLI commands & scripts (4 references)
+            flow-react-sdk/     # React frontend on Flow (4 references)
             flow-dev-setup/     # Dev environment setup (8 references)
+            flow-defi/          # DeFi protocol architecture (4 references)
+            flow-tokenomics/    # Token design & launch strategy (5 references)
 README.md                       # Installation instructions and plugin catalog
 ```
 
@@ -52,6 +56,8 @@ When a developer asks for help, use this table to determine which skill(s) to ac
 | Build React frontend on Flow | `flow-react-sdk` | |
 | Set up a Flow project, configure flow.json, deploy | `flow-project-setup` | |
 | Install dev tools (Flow CLI, emulator, VS Code, EVM tooling) | `flow-dev-setup` | `flow-project-setup` |
+| Design or architect a DeFi protocol on Flow | `flow-defi` | `cadence-defi-actions` |
+| Design token economics for a Flow protocol | `flow-tokenomics` | `flow-defi`, `cadence-tokens` |
 
 ## Key Conventions
 
