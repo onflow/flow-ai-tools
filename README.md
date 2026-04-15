@@ -7,7 +7,7 @@ AI tools for the [Flow blockchain](https://github.com/onflow) ecosystem. These [
 Set up your entire Flow development environment with one command:
 
 ```bash
-sh -ci "$(curl -fsSL https://raw.githubusercontent.com/onflow/flow-ai-tools/main/install.sh)"
+sh -ci "$(curl -fsSL https://raw.githubusercontent.com/onflow/flow-ai-tools/main/scripts/install.sh)"
 ```
 
 This installs the **Flow CLI**, configures the **Cadence MCP** server for Claude Code, and adds the **flow-dev** plugin with all its skills.

@@ -2,7 +2,7 @@
 # Flow Development Environment Setup
 #
 # One-liner:
-#   sh -ci "$(curl -fsSL https://raw.githubusercontent.com/onflow/flow-ai-tools/main/install.sh)"
+#   sh -ci "$(curl -fsSL https://raw.githubusercontent.com/onflow/flow-ai-tools/main/scripts/install.sh)"
 #
 # Installs:
 #   1. Flow CLI         — core development tool (emulator, deploy, test, etc.)
