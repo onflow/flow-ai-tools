@@ -3,7 +3,7 @@ name: flow-project-setup
 description: |
   Guide for setting up and configuring Flow blockchain projects. Covers flow.json structure (networks, accounts, contracts, dependencies, deployments), FCL frontend integration with React, Flow CLI workflow, emulator setup, testnet/mainnet deployment, environment-based configuration, and multi-network strategies.
   TRIGGER when: setting up a Flow project, configuring flow.json, setting up FCL, deploying contracts, switching networks, debugging deployment issues, "flow init", "flow emulator", "flow project deploy", "flow.json", "FCL config", "testnet deploy", "mainnet deploy", "contract deployment", "network configuration", "flow dependencies install", "emulator setup", "how to deploy to testnet", "configure FCL with React".
-  DO NOT TRIGGER when: writing Cadence code or asking about syntax (use cadence-lang), building token contracts (use cadence-tokens), composing DeFi transactions (use cadence-defi-actions), generating new contracts (use cadence-scaffold), auditing code (use cadence-audit).
+  DO NOT TRIGGER when: writing Cadence code or asking about syntax (use cadence-lang), building token contracts (use cadence-tokens), generating new contracts (use cadence-scaffold), auditing code (use cadence-audit).
 ---
 
 # Flow Project Setup
