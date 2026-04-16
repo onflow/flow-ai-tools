@@ -30,7 +30,7 @@ Then install individual plugins:
 
 | Plugin | Description | Skills | Category |
 |--------|-------------|--------|----------|
-| **flow-dev** | Flow blockchain development | `cadence-lang`, `cadence-tokens`, `cadence-defi-actions`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics` | blockchain |
+| **flow-dev** | Flow blockchain development | `cadence-lang`, `cadence-tokens`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics` | blockchain |
 
 ### flow-dev
 
@@ -40,7 +40,6 @@ Skills for developing on the Flow blockchain:
 |-------|-------------|
 | `cadence-lang` | Cadence language fundamentals: access control, entitlements, resources, contracts, transactions, interfaces, accounts, references, capabilities, pre/post conditions, security best practices, anti-patterns, and design patterns |
 | `cadence-tokens` | NFT and FT token development: NonFungibleToken/FungibleToken interface conformance, MetadataViews integration, collection patterns, modular NFT architectures |
-| `cadence-defi-actions` | DeFi transaction composition using the DeFiActions framework: Source/Sink/Swapper interfaces, IncrementFi connectors, restaking workflows, AutoBalancer |
 | `cadence-audit` | Smart contract audit and review: security vulnerabilities, severity-rated findings, structured review format, project-wide audit workflow |
 | `cadence-scaffold` | Interactive code generation: scaffold production-ready contracts, transactions, and DeFi transactions with proper security patterns |
 | `flow-react-sdk` | React frontend development: FlowProvider setup, Cadence hooks (query, mutate, auth, events), Cross-VM hooks (EVM bridging, batch transactions), UI components (Connect, TransactionButton, NftCard) |
@@ -66,9 +65,6 @@ plugins/
             cadence-tokens/
                 SKILL.md    # Token development guide
                 references/ # 2 reference files
-            cadence-defi-actions/
-                SKILL.md    # DeFi Actions guide
-                references/ # 5 reference files
             cadence-audit/
                 SKILL.md    # Audit guide
                 references/ # 2 reference files

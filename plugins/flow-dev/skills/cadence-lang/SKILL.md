@@ -3,7 +3,7 @@ name: cadence-lang
 description: |
   Comprehensive guide for writing correct, secure, and idiomatic Cadence smart contract code on the Flow blockchain. Covers language fundamentals (resources, contracts, transactions, interfaces, accounts, references, imports), access control and entitlements, capabilities, pre/post conditions, security best practices, anti-patterns to avoid, and proven design patterns.
   TRIGGER when: writing or debugging Cadence code, asking about Cadence syntax, access(self), access(all), entitlements, resources, move operator (<-), capabilities, references, pre/post conditions, storage paths, "how do I write cadence", "cadence error", "compile error in .cdc", "what does access(self) mean", "how do resources work", "capability-based security".
-  DO NOT TRIGGER when: building NFT/FT token contracts (use cadence-tokens), composing DeFi transactions with DeFiActions/Source/Sink/Swapper (use cadence-defi-actions), setting up flow.json or FCL (use flow-project-setup), reviewing existing code for vulnerabilities (use cadence-audit), generating new contracts from scratch (use cadence-scaffold).
+  DO NOT TRIGGER when: building NFT/FT token contracts (use cadence-tokens), setting up flow.json or FCL (use flow-project-setup), reviewing existing code for vulnerabilities (use cadence-audit), generating new contracts from scratch (use cadence-scaffold).
 ---
 
 # Cadence Language Guide
@@ -45,7 +45,6 @@ For security-sensitive tasks, also read `security-best-practices.md` and `anti-p
 This skill provides the language foundation. Other skills build on it:
 
 - **`cadence-tokens`** — Use alongside this skill when building NFT/FT contracts. Token contracts must follow all rules here plus token-specific standards.
-- **`cadence-defi-actions`** — Use alongside when composing DeFi transactions. DeFi code requires strict resource handling from this skill.
 - **`cadence-audit`** — Use to verify code follows the security rules and patterns documented here.
 - **`cadence-scaffold`** — Use to generate contracts/transactions that follow these rules by default.
 - **`flow-cli`** — Use to deploy and test the Cadence code written with this skill's guidance.

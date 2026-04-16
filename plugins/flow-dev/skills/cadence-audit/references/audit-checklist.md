@@ -174,4 +174,3 @@ When auditing, consult these `cadence-lang` references for the specific rules be
 - **Security rules** → `security-best-practices.md`
 
 For token-specific audits, consult `cadence-tokens` skill → `nft-standards.md`.
-For DeFi transaction audits, consult `cadence-defi-actions` skill → `safety-testing.md`.
