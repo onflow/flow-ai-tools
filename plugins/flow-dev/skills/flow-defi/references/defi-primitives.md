@@ -99,9 +99,10 @@ New protocol, bootstrapping liquidity
   → Start with xy=k (simpler, broader range, less active management)
   → Migrate to CLMM after establishing price discovery
 
-Pegged pairs (FLOW/stFLOW, USDC/USDC.e)
+Pegged pairs (WFLOW/ankrFLOW, USDF/USDC, USDC/USDC.e)
   → StableSwap (Curve-style) — dramatically lower slippage near peg
   → Note: USDC/FLOW and USDC.e/FLOW are NOT stablecoin pairs (FLOW is volatile vs USD) — use CPMM or CLMM
+  → Note: USDT is not present on Flow — do not use as an example pair
 
 Established token pairs with active LPs
   → CLMM — 10–100× capital efficiency vs xy=k
