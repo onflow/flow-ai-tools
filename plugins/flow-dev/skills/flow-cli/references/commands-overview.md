@@ -32,8 +32,7 @@ iex "& { $(irm 'https://raw.githubusercontent.com/onflow/flow-cli/master/install
 | `flow generate transaction <Name>` | Generate transaction scaffold |
 | `flow generate test <Name>` | Generate test scaffold |
 | `flow test` | Run all Cadence tests |
-| `flow test --coverage` | Run tests with coverage |
-| `flow test --verbose` | Run tests with detailed output |
+| `flow test --cover` | Run tests with coverage report (not `--coverage`) |
 | `flow project deploy` | Deploy to emulator (default) |
 | `flow project deploy --network=testnet` | Deploy to testnet |
 | `flow project deploy --update` | Update existing contracts |
@@ -81,20 +80,27 @@ iex "& { $(irm 'https://raw.githubusercontent.com/onflow/flow-cli/master/install
 | `flow config add contract` | Add contract to flow.json |
 | `flow config add deployment` | Add deployment target |
 | `flow config remove <type> <name>` | Remove config entry |
-| `flow config validate` | Validate flow.json |
 
 ### Development
 | Command | Purpose |
 |---------|---------|
 | `flow emulator` | Start local emulator |
 | `flow cadence lint` | Lint Cadence code |
-| `flow mcp` | Start LSP-powered MCP server for Cadence development in Claude Code |
+| `flow mcp` | Start MCP server for AI tool integration |
+
+### Scheduled Transactions (Forte upgrade, October 2025+)
+| Command | Purpose |
+|---------|---------|
+| `flow schedule setup` | Schedule a recurring Cadence transaction |
+| `flow schedule list` | List scheduled transactions for an account |
+| `flow schedule get <id>` | Get details of a scheduled transaction |
+| `flow schedule cancel <id>` | Cancel a scheduled transaction |
 
 ### Signatures
 | Command | Purpose |
 |---------|---------|
 | `flow signatures generate <message> --signer <account>` | Sign a message with an account's key |
-| `flow signatures verify <hex-message> <hex-sig> <pub-key>` | Verify a message signature |
+| `flow signatures verify <message> <signature> <public-key>` | Verify a message signature |
 
 ### FLIX (Flow Interaction Templates)
 | Command | Purpose |
@@ -140,33 +146,18 @@ flow accounts get 0x1234 --output json --save account.json --network mainnet
 --network mainnet     # Mainnet — access.mainnet.nodes.onflow.org:9000
 ```
 
-## MCP Server Setup
+## MCP Server
 
-Add Flow's LSP-powered MCP server to Claude Code for real-time Cadence language intelligence:
+`flow mcp` is a built-in Flow CLI command group that starts an MCP (Model Context Protocol) server, enabling AI tools to interact with the Flow blockchain. See the [Flow MCP documentation](https://developers.flow.com/tutorials/ai-plus-flow/mcp) for configuration details.
 
-```bash
-claude mcp add cadence-mcp -- flow mcp
-```
-
-Exposed tools inside Claude Code:
-
-| Tool | Description |
-|------|-------------|
-| `cadence_check` | Check Cadence file for compile errors |
-| `cadence_hover` | Type information at cursor position |
-| `cadence_definition` | Go to definition |
-| `cadence_symbols` | List all symbols in a file |
-| `cadence_completion` | Code completions |
-| `get_contract_source` | Get deployed contract source by name |
-| `get_contract_code` | Get contract code by address and name |
-| `cadence_execute_script` | Execute a Cadence script |
-| `cadence_code_review` | Review Cadence code for issues |
-
-Requires: Flow CLI installed, `flow mcp` available in PATH.
+The MCP server exposes tools for querying chain state and interacting with contracts. Use `flow mcp` to start the server directly from the CLI.
 
 ## Deprecated Commands
 
 | Command | Status | Replacement |
 |---------|--------|-------------|
-| `flow dev` | Deprecated | Use emulator directly: `flow emulator` |
-| `flow run` | Deprecated alias | Was alias for `flow dev` |
+| `flow dev` | Deprecated | Use `flow run` — starts emulator and deploys all project contracts (direct replacement) |
+
+> **Note:** `flow test --fork` is an unrelated feature for running tests against a forked mainnet/testnet state, not a replacement for `flow dev`.
+>
+> `flow run` is an active alias: equivalent to starting the emulator and running `flow project deploy`.

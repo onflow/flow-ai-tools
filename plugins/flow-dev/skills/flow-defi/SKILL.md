@@ -1,7 +1,7 @@
 ---
 name: flow-defi
 description: |
-  Architecture guide for building DeFi protocols on the Flow blockchain. Covers Flow's DeFi-specific advantages (MEV-free EVM, cross-VM atomic transactions, SPoCKs, on-chain automation), core DeFi primitives (lending health factors, interest rate kink models, AMM type selection), liquidity bootstrapping strategy (veFLOW, Merkl, CL ranges, bootstrapping benchmarks), and the current Flow DeFi ecosystem map (existing protocols, missing primitives, opportunity analysis).
+  Architecture guide for building DeFi protocols on the Flow blockchain. Covers Flow's DeFi-specific advantages (MEV-free EVM, cross-VM atomic transactions, on-chain automation), core DeFi primitives (lending health factors, interest rate kink models, AMM type selection), liquidity bootstrapping strategy (veFLOW, Merkl, CL ranges, bootstrapping benchmarks), and the current Flow DeFi ecosystem map (existing protocols, missing primitives, opportunity analysis).
   TRIGGER when: designing a lending protocol on Flow, choosing AMM type for a DEX, liquidity bootstrapping strategy, veFLOW mechanics, "how does Flow DeFi work", "AMM types on Flow", "liquidity bootstrapping", "Flow DeFi ecosystem", "cross-VM composability for DeFi", "health factors", "interest rate curves", "collateral design", "DEX TVL", "Merkl integration", "missing DeFi primitives on Flow", "perp DEX on Flow", "launchpad on Flow", "COA pattern", "MEV-free EVM".
   DO NOT TRIGGER when: designing token economics (use flow-tokenomics), asking about Cadence syntax (use cadence-lang).
 ---

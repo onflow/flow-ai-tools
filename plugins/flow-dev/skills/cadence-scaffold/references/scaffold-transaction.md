@@ -12,7 +12,7 @@ Before generating, ask for:
 
 ### Phase Discipline (physical write order)
 ```
-prepare → pre → post → execute
+prepare → pre → execute → post
 ```
 - `prepare`: ONLY account access operations (borrow capabilities, validate storage)
 - `pre`: Input validation — single boolean expressions only
@@ -22,7 +22,7 @@ prepare → pre → post → execute
 ### Entitlement Discipline
 - `auth(BorrowValue)` — read-only
 - `auth(BorrowValue, SaveValue)` — read + write
-- `auth(BorrowValue, SaveValue, StorageCapabilities, Capabilities)` — setup
+- `auth(BorrowValue, SaveValue, IssueStorageCapabilityController, PublishCapability)` — setup (issue and publish capabilities)
 - Never: `auth(Storage, Contracts, Keys)` unless explicitly required
 
 ### Resource Safety
@@ -84,7 +84,7 @@ transaction(amount: UFix64, recipient: Address) {
 import "MyContract"
 
 transaction() {
-    prepare(signer: auth(SaveValue, BorrowValue, StorageCapabilities, Capabilities) &Account) {
+    prepare(signer: auth(SaveValue, BorrowValue, IssueStorageCapabilityController, PublishCapability) &Account) {
         // Check if already set up
         if signer.storage.borrow<&MyContract.Collection>(from: MyContract.StoragePath) != nil {
             return  // Already initialized

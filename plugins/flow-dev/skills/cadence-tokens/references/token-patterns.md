@@ -59,8 +59,7 @@ access(all) resource interface Trait {
     access(all) view fun getValueAsString(): String
     access(all) fun updateValue(newValue: AnyStruct)
     access(all) view fun getDisplayName(): String
-    // @discardableResult: callers (e.g. EvolvingNFT) may discard the return value
-    @discardableResult
+    // Return value may be discarded by callers (e.g. EvolvingNFT)
     access(all) fun evolveAccumulative(seeds: {String: UInt64}, steps: UInt64, nftOwner: Address?, nftUUID: UInt64): AnyStruct?
     access(all) view fun canEvolve(): Bool
 }
@@ -93,35 +92,45 @@ access(all) fun createMitosisChild(parentTrait: &{TraitModule.Trait}, seed: UInt
 ### Basic Vault with Entitlements
 ```cadence
 import "FungibleToken"
-import "Burner"
 
 access(all) contract MyToken: FungibleToken {
-    entitlement Withdraw
+    // Uses FungibleToken.Withdraw entitlement (declared in the FungibleToken standard contract)
 
     access(all) var totalSupply: UFix64
 
+    // FungibleToken.Vault interface auto-emits Withdrawn/Deposited events via its post conditions.
+    // Only declare custom events for operations not covered by the standard (mint, burn).
     access(all) event TokensMinted(amount: UFix64)
     access(all) event TokensBurned(amount: UFix64)
-    access(all) event TokensDeposited(amount: UFix64, to: Address?)
-    access(all) event TokensWithdrawn(amount: UFix64, from: Address?)
 
     access(all) resource Vault: FungibleToken.Vault {
-        access(self) var balance: UFix64
+        access(all) var balance: UFix64
 
         access(all) view fun getBalance(): UFix64 { return self.balance }
 
         access(all) fun deposit(from: @{FungibleToken.Vault}) {
-            let amount = from.balance
-            Burner.burn(<-from)
-            self.balance = self.balance + amount
-            emit TokensDeposited(amount: amount, to: self.owner?.address)
+            let vault <- from as! @MyToken.Vault
+            self.balance = self.balance + vault.balance
+            destroy vault
+            // FungibleToken.Vault interface post condition auto-emits FungibleToken.Deposited
         }
 
-        access(Withdraw) fun withdraw(amount: UFix64): @{FungibleToken.Vault} {
+        access(FungibleToken.Withdraw) fun withdraw(amount: UFix64): @{FungibleToken.Vault} {
             pre { self.balance >= amount: "Insufficient balance" }
             self.balance = self.balance - amount
-            emit TokensWithdrawn(amount: amount, from: self.owner?.address)
             return <- create Vault(balance: amount)
+            // FungibleToken.Vault interface post condition auto-emits FungibleToken.Withdrawn
+        }
+
+        // Required: FungibleToken.Vault inherits Burner.Burnable via the Balance interface.
+        // Burner.burn(<-vault) calls this before destroying — update totalSupply here.
+        // deposit() uses plain `destroy vault` (bypasses burnCallback) because transfers
+        // are not burns and must not decrement totalSupply.
+        access(contract) fun burnCallback() {
+            if self.balance > 0.0 {
+                MyToken.totalSupply = MyToken.totalSupply - self.balance
+            }
+            self.balance = 0.0
         }
 
         init(balance: UFix64) { self.balance = balance }
@@ -135,7 +144,7 @@ access(all) contract MyToken: FungibleToken {
         }
     }
 
-    access(all) fun createEmptyVault(): @Vault {
+    access(all) fun createEmptyVault(vaultType: Type): @{FungibleToken.Vault} {
         return <- create Vault(balance: 0.0)
     }
 
@@ -147,10 +156,12 @@ access(all) contract MyToken: FungibleToken {
 ```
 
 ### FT Key Rules
-- Implement `FungibleToken.Vault` interface (Provider, Receiver, Balance)
-- Use `access(Withdraw)` entitlement for withdraw operations
+- Implement `FungibleToken.Vault` interface (Provider, Receiver, Balance, Burner.Burnable)
+- Use `access(FungibleToken.Withdraw)` entitlement for withdraw operations
 - `deposit` should be `access(all)` (anyone can deposit)
-- Use named constants for total supply
-- Emit events for minting, burning, transfers
+- Use `destroy vault` in `deposit()` — NOT `Burner.burn()` — to avoid decrementing totalSupply during transfers
+- Implement `burnCallback()` to decrement `totalSupply` (called by `Burner.burn()` in explicit burn operations)
+- Do NOT emit custom Deposited/Withdrawn events — the FungibleToken interface post conditions auto-emit `FungibleToken.Deposited` and `FungibleToken.Withdrawn`
+- DO emit custom events for mint and burn (not covered by the standard)
 - Store vault at well-known storage path
 - Publish receiver capability publicly (no entitlements)

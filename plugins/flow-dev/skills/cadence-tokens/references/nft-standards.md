@@ -20,19 +20,22 @@ access(all) resource Collection: NonFungibleToken.Collection {
 ## Required Standard Functions
 
 ### Contract Level
-- `createEmptyCollection(): @{NonFungibleToken.Collection}`
+- `createEmptyCollection(nftType: Type): @{NonFungibleToken.Collection}`
 - `getContractViews(resourceType: Type?): [Type]`
 - `resolveContractView(resourceType: Type?, viewType: Type): AnyStruct?`
 
 ### NFT Resource
-- `getViews(): [Type]` — Return supported MetadataViews
+- `view getViews(): [Type]` — Return supported MetadataViews
 - `resolveView(_ view: Type): AnyStruct?` — Resolve specific metadata views
+- `createEmptyCollection(): @{NonFungibleToken.Collection}` — Create a compatible empty collection
 
 ### Collection Resource
 - `deposit(token: @{NonFungibleToken.NFT})`
-- `withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT}` with proper entitlements
+- `access(NonFungibleToken.Withdraw) withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT}`
+- `createEmptyCollection(nftType: Type): @{NonFungibleToken.Collection}`
 - `getIDs(): [UInt64]`
-- `borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}?`
+- `view borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}?`
+- `getLength(): Int`
 - `getSupportedNFTTypes(): {Type: Bool}`
 - `isSupportedNFTType(type: Type): Bool`
 
@@ -81,12 +84,12 @@ access(all) contract MyAsset {
     entitlement Mint
 
     access(all) resource Admin {
-        access(Mint) fun mintNFT(): @NonFungibleToken.NFT { /* ... */ }
+        access(Mint) fun mintNFT(): @{NonFungibleToken.NFT} { /* ... */ }
         access(Mint) fun createMinter(): @Minter { return <- create Minter() }
     }
 
     access(all) resource Minter {
-        access(Mint) fun mintNFT(): @NonFungibleToken.NFT { /* ... */ }
+        access(Mint) fun mintNFT(): @{NonFungibleToken.NFT} { /* ... */ }
     }
 
     init() {

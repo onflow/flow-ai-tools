@@ -31,7 +31,7 @@ let ref = signer.storage.borrow<&MyResource>(from: /storage/myResource)
 let data = signer.storage.copy<MyStruct>(from: /storage/myData)
 
 // Check existence
-let exists = account.storage.check<@MyResource>(/storage/myResource)
+let exists = account.storage.check<@MyResource>(from: /storage/myResource)
 ```
 
 ### Required Entitlements
@@ -46,11 +46,11 @@ auth(CopyValue) &Account      // copy()
 
 ### Issue and Publish
 ```cadence
-prepare(signer: auth(StorageCapabilities, Capabilities) &Account) {
-    let controller = signer.capabilities.storage
+prepare(signer: auth(IssueStorageCapabilityController, PublishCapability) &Account) {
+    // issue() returns Capability<T> directly — not StorageCapabilityController
+    let cap = signer.capabilities.storage
         .issue<&Resource>(/storage/resource)
-    controller.setTag("Public read-only access")
-    signer.capabilities.publish(controller.capability, at: /public/resource)
+    signer.capabilities.publish(cap, at: /public/resource)
 }
 ```
 
@@ -110,37 +110,59 @@ Cross-account capability bootstrapping:
 // Publisher
 signer.inbox.publish(controller.capability, name: "myResource", recipient: recipientAddress)
 
-// Claimer
-let cap = signer.inbox.claim<&MyResource>(name: "myResource", provider: providerAddress)
+// Claimer — first arg has no external label (signature uses _)
+let cap = signer.inbox.claim<&MyResource>("myResource", provider: providerAddress)
     ?? panic("Capability not found in inbox")
 
 // Unpublish
-signer.inbox.unpublish<&MyResource>(name: name, recipient: recipientAddress)
+signer.inbox.unpublish<&MyResource>(name)
 ```
 
 ## Account Entitlements
 
-### Fine-Grained
+Capability entitlements have **three tiers** — prefer the most specific that covers your needs.
+
+### Fine-Grained (prefer for Principle of Least Authority)
 ```cadence
+// Storage
 auth(SaveValue) &Account              // Save to storage
 auth(LoadValue) &Account              // Load from storage
 auth(BorrowValue) &Account            // Borrow reference
 auth(CopyValue) &Account              // Copy struct values
-auth(StorageCapabilities) &Account    // Issue/get storage cap controllers
-auth(AccountCapabilities) &Account    // Issue/get account cap controllers
+
+// Capabilities — most specific (sub-entitlements of StorageCapabilities/AccountCapabilities)
+auth(IssueStorageCapabilityController) &Account  // Issue new storage capability
+auth(GetStorageCapabilityController) &Account    // Get/query storage cap controllers
+auth(IssueAccountCapabilityController) &Account  // Issue new account capability
+auth(GetAccountCapabilityController) &Account    // Get/query account cap controllers
+auth(PublishCapability) &Account                 // Publish capability to public area
+auth(UnpublishCapability) &Account               // Unpublish capability from public area
+
+// Keys
 auth(AddKey) &Account                 // Add key
 auth(RevokeKey) &Account              // Revoke key
+
+// Contracts
 auth(AddContract) &Account            // Deploy contract
 auth(UpdateContract) &Account         // Update contract
 auth(RemoveContract) &Account         // Remove contract
-auth(PublishInboxCapability) &Account  // Publish to inbox
-auth(ClaimInboxCapability) &Account    // Claim from inbox
+
+// Inbox
+auth(PublishInboxCapability) &Account    // Publish to inbox
+auth(ClaimInboxCapability) &Account     // Claim from inbox
+auth(UnpublishInboxCapability) &Account // Unpublish from inbox
 ```
 
-### Coarse-Grained
+### Intermediate (subsumes fine-grained within the category)
+```cadence
+auth(StorageCapabilities) &Account    // Issue + Get storage cap controllers
+auth(AccountCapabilities) &Account    // Issue + Get account cap controllers
+```
+
+### Coarse-Grained (use sparingly)
 ```cadence
 auth(Storage) &Account       // All storage ops
-auth(Capabilities) &Account  // All capability ops
+auth(Capabilities) &Account  // All capability ops (subsumes StorageCapabilities + AccountCapabilities)
 auth(Keys) &Account          // All key ops
 auth(Contracts) &Account     // All contract ops
 auth(Inbox) &Account         // All inbox ops
@@ -148,9 +170,9 @@ auth(Inbox) &Account         // All inbox ops
 
 ### Common Combinations
 ```cadence
-auth(BorrowValue) &Account                                    // Read-only
-auth(BorrowValue, SaveValue) &Account                          // Read + write
-auth(BorrowValue, SaveValue, StorageCapabilities) &Account     // + cap issuance
+auth(BorrowValue) &Account                                                     // Read-only
+auth(BorrowValue, SaveValue) &Account                                          // Read + write
+auth(BorrowValue, SaveValue, IssueStorageCapabilityController, PublishCapability) &Account  // + cap issuance
 ```
 
 ## Creating New Accounts

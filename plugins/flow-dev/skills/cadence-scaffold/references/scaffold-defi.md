@@ -28,7 +28,7 @@ Identify the required flow:
 
 ## Transaction Physical Order
 ```
-prepare → pre → post → execute
+prepare → pre → execute → post
 ```
 
 ## Canonical Restake Template
@@ -46,9 +46,10 @@ transaction(pid: UInt64) {
     let pool: &{Staking.PoolPublic}
     let startingStake: UFix64
     let swapSource: SwapConnectors.SwapSource
+    let poolSink: IncrementFiStakingConnectors.PoolSink
     let expectedStakeIncrease: UFix64
 
-    prepare(acct: auth(BorrowValue, SaveValue, StorageCapabilities) &Account) {
+    prepare(acct: auth(BorrowValue, SaveValue, IssueStorageCapabilityController) &Account) {
         // Create operation ID — passed to all connectors for traceability
         let operationID = DeFiActions.createUniqueIdentifier()
 
@@ -86,6 +87,19 @@ transaction(pid: UInt64) {
         self.expectedStakeIncrease = zapper.quoteOut(
             forProvided: lpSource.minimumAvailable(), reverse: false
         ).outAmount
+
+        // Build PoolSink in prepare — operationID must be in scope (local var, not accessible in execute)
+        self.poolSink = IncrementFiStakingConnectors.PoolSink(
+            pid: pid, staker: self.userCertificateCap.address, uniqueID: operationID
+        )
+    }
+
+    execute {
+        // Size withdrawal by sink capacity
+        let vault <- self.swapSource.withdrawAvailable(maxAmount: self.poolSink.minimumCapacity())
+        self.poolSink.depositCapacity(from: &vault as auth(FungibleToken.Withdraw) &{FungibleToken.Vault})
+        assert(vault.balance == 0.0, message: "Residual after deposit")
+        destroy vault
     }
 
     post {
@@ -93,17 +107,6 @@ transaction(pid: UInt64) {
         self.pool.getUserInfo(address: self.userCertificateCap.address)?.stakingAmount ?? 0.0
             >= self.startingStake + self.expectedStakeIncrease:
             "Restake below expected amount"
-    }
-
-    execute {
-        let poolSink = IncrementFiStakingConnectors.PoolSink(
-            pid: pid, staker: self.userCertificateCap.address, uniqueID: nil
-        )
-        // Size withdrawal by sink capacity
-        let vault <- self.swapSource.withdrawAvailable(maxAmount: poolSink.minimumCapacity())
-        poolSink.depositCapacity(from: &vault as auth(FungibleToken.Withdraw) &{FungibleToken.Vault})
-        assert(vault.balance == 0.0, message: "Residual after deposit")
-        destroy vault
     }
 }
 ```

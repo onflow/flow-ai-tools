@@ -21,8 +21,7 @@ access(all) contract interface TraitModule {
 
         // Accumulative evolution — called by core NFT contract
         // access(all) required: called cross-contract from EvolvingNFT
-        // @discardableResult: callers may discard the return value
-        @discardableResult
+        // Return value may be discarded by callers (e.g. EvolvingNFT)
         access(all) fun evolveAccumulative(
             seeds: {String: UInt64},
             steps: UInt64,
@@ -157,7 +156,7 @@ access(all) fun evolve() {
     // Process in registered order — dependency-safe
     for moduleType in EvolvingNFT.moduleOrder {
         if self.ensureTraitExists(traitType: moduleType) {
-            self.traits[moduleType]?.evolveAccumulative(
+            let _ = self.traits[moduleType]?.evolveAccumulative(
                 seeds: seeds,
                 steps: steps,
                 nftOwner: self.owner?.address,

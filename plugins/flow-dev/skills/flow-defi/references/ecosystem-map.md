@@ -22,9 +22,8 @@ Current state of DeFi on Flow, missing primitives, and opportunity analysis.
 
 | Protocol | AMM Type | Notes |
 |----------|----------|-------|
-| IncrementFi | CLMM + xy=k | Largest DEX by TVL; Flow's primary AMM |
-| KittyPunch | xy=k | Simpler pairs, community DEX |
-| Metapier | StableSwap | Stablecoin-focused |
+| IncrementFi | CPAMM + Stableswap | Largest DEX by TVL; Flow's primary AMM (volatile pairs: xy=k constant product; stable pairs: Solidly stableswap curve) |
+| KittyPunch | EVM-based | Full-suite DEX (PunchSwap AMM, StableKitty stableswap, AggroKitty aggregator) with KUSD stablecoin and yield vaults on Flow EVM |
 
 ### Bridges
 
@@ -82,6 +81,8 @@ Early-stage lending markets exist on Flow; sector is underdeveloped vs lending v
 ```
 Price = initialPrice × (1 + k)^tokensSold
 where k = graduation parameter (typically 0.00001–0.0001)
+(Note: This is a discrete exponential approximation. Pump.fun itself uses
+constant-product AMM mechanics with virtual reserves, not this formula directly.)
 
 Graduation threshold: typically 10–20% of supply sold
 → Protocol receives initial bonding curve liquidity
@@ -128,12 +129,15 @@ Required for protocol credibility — without a DefiLlama listing, most DeFi use
 
 Minimum viable adapter:
 ```javascript
-const { getFlowTVL } = require("../helper/flow");
+const { fetchURL } = require("../helper/utils");
 
 module.exports = {
   flow: {
     tvl: async () => {
-      return getFlowTVL(/* your contract addresses */);
+      // Query your contracts or an API endpoint for TVL data
+      // See existing Flow adapters in the DefiLlama-Adapters repo for examples
+      const data = await fetchURL(/* your API endpoint */);
+      return { flow: data.tvl };
     }
   }
 };
