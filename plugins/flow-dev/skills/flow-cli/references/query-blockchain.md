@@ -134,6 +134,24 @@ flow scripts execute cadence/scripts/GetBalance.cdc 0xabc123... \
   --block-id def456... --network mainnet
 ```
 
+**CLI help reference (`flow scripts execute --help`):**
+
+```
+Execute a script
+
+Usage:
+  flow scripts execute <filename> [<argument> <argument> ...] [flags]
+
+Examples:
+flow scripts execute script.cdc "Meow" "Woof"
+
+Flags:
+      --args-json string    arguments in JSON-Cadence format
+      --block-height uint   block height to execute the script at
+      --block-id string     block ID to execute the script at
+  -h, --help                help for execute
+```
+
 **Argument type mapping for `--args-json`:**
 
 | Cadence type | JSON type value |
