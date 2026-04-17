@@ -11,6 +11,8 @@
 | Transaction by ID | `flow transactions get <txID>` |
 | System transaction for a block | `flow transactions get-system <block>` |
 | Execute read-only Cadence script | `flow scripts execute <file.cdc> [args]` |
+| Historical script at block height | `flow scripts execute <file.cdc> --block-height <N>` |
+| Historical script at block ID | `flow scripts execute <file.cdc> --block-id <id>` |
 
 ---
 
@@ -122,6 +124,14 @@ flow scripts execute cadence/scripts/GetBalance.cdc 0xf8d6e0586b0a20c7 --network
 flow scripts execute cadence/scripts/GetNFTs.cdc \
   --args-json '[{"type": "Address", "value": "0xf8d6e0586b0a20c7"}]' \
   --network mainnet
+
+# At historical block height
+flow scripts execute cadence/scripts/GetBalance.cdc 0xf8d6e0586b0a20c7 \
+  --block-height 12000000 --network mainnet
+
+# At specific block ID
+flow scripts execute cadence/scripts/GetBalance.cdc 0xabc123... \
+  --block-id def456... --network mainnet
 ```
 
 **Argument type mapping for `--args-json`:**

@@ -64,6 +64,12 @@ flow scripts execute cadence/scripts/GetBalance.cdc \
 
 # On specific network
 flow scripts execute cadence/scripts/GetBalance.cdc --network testnet
+
+# At historical block height
+flow scripts execute cadence/scripts/GetBalance.cdc --block-height 12345 --network mainnet
+
+# At specific block ID
+flow scripts execute cadence/scripts/GetBalance.cdc --block-id abc123... --network mainnet
 ```
 
 Simple types (Address, UInt64, String, Bool) can be positional args. Use `--args-json` for UFix64, optionals, structs, arrays, dictionaries.
