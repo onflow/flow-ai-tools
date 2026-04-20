@@ -14,10 +14,9 @@ Direct distribution of protocol fees to token stakers in non-native (non-reflexi
 |----------|---------|-------------|----------|-----------|
 | GMX v1 | ~$470M cumulative (v1) | 30% (v1) | ETH (v1) | 15–25% |
 | Synthetix | Variable | 100% | sUSD | 5–15% |
-| Jupiter | Variable | 50% | SOL/USDC | Variable |
 | EtherFi | Variable | 60% | ETH | ~8% |
 
-**Note:** GMX v2 (October 2024) replaced the ETH distribution with a buyback mechanism. The table reflects v1 metrics for reference only.
+**Note:** GMX v2 launched August 2023 (changed fee split percentages, still ETH-denominated). In October 2024 a DAO governance vote replaced ETH/AVAX distributions with a GMX token buyback model. The table reflects v1 metrics for reference only.
 
 **Why non-reflexive currency matters:**
 - Yield in ETH/USDC = real value regardless of token price
@@ -28,7 +27,7 @@ Direct distribution of protocol fees to token stakers in non-native (non-reflexi
 ```cadence
 // Revenue collection pattern
 access(all) contract ProtocolFees {
-    access(all) var pendingDistribution: UFix64
+    access(contract) var pendingDistribution: UFix64
 
     // Called on each protocol interaction
     access(contract) fun collectFee(amount: UFix64) {
@@ -58,7 +57,7 @@ Use protocol revenue to repurchase tokens from the market and permanently destro
 | MakerDAO | $100M+ PSM surplus → buyback | Fixed | Sustained |
 | Uniswap (proposed) | Fee switch vote | Fixed | Not yet activated |
 
-**Critical finding:** 7 of 9 protocols with buyback programs still saw token price decline. The 2 exceptions (Hyperliquid, BNB) share:
+**Pattern finding:** Most protocols with buyback programs still see token price decline. The exceptions (notably Hyperliquid and BNB) tend to share:
 - Buyback ratio >30% of revenue
 - Fixed or capped supply (burns are meaningful)
 - Strong narrative (clear value prop)
@@ -79,7 +78,7 @@ Use protocol revenue to repurchase tokens from the market and permanently destro
 
 Split revenue between multiple destinations.
 
-**Jupiter (JUP) model:** 50% → buyback/burn, 50% → staker yield
+**Jupiter (JUP) model:** 50% → JUP buyback (beginning Feb 2025), 50% → treasury (growth, strategy, operational stability) — not staker yield
 
 **EtherFi model:** 60% → stakers, 40% → treasury (for protocol development)
 

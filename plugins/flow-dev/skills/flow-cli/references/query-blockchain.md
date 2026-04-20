@@ -6,12 +6,13 @@
 |---------------|---------|
 | Account info, balance, keys, contracts | `flow accounts get <address>` |
 | Latest or specific block | `flow blocks get latest` / `flow blocks get <id-or-height>` |
-| Events by type in block range | `flow events get <EventType> <start> <end>` |
+| Events by type in block range | `flow events get <EventType> --start <start> --end <end>` |
 | Collection by ID | `flow collections get <collectionID>` |
 | Transaction by ID | `flow transactions get <txID>` |
 | System transaction for a block | `flow transactions get-system <block>` |
 | Execute read-only Cadence script | `flow scripts execute <file.cdc> [args]` |
 | Historical script at block height | `flow scripts execute <file.cdc> --block-height <N>` |
+| Historical script at block ID | `flow scripts execute <file.cdc> --block-id <id>` |
 
 ---
 
@@ -60,15 +61,12 @@ flow blocks get latest --output json --network mainnet
 ### `flow events get`
 
 ```bash
-# Events in block range (inclusive)
-flow events get A.1654653399040a61.FlowToken.TokensWithdrawn 0 100 --network mainnet
+# Events in block range (inclusive) — use --start and --end flags
+flow events get A.1654653399040a61.FlowToken.TokensWithdrawn --start 0 --end 100 --network mainnet
 
-# With JSON args filter
-flow events get "A.f233dcee88fe0abe.FungibleToken.TokensDeposited" 15000000 15000100 \
-  --network mainnet --output json
-
-# Using short network alias
-flow events get A.0b2a3299cc857e29.TopShot.Deposit 0 latest -n mainnet
+# With JSON output
+flow events get "A.f233dcee88fe0abe.FungibleToken.TokensDeposited" \
+  --start 15000000 --end 15000100 --network mainnet --output json
 ```
 
 **Event type format:** `A.<contract-address>.<ContractName>.<EventName>`
@@ -91,8 +89,8 @@ flow collections get <collectionID> --network mainnet
 # Basic
 flow transactions get <txID> --network mainnet
 
-# Include signatures, code, and fee events
-flow transactions get <txID> --include signatures,code,fee-events --network mainnet
+# Include signatures and code (valid values: code, payload, signatures)
+flow transactions get <txID> --include signatures,code --network mainnet
 
 # JSON
 flow transactions get <txID> --output json --network mainnet
@@ -127,13 +125,31 @@ flow scripts execute cadence/scripts/GetNFTs.cdc \
   --args-json '[{"type": "Address", "value": "0xf8d6e0586b0a20c7"}]' \
   --network mainnet
 
-# Historical query at block height
+# At historical block height
 flow scripts execute cadence/scripts/GetBalance.cdc 0xf8d6e0586b0a20c7 \
   --block-height 12000000 --network mainnet
 
 # At specific block ID
 flow scripts execute cadence/scripts/GetBalance.cdc 0xabc123... \
   --block-id def456... --network mainnet
+```
+
+**CLI help reference (`flow scripts execute --help`):**
+
+```
+Execute a script
+
+Usage:
+  flow scripts execute <filename> [<argument> <argument> ...] [flags]
+
+Examples:
+flow scripts execute script.cdc "Meow" "Woof"
+
+Flags:
+      --args-json string    arguments in JSON-Cadence format
+      --block-height uint   block height to execute the script at
+      --block-id string     block ID to execute the script at
+  -h, --help                help for execute
 ```
 
 **Argument type mapping for `--args-json`:**
@@ -169,7 +185,7 @@ Core Flow contracts across environments:
 | `FlowServiceAccount` | `0xe467b9dd11fa00df` | `0x8c5303eaa26202d6` | `0xf8d6e0586b0a20c7` |
 | `FlowFees` | `0xf919ee77447b7497` | `0x912d5440f7e3769e` | `0xe5a8b7f23e8b548f` |
 | `FlowStorageFees` | `0xe467b9dd11fa00df` | `0x8c5303eaa26202d6` | `0xf8d6e0586b0a20c7` |
-| `Crypto` | `0xf8d6e0586b0a20c7` | `0xf8d6e0586b0a20c7` | `0xf8d6e0586b0a20c7` |
+| `Crypto` | `0xe467b9dd11fa00df` | `0x8c5303eaa26202d6` | `0xf8d6e0586b0a20c7` |
 | `EVM` | `0xe467b9dd11fa00df` | `0x8c5303eaa26202d6` | `0xf8d6e0586b0a20c7` |
 | `FlowEVMBridge` | `0x1e4aa0b87d10b141` | `0xdfc20aee650fcbdf` | — |
 | `HybridCustody` | `0xd8a7e05a7ac670c0` | `0x294e44e1ec6993c6` | — |

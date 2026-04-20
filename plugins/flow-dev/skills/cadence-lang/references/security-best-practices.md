@@ -83,22 +83,36 @@ access(all) fun safe(vaultCap: Capability<auth(Withdraw) &Vault>) { }
 ```cadence
 auth(BorrowValue) &Account                          // Read-only
 auth(BorrowValue, SaveValue) &Account                // Read + write
-auth(BorrowValue, StorageCapabilities) &Account  // Cap issuance
+auth(IssueStorageCapabilityController, PublishCapability) &Account              // Cap issuance + publish
 ```
 
 ## Type Safety
 
-### Practice 14: Use Most Specific Types
-```cadence
-// ✅ Specific
-access(all) fun processNFT(nft: @MyNFT) { }
+### Practice 14: Match Type Specificity to Intent
 
-// ❌ Too generic
-access(all) fun processNFT(nft: @{NonFungibleToken.NFT}) { }
+Use the most specific type your function actually requires. At open interface boundaries (standards implementations, marketplaces, vaults that hold multiple types), interface types are correct — pair them with an internal force-cast to verify the concrete type.
+
+```cadence
+// ✅ Correct for internal/single-type functions
+access(all) fun processMyNFT(nft: @MyNFT) { }
+
+// ✅ Correct for standards-conforming APIs (marketplace, collection deposit, FT receiver)
+// Accept any conforming type, cast internally to verify
+access(all) fun deposit(token: @{NonFungibleToken.NFT}) {
+    let nft <- token as! @MyNFT  // Panics cleanly if wrong type — this is intended
+    // ...
+}
+
+// ❌ Wrong: accepting an interface type without casting, then using it as concrete type
+access(all) fun deposit(token: @{NonFungibleToken.NFT}) {
+    // Using token as if it's @MyNFT without verifying — silent type confusion
+}
 ```
 
+**Rule:** Use `@ConcreteType` for functions that must only accept that exact type. Use `@{Interface}` at standard API boundaries that genuinely accept any conforming value, and always cast (`as!`) internally to your expected concrete type.
+
 ### Practice 15: Cast Less-Specific Types
-Verify and cast to expected concrete types when receiving generic types.
+Verify and cast to expected concrete types when receiving generic types. A failing cast panics cleanly — this is the intended security boundary, not a problem to avoid.
 
 ## Resource Safety
 

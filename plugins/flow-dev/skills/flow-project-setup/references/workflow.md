@@ -14,7 +14,7 @@ Configure FCL for emulator → test auth flow → test transactions → verify e
 
 ### Stage 3: Testnet Deployment
 ```bash
-flow project deploy --network=testnet --signer testnet-deployer
+flow project deploy --network=testnet
 ```
 
 ### Stage 4: Frontend Integration (Testnet)
@@ -96,14 +96,14 @@ access(all) fun evolvePartial(maxSteps: UInt64) {
 flow project deploy --network=testnet --update
 ```
 - Add, change, or delete functions ✅
-- Remove existing fields ✅
-- Reorder fields ✅
 - Change field access modifiers ✅
 - Add new type declarations ✅
 - Modify events and constructors ✅
+- Remove existing fields ✅ (stored data becomes inaccessible; no crash — fields encoded by name)
+- Reorder fields ✅ (name-based encoding means order doesn't affect deserialization)
 
 ### NOT Allowed (requires migration or new contract)
-- Adding new fields ❌ (init doesn't re-run on update)
+- Adding new non-optional fields ❌ (init doesn't re-run on update; use optional fields + lazy init)
 - Changing field types ❌ (deserialization errors)
 - Removing struct/resource/interface declarations ❌
 - Removing interface conformance ❌
@@ -150,16 +150,14 @@ access(all) fun ensureNewFieldInitialized() {
 flow init
 flow emulator
 flow project deploy
-flow project deploy --network=testnet --signer testnet-deployer
+flow project deploy --network=testnet
 
 # Testing
 flow test
 flow scripts execute <script>
 flow transactions send <tx>
-flow config validate
 
 # Network
-flow config set env testnet
 flow accounts get <address>
 flow dependencies install
 ```

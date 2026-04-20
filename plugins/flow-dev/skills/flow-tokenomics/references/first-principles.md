@@ -38,7 +38,7 @@ The goal: make "hold" the dominant strategy in the token's game theory.
 
 ### Why Olympus (3,3) Failed
 
-Olympus claimed a Nash equilibrium where all players choosing to "bond" and "stake" (coded as "(3,3)") was optimal. It worked until it didn't:
+Olympus claimed a Nash equilibrium where all players choosing to stake (coded as "(3,3)") was optimal. In the OlympusDAO game theory matrix: staking = +3, bonding = +1, selling = -1; the (3,3) label refers specifically to mutual staking. It worked until it didn't:
 
 | Condition | Holding optimal? |
 |-----------|-----------------|
@@ -46,7 +46,7 @@ Olympus claimed a Nash equilibrium where all players choosing to "bond" and "sta
 | APY < expected price decline | ❌ No — sell now, buy back cheaper |
 | Everyone thinks everyone will sell | ❌ Mass exit is rational → self-fulfilling |
 
-**Result:** Olympus fell from $1,400 to $10 (-99%) because defection became rational when price momentum reversed. The "(3,3)" equilibrium was only stable in bull markets.
+**Result:** Olympus fell from $1,400 to ~$8 (-99%) because defection became rational when price momentum reversed. The "(3,3)" equilibrium was only stable in bull markets.
 
 ### Designing Stable Equilibria
 
@@ -56,7 +56,7 @@ A holding equilibrium is stable when:
 3. **Network effects increase with holders** — more holders → more utility → more demand
 
 **GMX model (stable, v1):**
-- Hold GMX → receive 30% of protocol fees in ETH *(v1 mechanism; GMX v2, October 2024, replaced this with a buyback model)*
+- Hold GMX → receive 30% of protocol fees in ETH *(v1 mechanism; in October 2024 a DAO governance vote replaced ETH distributions with a GMX token buyback model)*
 - Cash flow denominated in ETH (not GMX) — no reflexivity
 - No exit penalty, but exiting means losing ongoing cash flow
 - Equilibrium: hold GMX if you believe protocol will generate more fees
@@ -101,7 +101,7 @@ Mechanisms break when rational actors optimize against them rather than for thei
 
 ### Loss Aversion in Vesting Design
 
-People feel losses 2× more intensely than equivalent gains (Kahneman-Tversky prospect theory). Apply to token mechanics:
+People feel losses ~2.25× more intensely than equivalent gains (Tversky and Kahneman, 1992 — Cumulative Prospect Theory; λ ≈ 2.25). Apply to token mechanics:
 
 - **Cliff as streak-loss:** Frame 12-month cliff as "you've earned X tokens — unstake before maturity and lose them all" rather than "you'll receive tokens after 12 months"
 - **Sunk cost lock-in:** Once users have staked for 3+ months, the cliff loss-aversion keeps them locked
