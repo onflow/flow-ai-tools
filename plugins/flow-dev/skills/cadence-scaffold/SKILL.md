@@ -37,3 +37,4 @@ All generated code must follow:
 - **`cadence-defi-actions`** — Consult when scaffolding DeFi transactions for connector APIs and safety rules.
 - **`cadence-audit`** — Run an audit on generated code to verify it follows security best practices before the user deploys.
 - **`flow-cli`** — Use to deploy and test scaffolded contracts and transactions.
+- **`cadence-testing`** — Use to write tests for any scaffolded contract or transaction before deployment.
