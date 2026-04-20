@@ -50,3 +50,4 @@ When auditing a full project:
 - **`cadence-lang`** — Essential during audits. Consult for access control rules, entitlement patterns, resource safety, anti-patterns, and design patterns. Every audit finding should reference the specific Cadence rule being violated.
 - **`cadence-tokens`** — Consult when auditing NFT/FT contracts for standard compliance (NonFungibleToken interface, MetadataViews requirements).
 - **`cadence-defi-actions`** — Consult when auditing DeFi transactions for connector safety rules, vault handling, and type validation.
+- **`cadence-testing`** — Use to follow up on audit findings like "missing test coverage" or "edge case not tested" with concrete test-writing guidance.
