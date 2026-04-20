@@ -44,6 +44,7 @@ For security-sensitive tasks, also read `security-best-practices.md` and `anti-p
 
 This skill provides the language foundation. Other skills build on it:
 
+- **`cadence-testing`** — Use alongside when writing tests for Cadence code. Tests are Cadence too and must follow every rule in this skill.
 - **`cadence-tokens`** — Use alongside this skill when building NFT/FT contracts. Token contracts must follow all rules here plus token-specific standards.
 - **`cadence-defi-actions`** — Use alongside when composing DeFi transactions. DeFi code requires strict resource handling from this skill.
 - **`cadence-audit`** — Use to verify code follows the security rules and patterns documented here.
