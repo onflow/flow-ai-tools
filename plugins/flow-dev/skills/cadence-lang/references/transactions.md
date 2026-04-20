@@ -8,13 +8,13 @@ Transactions use explicit execution phases to separate concerns and make securit
 import "FungibleToken"
 
 transaction(amount: UFix64, recipient: Address) {
-    let senderVault: &{FungibleToken.Provider}
+    let senderVault: auth(FungibleToken.Withdraw) &{FungibleToken.Vault}
     let recipientReceiver: &{FungibleToken.Receiver}
 
     prepare(signer: auth(BorrowValue) &Account) {
         self.senderVault = signer.storage
-            .borrow<&{FungibleToken.Provider}>(from: /storage/flowTokenVault)
-            ?? panic("Could not borrow FungibleToken Provider reference from /storage/flowTokenVault")
+            .borrow<auth(FungibleToken.Withdraw) &{FungibleToken.Vault}>(from: /storage/flowTokenVault)
+            ?? panic("Could not borrow FungibleToken Vault reference from /storage/flowTokenVault")
         self.recipientReceiver = getAccount(recipient)
             .capabilities.borrow<&{FungibleToken.Receiver}>(/public/flowTokenReceiver)
             ?? panic("Could not borrow FungibleToken Receiver reference from /public/flowTokenReceiver")
@@ -94,11 +94,11 @@ post {
 Declare fields to share state between phases:
 ```cadence
 transaction(amount: UFix64) {
-    let vault: &{FungibleToken.Provider}
+    let vault: &{FungibleToken.Vault}
     let startBalance: UFix64
 
     prepare(signer: auth(BorrowValue) &Account) {
-        self.vault = signer.storage.borrow<&{FungibleToken.Provider}>(from: /storage/vault)
+        self.vault = signer.storage.borrow<&{FungibleToken.Vault}>(from: /storage/vault)
             ?? panic("Could not borrow vault")
         self.startBalance = self.vault.balance
     }
@@ -143,18 +143,21 @@ prepare(signer: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
 ### Token Transfer
 ```cadence
 transaction(amount: UFix64, to: Address) {
-    let sentVault: @{FungibleToken.Vault}
+    // Borrow references in prepare to avoid moving the vault out of storage
+    let senderVault: auth(FungibleToken.Withdraw) &{FungibleToken.Vault}
+    let recipientReceiver: &{FungibleToken.Receiver}
+
     prepare(signer: auth(BorrowValue) &Account) {
-        let vaultRef = signer.storage
+        self.senderVault = signer.storage
             .borrow<auth(FungibleToken.Withdraw) &{FungibleToken.Vault}>(from: /storage/vault)
             ?? panic("Could not borrow vault")
-        self.sentVault <- vaultRef.withdraw(amount: amount)
-    }
-    execute {
-        let recipient = getAccount(to)
+        self.recipientReceiver = getAccount(to)
             .capabilities.borrow<&{FungibleToken.Receiver}>(/public/receiver)
             ?? panic("Could not borrow receiver")
-        recipient.deposit(from: <-self.sentVault)
+    }
+    execute {
+        let vault <- self.senderVault.withdraw(amount: amount)
+        self.recipientReceiver.deposit(from: <-vault)
     }
 }
 ```
@@ -162,7 +165,7 @@ transaction(amount: UFix64, to: Address) {
 ### Resource Setup
 ```cadence
 transaction() {
-    prepare(signer: auth(SaveValue, StorageCapabilities, Capabilities) &Account) {
+    prepare(signer: auth(SaveValue, IssueStorageCapabilityController, PublishCapability) &Account) {
         let resource <- MyContract.createResource()
         signer.storage.save(<-resource, to: /storage/myResource)
         let cap = signer.capabilities.storage.issue<&MyContract.Resource>(/storage/myResource)

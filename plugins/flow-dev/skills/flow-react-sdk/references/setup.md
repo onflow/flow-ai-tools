@@ -27,7 +27,7 @@ function Root() {
         appDetailUrl: 'https://myonchainapp.com',
       }}
       flowJson={flowJSON}
-      darkMode={false}
+      colorMode="light"
     >
       <App />
     </FlowProvider>
@@ -91,7 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 |------|------|-------------|
 | `config` | `FlowConfig` | Configuration object (see above) |
 | `flowJson` | `object` | Imported `flow.json` for contract resolution |
-| `darkMode` | `boolean` | Dark mode toggle (default: `false`) |
+| `colorMode` | `"light" \| "dark" \| "system"` | Color mode (default: `"system"`) |
 | `theme` | `ThemeConfig` | Custom theme overrides |
 
 ## Network Configuration
@@ -101,10 +101,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 config={{ accessNodeUrl: 'https://rest-mainnet.onflow.org', flowNetwork: 'mainnet' }}
 
 // Testnet
-config={{ accessNodeUrl: 'https://access-testnet.onflow.org', flowNetwork: 'testnet' }}
+config={{ accessNodeUrl: 'https://rest-testnet.onflow.org', flowNetwork: 'testnet' }}
 
 // Emulator
-config={{ accessNodeUrl: 'http://127.0.0.1:8888', flowNetwork: 'emulator' }}
+config={{ accessNodeUrl: 'http://localhost:8888', flowNetwork: 'emulator' }}
 ```
 
 ## Theming
@@ -129,18 +129,16 @@ const customTheme = {
 
 Theme color properties: `primary`, `primaryForeground`, `secondary`, `secondaryForeground`, `accent`, `background`, `foreground`, `muted`, `mutedForeground`, `border`, `success`, `error`, `link`. Only specify colors you want to override.
 
-## Dark Mode
+## Color Mode
 
-Controlled by parent app via `darkMode` prop on FlowProvider:
-- `darkMode={false}` — Light mode (default)
-- `darkMode={true}` — Dark mode
-- Dynamically changeable at runtime
+Controlled by the `colorMode` prop on `FlowProvider`:
+- `colorMode="light"` — Force light mode
+- `colorMode="dark"` — Force dark mode
+- `colorMode="system"` — Follow OS preference (default)
 
 ```tsx
-const { isDark } = useDarkMode();  // Access in components
+const { isDark } = useDarkMode();  // Access current dark mode state in components
 ```
-
-Note: SDK does NOT auto-follow system preferences — parent app manages state.
 
 ## Utility Hooks
 

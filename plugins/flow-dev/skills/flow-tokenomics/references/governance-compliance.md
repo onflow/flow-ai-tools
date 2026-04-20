@@ -27,7 +27,7 @@ DAO governance models, attack vectors, defenses, and regulatory considerations f
 Borrow massive token supply within one transaction → pass malicious proposal → repay.
 
 **Real examples:**
-- **Beanstalk ($182M, April 2022):** Attacker flash-borrowed ~$1B in LP tokens via Aave to acquire a temporary supermajority → passed an emergency governance proposal granting the attacker the entire protocol treasury → drained $182M in the same transaction
+- **Beanstalk ($182M, April 2022):** Attacker flash-borrowed ~$1B in stablecoins primarily via Aave (plus Uniswap and SushiSwap) to acquire a temporary supermajority (>67% of Stalk voting power) → passed an emergency governance proposal granting the attacker the entire protocol treasury → drained $182M in the same transaction (attacker netted ~$80M after repaying loans)
 - **Build Finance ($11M, 2022):** Similar flash loan attack
 
 **Defenses (must implement ALL of these):**
@@ -55,7 +55,7 @@ Legitimate at small scale (Curve Wars bribes). Becomes attack vector when:
 - Bribe market prices are too low vs. treasury value
 
 **Bribe market economics:**
-- Historical bribe ROI: $1 in bribes → $3–8 in emissions directed
+- Historical bribe ROI: $1 in bribes → $2–5 in emissions directed (avg ~$4; Curve Wars data)
 - Attack becomes viable when treasury value >> cost to control governance
 
 **Defense:** Minimum governance threshold for sensitive proposals (e.g., treasury withdrawals require 25% quorum vs standard 10%)
@@ -111,8 +111,8 @@ Four criteria that must ALL be met for an asset to be a security:
 | Case | Outcome | Lesson |
 |------|---------|--------|
 | Ripple (XRP) | Partial win: XRP not a security for secondary market sales | Programmatic sales ≠ investment contract |
-| Telegram (TON) | $1.7B settlement, TON shutdown | Pre-launch token sales = securities |
-| Coinbase (COIN) | SEC case filed 2023; status evolving — verify current state | Regulatory landscape is in flux as of 2026 |
+| Telegram (TON) | $1.224B returned to investors + $18.5M penalty; TON project shutdown | Pre-launch token sales = securities |
+| Coinbase (COIN) | Case dismissed with prejudice February 2025; SEC reversed crypto enforcement stance under new administration | Regulatory climate can shift with administration changes |
 
 ### Four Compliance Strategies
 
@@ -132,7 +132,7 @@ Four criteria that must ALL be met for an asset to be a security:
 
 | Event | Tax treatment |
 |-------|--------------|
-| Airdrop received | Ordinary income at FMV on receipt date (Rev. Rul. 2023-14) |
+| Airdrop received | Ordinary income at FMV on receipt date (Rev. Rul. 2019-24; Notice 2014-21 applies to virtual currency generally) |
 | Staking rewards | Ordinary income at FMV on receipt (Rev. Rul. 2023-14) |
 | Token sale | Capital gain/loss (short-term if held < 1 year) |
 | NFT sale | Capital gain/loss |

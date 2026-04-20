@@ -3,7 +3,7 @@ name: cadence-tokens
 description: |
   Guide for developing NFT and Fungible Token contracts on the Flow blockchain using Cadence. Covers NonFungibleToken and FungibleToken interface conformance, MetadataViews integration for marketplace compatibility, collection patterns, minting, standard paths, event emission, and modular NFT architectures for complex traits and evolution.
   TRIGGER when: building NFT contracts, FT token contracts, implementing NonFungibleToken or FungibleToken interfaces, working with MetadataViews, creating collections, minting tokens, "create an NFT", "build a token contract", "mint NFT", "NFT collection", "fungible token vault", "royalties", "MetadataViews.Display", "NonFungibleToken.Collection", "token standards", "FungibleToken.Vault".
-  DO NOT TRIGGER when: asking about general Cadence syntax or patterns (use cadence-lang), composing DeFi transactions (use cadence-defi-actions), setting up flow.json or deploying (use flow-project-setup), auditing code (use cadence-audit).
+  DO NOT TRIGGER when: asking about general Cadence syntax or patterns (use cadence-lang), setting up flow.json or deploying (use flow-project-setup), auditing code (use cadence-audit).
 ---
 
 # Cadence Token Development

@@ -146,7 +146,7 @@
 ## Cadence-Specific Gotchas
 
 - Cadence does NOT have `defer`
-- Cadence does NOT have if-expressions (only if-statements)
+- Cadence does NOT have if-expressions (`if` blocks cannot be used as expressions that return a value); use the ternary operator (`condition ? a : b`) instead
 - Fields cannot have initial values in declarations — must initialize in `init()`
 - Owning a value (struct/resource) gives full access to all methods regardless of entitlements — entitlements only gate access through references
 - Reserved keywords cannot be used as identifiers (see Cadence language reference)
@@ -174,4 +174,3 @@ When auditing, consult these `cadence-lang` references for the specific rules be
 - **Security rules** → `security-best-practices.md`
 
 For token-specific audits, consult `cadence-tokens` skill → `nft-standards.md`.
-For DeFi transaction audits, consult `cadence-defi-actions` skill → `safety-testing.md`.

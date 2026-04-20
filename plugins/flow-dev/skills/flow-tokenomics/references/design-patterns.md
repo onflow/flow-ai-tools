@@ -12,7 +12,7 @@ Distribute actual protocol revenue (not token inflation) to stakers.
 **Case study: GMX v1**
 - ~$470M cumulative fees generated (v1 era); 30% → GMX stakers in ETH, 70% → GLP LPs
 - Sustained 15–25% ETH APY during high-activity periods; token survived bear markets because cash flows were real
-- **Note:** GMX v2 (launched October 2024) restructured the fee model — staker ETH distribution was replaced with a buyback mechanism. Verify current GMX v2 mechanics if using as a reference
+- **Note:** GMX v2 (launched August 2023) restructured the fee model — staker ETH distribution was replaced with a buyback mechanism. Verify current GMX v2 mechanics if using as a reference
 
 **Case study: Synthetix**
 - Revenue from synth trading fees → SNX stakers
@@ -38,7 +38,7 @@ Use protocol revenue to repurchase and burn circulating supply.
 
 **When to use:** Early-stage protocol with revenue but not enough to meaningfully yield individual stakers. Burns compound over time.
 
-**Critical finding:** 7 of 9 tokens with buyback programs decline anyway. Exceptions share: >30% buyback ratio, fixed supply, strong narrative, zero/minimal VC allocation.
+**Pattern finding:** Most tokens with buyback programs still decline in price. Exceptions tend to share: >30% buyback ratio of fees, fixed supply, strong narrative, zero/minimal VC allocation.
 
 ---
 
@@ -50,7 +50,7 @@ Lock tokens to receive voting power that directs protocol emissions.
 - 40–50% of total supply locked
 - Voting power directs gauge weights (emissions to pools)
 - Created the "Curve Wars" — protocols pay billions in bribes to veCRV holders
-- Convex Finance built a $3B protocol on top of this primitive
+- Convex Finance built a protocol on top of this primitive, reaching ~$20B peak TVL
 
 **Mechanics:**
 ```
@@ -115,7 +115,7 @@ High emissions collapse token price, destroying the APY they're supposed to offe
 - Peak APY: 8,000%+ 
 - Required constant new buyers to maintain price
 - Death spiral: price fell → APY in dollar terms fell → fewer buyers → more price pressure
-- Peak: $1,400 → Trough: $10 (-99%)
+- Peak: $1,400 → Trough: ~$8 (-99%)
 
 **Rule:** Max annual emission rate = 10% of circulating supply. Reduce over time.
 
@@ -127,7 +127,7 @@ Stablecoins backed only by their paired governance token cannot survive bank run
 **Case study: TerraLUNA**
 - UST maintained peg via LUNA mint/burn
 - During panic: UST → sell LUNA → LUNA price falls → UST peg breaks → more LUNA minted → hyperinflation
-- $40 billion in value destroyed in 72 hours
+- approximately $45 billion in value destroyed over approximately 5–7 days (May 7–15, 2022)
 
 **Rule:** Stablecoins require $1+ in collateral per $1 in circulation. Algorithmic mechanisms can optimize, not replace, collateral.
 
@@ -139,7 +139,7 @@ Unsustainably high yields funded by new deposits, not protocol revenue.
 **Case study: Anchor Protocol**
 - 20% APY on UST "guaranteed" by Terraform Labs
 - Subsidized from TFL treasury, not real yield
-- Attracted $18B in deposits
+- Attracted ~$17B in deposits at peak (April 2022)
 - Collapsed when TFL could no longer sustain subsidies
 
 **Rule:** If you can't explain where the yield comes from, it's a Ponzi.
@@ -150,7 +150,7 @@ Unsustainably high yields funded by new deposits, not protocol revenue.
 Large VC/founder allocations create persistent sell pressure.
 
 **Case studies:**
-- Aptos (APT): 51.5% to insiders → botted airdrop, -50% in 48h
+- Aptos (APT): ~49% to insiders (core contributors + foundation + investors) → botted airdrop, ~40% price drop in 24h
 - ICP (Internet Computer): 40%+ to insiders → -95% from peak
 
 **Best practice:**

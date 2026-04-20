@@ -19,13 +19,14 @@ capability.check(): Bool       // Verify validity
 
 ### Phase 1: Issue
 ```cadence
-let controller = account.capabilities.storage
+// issue() returns Capability<T> directly
+let cap = account.capabilities.storage
     .issue<&MyResource>(/storage/myResource)
 ```
 
 ### Phase 2: Publish
 ```cadence
-account.capabilities.publish(controller.capability, at: /public/myResource)
+account.capabilities.publish(cap, at: /public/myResource)
 ```
 
 ### Phase 3: Get/Borrow
@@ -83,14 +84,19 @@ account.capabilities.publish(publicCap, at: /public/vault)
 
 ### Store Controllers for Revocation
 ```cadence
-let controller = account.capabilities.storage
+// issue() returns Capability<T>; store its .id to enable future revocation
+let cap = account.capabilities.storage
     .issue<&MyResource>(/storage/myResource)
-account.storage.save(controller, to: /storage/myResourceController)
+account.capabilities.publish(cap, at: /public/myResource)
+account.storage.save(cap.id, to: /storage/myResourceCapabilityID)
 
-// Later: revoke by getting controller and calling delete()
+// Later: retrieve ID, look up StorageCapabilityController, and delete
+let storedID = account.storage.load<UInt64>(from: /storage/myResourceCapabilityID)
+    ?? panic("No stored capabilityID")
 let ctrl = account.capabilities.storage
-    .getController(byCapabilityID: controller.capabilityID)
+    .getController(byCapabilityID: storedID)
 ctrl?.delete()
+// All copies of this capability become invalid
 ```
 
 ### Tag Capabilities
@@ -103,7 +109,7 @@ controller.setTag("FlowToken Receiver - Public Deposit Access")
 let controllers = account.capabilities.storage.getControllers(forPath: /storage/vault)
 for controller in controllers {
     log("Cap ID: ".concat(controller.capabilityID.toString()))
-    log("Tag: ".concat(controller.tag ?? "No tag"))
+    log("Tag: ".concat(controller.tag))
 }
 ```
 

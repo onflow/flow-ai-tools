@@ -69,10 +69,10 @@ Assign collateral factors by asset risk profile:
 
 ### Liquidation Mechanics
 
-```cadence
-// Liquidation reward pattern
-let liquidationBonus = 0.05  // 5% bonus to liquidators
-let maxLiquidation = 0.5     // Max 50% of position per liquidation
+```
+// Liquidation reward pattern (illustrative — not valid Cadence; types must be explicit)
+liquidationBonus = 0.05  // 5% bonus to liquidators
+maxLiquidation = 0.5     // Max 50% of position per liquidation
 
 // Liquidator receives: repaidDebt × (1 + liquidationBonus) in collateral
 // Protocol receives: small fee (0.5–1%) from liquidation bonus
@@ -99,8 +99,10 @@ New protocol, bootstrapping liquidity
   → Start with xy=k (simpler, broader range, less active management)
   → Migrate to CLMM after establishing price discovery
 
-Stablecoin pairs (USDC/FLOW, FLOW/stFLOW)
+Pegged pairs (WFLOW/ankrFLOW, USDF/USDC, USDC/USDC.e)
   → StableSwap (Curve-style) — dramatically lower slippage near peg
+  → Note: USDC/FLOW and USDC.e/FLOW are NOT stablecoin pairs (FLOW is volatile vs USD) — use CPMM or CLMM
+  → Note: USDT is not present on Flow — do not use as an example pair
 
 Established token pairs with active LPs
   → CLMM — 10–100× capital efficiency vs xy=k
@@ -120,8 +122,8 @@ For a token with annualized volatility `σ`:
 Suggested range width = price × σ × √(days / 365) × 2
 
 Example: FLOW at $1.00, 80% annual vol, 30-day LP period:
-range = 1.00 × 0.80 × √(30/365) × 2 = ±0.47
-→ LP range: $0.53 to $1.47
+range = 1.00 × 0.80 × √(30/365) × 2 = ±0.46
+→ LP range: $0.54 to $1.46
 ```
 
 Tighter range = higher fee yield (more of your liquidity at price) but more frequent rebalancing.
@@ -144,18 +146,18 @@ Tighter range = higher fee yield (more of your liquidity at price) but more freq
 
 ### Oracle Safety Rules
 
-```cadence
+```
+// Illustrative pseudocode — oracle API and types are protocol-specific
+
 // ❌ Never use spot price from AMM as oracle
-let spotPrice = amm.getSpotPrice()  // manipulatable in same transaction
+spotPrice = amm.getSpotPrice()  // manipulatable in same transaction
 
 // ✅ Use TWAP (time-weighted average price)
-let twapPrice = oracle.getTWAP(token: tokenAddress, period: 1800)  // 30-min TWAP
+twapPrice = oracle.getTWAP(token: tokenAddress, period: 1800)  // 30-min TWAP
 
 // ✅ Sanity check with deviation bounds
-assert(
-    twapPrice > lastKnownPrice * 0.5 && twapPrice < lastKnownPrice * 2.0,
-    message: "Oracle price deviation exceeds 2× — possible manipulation"
-)
+assert(twapPrice > lastKnownPrice * 0.5 && twapPrice < lastKnownPrice * 2.0,
+    message: "Oracle price deviation exceeds 2× — possible manipulation")
 ```
 
 ### Circular Collateral Risk

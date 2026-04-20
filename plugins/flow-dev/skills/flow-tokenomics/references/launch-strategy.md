@@ -102,9 +102,9 @@ Layer multiple barriers:
 
 | Launch | What failed | Data | Lesson |
 |--------|------------|------|--------|
-| **Aptos (APT)** | Botted airdrop; heavy VC allocation (51.5%) | -50% in 48h | Anti-Sybil required; insider allocation destroys trust |
+| **Aptos (APT)** | Botted airdrop; heavy insider allocation (~49%: core contributors + foundation + investors) | ~40% in 24h | Anti-Sybil required; insider allocation destroys trust |
 | **Blast** | 100% incentive-driven TVL, no utility | -97% TVL after incentives ended | Build product before incentives |
-| **Arbitrum** | Near-perfect gold standard | ~625K qualifying addresses post-Sybil filter (from 1.13M initial claims); sustained TVL | Public criteria + long points program + genuine product |
+| **Arbitrum** | Near-perfect gold standard | ~625K qualifying addresses post-Sybil filter (from ~2.3M eligible wallets pre-filter); sustained TVL | Public criteria + long points program + genuine product |
 | **Hyperliquid** | Gold standard | 31% community airdrop, zero VC | Extreme community allocation + real product + buybacks |
 | **Drift Volume Wars** | Competition design model | Volume spikes during event, baseline increase after | Competitions with floor ($100 min) and tiers work |
 

@@ -26,8 +26,7 @@ flow generate test MyToken               # cadence/tests/MyToken_test.cdc
 ```bash
 flow test                                    # Run all tests
 flow test cadence/tests/MyToken_test.cdc     # Run specific test
-flow test --coverage                         # With coverage report
-flow test --verbose                          # Detailed output
+flow test --cover                            # With coverage report
 ```
 
 ## Deploy Contracts
@@ -44,10 +43,9 @@ flow project deploy --network=mainnet
 
 # Update existing contracts
 flow project deploy --update
-
-# Deploy with specific signer
-flow project deploy --network=testnet --signer testnet-deployer
 ```
+
+> **Note:** The deploying account is configured in `flow.json`'s `deployments` block — there is no `--signer` flag on `flow project deploy`.
 
 Reads `deployments` section of `flow.json` to determine which contracts go to which accounts.
 
@@ -82,10 +80,6 @@ Simple types (Address, UInt64, String, Bool) can be positional args. Use `--args
 # Basic transaction
 flow transactions send cadence/transactions/TransferTokens.cdc
 
-# With arguments
-flow transactions send cadence/transactions/Transfer.cdc \
-  --arg Address:0xf8d6e0586b0a20c7 --arg UFix64:10.0
-
 # With JSON arguments
 flow transactions send cadence/transactions/Transfer.cdc \
   --args-json '[{"type": "Address", "value": "0x1234"}, {"type": "UFix64", "value": "10.0"}]'
@@ -103,8 +97,8 @@ flow transactions send cadence/transactions/HeavyTx.cdc --gas-limit 9999
 # Get transaction details
 flow transactions get <txId> --network mainnet
 
-# Include signatures, code, fee events
-flow transactions get <txId> --include signatures,code,fee-events --network mainnet
+# Include signatures and code
+flow transactions get <txId> --include signatures,code --network mainnet
 
 # Get system transaction for a block
 flow transactions get-system latest --network mainnet
@@ -155,9 +149,6 @@ flow config add deployment --network testnet --account my-account --contract MyT
 flow config remove account my-account
 flow config remove contract MyToken
 flow config remove deployment testnet my-account MyToken
-
-# Validate
-flow config validate
 ```
 
 ## Key Management
@@ -175,7 +166,7 @@ flow keys derive <private-key>
 
 ## Emulator
 
-> **Deprecated:** `flow dev` and `flow run` are deprecated. Use `flow emulator` directly for local development.
+> **Note:** `flow dev` is deprecated — use `flow run` as the direct replacement (starts the emulator and deploys all project contracts). `flow test --fork` is an unrelated feature for running tests against a forked mainnet/testnet state.
 
 ```bash
 # Start emulator

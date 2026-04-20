@@ -47,7 +47,7 @@ my-project/
   }
 }
 ```
-For production: `"key": "${FLOW_MAINNET_PRIVATE_KEY}"`
+For production, use file-based key storage (`.pkey` files outside the repo) or a secrets manager. Environment variable substitution (`${ENV_VAR}`) is not officially supported in `flow.json` key fields — use file-based keys with a `.gitignore` exclusion instead.
 
 ### Contracts
 ```json
@@ -67,7 +67,7 @@ For production: `"key": "${FLOW_MAINNET_PRIVATE_KEY}"`
 "dependencies": {
   "NonFungibleToken": {
     "source": "mainnet://1d7e57aa55817448.NonFungibleToken",
-    "hash": "b63f10e00d1a814492822652dac7c0574428a200e4c26cb3c832c4829e2778f0",
+    "hash": "<run `flow dependencies install` to auto-populate the current hash>",
     "aliases": {
       "emulator": "f8d6e0586b0a20c7",
       "testnet": "631e88ae7f1d7c20",
@@ -114,14 +114,29 @@ config({ ...networkConfigs[network], 'app.detail.title': 'My App' }).load({ flow
 ```
 
 ### React Integration
-```typescript
+When using `@onflow/react-sdk`, pass config directly to `FlowProvider` instead of a separate FCL config file:
+
+```tsx
 import { FlowProvider } from '@onflow/react-sdk';
-import './config/fcl-config';
+import flowJSON from '../flow.json';
 
 function App() {
-  return <FlowProvider><YourAppComponents /></FlowProvider>;
+  return (
+    <FlowProvider
+      config={{
+        accessNodeUrl: 'https://rest-testnet.onflow.org',
+        flowNetwork: 'testnet',
+        appDetailTitle: 'My App',
+      }}
+      flowJson={flowJSON}
+    >
+      <YourAppComponents />
+    </FlowProvider>
+  );
 }
 ```
+
+> **Note:** The raw FCL config pattern above (`config(...).load({ flowJSON })`) applies to non-React apps or raw FCL usage. Do not mix both approaches — `FlowProvider` handles FCL configuration internally via its props.
 
 ## Standard Contract Addresses
 
@@ -133,8 +148,7 @@ function App() {
 ```bash
 flow config add account / contract / deployment
 flow config remove account my-account
-flow config validate
-flow dependencies install / update / list
+flow dependencies install / discover / list
 ```
 
 ## Environment Variables
@@ -152,7 +166,7 @@ FLOW_MAINNET_PRIVATE_KEY=<secure-key>
 
 | Issue | Solution |
 |-------|----------|
-| "Account not found" | Verify account name spelling, `flow config validate` |
+| "Account not found" | Verify account name in flow.json is correct |
 | "Contract not found" | Register contract in flow.json first |
 | "Address mismatch" | Check aliases match between flow.json, imports, FCL |
 | "Failed to resolve import" | Add alias for target network in flow.json |

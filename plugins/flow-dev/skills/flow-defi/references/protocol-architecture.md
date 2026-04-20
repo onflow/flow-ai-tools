@@ -24,7 +24,7 @@ transaction() {
             to: evmContractAddress,
             data: calldata,
             gasLimit: 200000,
-            value: EVM.Balance(attoflow: 0)
+            value: EVM.Balance(attoflow: UInt(0))
         )
     }
 }
@@ -46,7 +46,7 @@ COAs bridge Cadence and EVM within a single Flow address. One Flow account contr
 ### Creating a COA
 ```cadence
 transaction() {
-    prepare(signer: auth(SaveValue, BorrowValue, Capabilities) &Account) {
+    prepare(signer: auth(SaveValue, IssueStorageCapabilityController, PublishCapability) &Account) {
         // Create COA (one-time per account)
         if signer.storage.borrow<&EVM.CadenceOwnedAccount>(from: /storage/evm) == nil {
             let coa <- EVM.createCadenceOwnedAccount()
@@ -73,7 +73,7 @@ let result = coa.call(
     to: evmContractAddress,
     data: calldata,
     gasLimit: 100000,
-    value: EVM.Balance(attoflow: 0)
+    value: EVM.Balance(attoflow: UInt(0))
 )
 ```
 
@@ -89,7 +89,7 @@ let result = coa.call(
 
 ## On-Chain Automation (FlowTransactionScheduler)
 
-**FLIP 330** introduces `FlowTransactionScheduler` — a native protocol mechanism for scheduling recurring Cadence transactions without off-chain keeper infrastructure.
+`FlowTransactionScheduler` is a native protocol mechanism for scheduling recurring Cadence transactions without off-chain keeper infrastructure.
 
 ### Key Properties
 - Transactions execute automatically at specified intervals or block heights
@@ -102,8 +102,8 @@ let result = coa.call(
 - Epoch transitions (staking/vesting contracts)
 - Reward distribution (no cron bots)
 
-### Setup Pattern
-`FlowTransactionScheduler` is a Cadence contract deployed on mainnet since the Forte upgrade (October 2025). Scheduling is done via Cadence transactions to that contract — there is no separate `flow schedule` CLI command. Consult the `FlowTransactionScheduler` contract documentation for the current Cadence API.
+### Deployment
+`FlowTransactionScheduler` shipped as part of the Forte network upgrade (October 22, 2025) and is deployed to the service account on mainnet, testnet, and emulator. Scheduling is done via Cadence transactions to that contract. The `flow schedule` CLI command group (`flow schedule setup`, `flow schedule list`, `flow schedule get`, `flow schedule cancel`) wraps these Cadence transactions as a convenience.
 
 ---
 
@@ -121,4 +121,4 @@ access(all) fun getRandomSeed(blockHeight: UInt64): [UInt8] {
 
 **DeFi applications:** Fair lottery/raffle contracts, randomized NFT drops, prediction market resolution.
 
-> **See also:** `defi-primitives.md` for building blocks (lending models, AMM selection). `cadence-defi-actions` skill for writing the Cadence transaction code that powers these protocols.
+> **See also:** `defi-primitives.md` for building blocks (lending models, AMM selection).

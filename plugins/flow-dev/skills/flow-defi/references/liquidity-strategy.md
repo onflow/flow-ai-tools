@@ -8,40 +8,40 @@ Bootstrapping and sustaining liquidity for DeFi protocols on Flow.
 
 ### Gold Standard: Base/Aerodrome
 - Protocol-owned liquidity seeded at launch (reported ~$4M — verify exact figure)
-- Reached $1B+ TVL by month 13 (late 2023); stabilized in the $500M–$800M range through 2024–2025
+- Reached $1B+ TVL by month 13 (~September 2024); stabilized in the $500M–$800M range through 2024–2025
 - Revenue exceeded emissions within approximately 2 years (self-sustaining phase)
 - Among the most capital-efficient liquidity bootstrapping programs deployed to date
 
 ### Key Finding: Lock-Up is Non-Negotiable
-Programs without lock-up lose **60–80% of TVL within 30 days** of incentives ending.
-Lock-ups of 1–4 weeks retain 40–60% of peak TVL post-incentive.
+Programs without lock-up commonly lose an estimated **60–80% of TVL within 30 days** of incentives ending (industry heuristic; varies by protocol).
+Lock-ups of 1–4 weeks are estimated to retain 40–60% of peak TVL post-incentive.
 
 ---
 
-## veFLOW Design
+## ve(3,3) Design Pattern
 
-Flow's native ve(3,3) governance token mechanic:
+A ve(3,3) mechanic adapted for Flow (architectural pattern — not a live native protocol; you would implement this in your own governance token):
 
 | Component | Details |
 |-----------|---------|
 | Lock period | 1 week to 4 years (longer = more voting power) |
-| Voting | Lock FLOW → receive veFLOW → vote for pools weekly |
-| Fee distribution | 100% of trading fees from voted pools → veFLOW holders |
-| Bribes | External protocols pay veFLOW holders to vote for their pools |
+| Voting | Lock governance token → receive veToken → vote for pools weekly |
+| Fee distribution | 100% of trading fees from voted pools → veToken holders |
+| Bribes | External protocols pay veToken holders to vote for their pools |
 | Emissions | Protocol emissions directed to pools by vote weight |
-| Rebase | Weekly FLOW rebase to veFLOW holders (dilution protection) |
+| Rebase | Weekly rebase to veToken holders (dilution protection) |
 
-**Protocol integration strategy:**
-1. Acquire veFLOW (buy FLOW, lock for max period)
+**Protocol integration strategy (once deployed on Flow):**
+1. Acquire governance tokens (buy and lock for max period)
 2. Vote for your protocol's pools every epoch
-3. Attract third-party veFLOW votes via bribes
-4. Bribe market ROI: $1 in bribes → $3–8 in emissions (Curve Wars precedent)
+3. Attract third-party votes via bribes
+4. Bribe market ROI: $1 in bribes → $2–5 in emissions (avg ~$4; Curve Wars data)
 
 ---
 
 ## Merkl Integration
 
-Merkl (by Angle Protocol) is an off-chain reward distribution infrastructure usable for on-chain verified distributions.
+Merkl (by Angle Labs) is an off-chain reward distribution infrastructure usable for on-chain verified distributions.
 
 ### Setup Process
 1. Deploy your incentive budget to Merkl's distributor contract
@@ -52,7 +52,7 @@ Merkl (by Angle Protocol) is an off-chain reward distribution infrastructure usa
 ### Economics
 | Parameter | Typical Value |
 |-----------|--------------|
-| Merkl fee | 3% of incentive budget |
+| Merkl fee | 3% of incentive budget (entry tier; degressive at higher volumes) |
 | Break-even TVL | $200K+ (below this, direct emissions more efficient) |
 | Minimum campaign | $5,000 in incentives |
 | Reward calculation | Based on active liquidity (CLMM-aware) |

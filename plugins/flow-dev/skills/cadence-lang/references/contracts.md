@@ -59,7 +59,7 @@ Every contract has implicit `self.account` providing full access to the deployin
 
 ## Contract Interfaces
 
-Define behavioral contracts. Events and interfaces in contract interfaces are their own definition (not required by implementors). Fields and functions ARE required.
+Define behavioral contracts. Events declared in a contract interface define the event type for the standard but implementing contracts do not redeclare them. Nested resource/struct interfaces declared in a contract interface are available to implementors. Fields and functions ARE required.
 
 ```cadence
 access(all) contract interface TokenInterface {
@@ -109,16 +109,16 @@ let contractRef = account.contracts.borrow<&MyContract>(name: "MyContract")
 
 ### Valid Changes (Allowed)
 - Add, change, or delete functions (signatures, bodies, access modifiers)
-- Remove existing fields
-- Reorder fields
 - Change field access modifiers
 - Add interface conformance to structs/resources
 - Add new struct/resource/interface/enum declarations
 - Add enum cases at the END of existing cases
 - Modify events and constructors freely
+- Remove existing fields (stored data for that field becomes inaccessible but causes no crash — Cadence encodes fields by name, not position)
+- Reorder fields (Cadence field encoding is name-based, so order is irrelevant to deserialization)
 
 ### Invalid Changes (NOT Allowed)
-- Adding new fields (the initializer doesn't re-run on update, so new fields have no value)
+- Adding new non-optional fields (init doesn't re-run; stored values would have no data — use optional fields + lazy init instead)
 - Changing the type of an existing field (causes deserialization errors)
 - Removing existing struct/resource/interface/enum declarations
 - Renaming declarations
