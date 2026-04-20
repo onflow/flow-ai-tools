@@ -123,7 +123,7 @@ access(all) fun tearDown() {
 
 ## Imports
 
-`import Test` is implicit in any `_test.cdc` file — the testing framework is always in scope and you do not need to declare the import, though adding it for clarity is harmless.
+Every test file starts with `import Test`. The `Test` contract is built into Cadence, so you do not need to add it to `flow.json` — the import just brings its types and helpers into scope. Without this line, references like `Test.newEmulatorBlockchain` and `Test.expect` will not resolve.
 
 Contracts under test are imported by name using the string-import form:
 
@@ -131,7 +131,7 @@ Contracts under test are imported by name using the string-import form:
 import "Counter"
 ```
 
-The resolver uses the `testing` alias from `flow.json` to locate the contract in the test blockchain. Importing works only after the contract has been deployed via `blockchain.deployContract` — see the example below.
+The `import` statement resolves against the `testing` alias when the test file is parsed. Calls into the contract (from `executeScript` or `executeTransaction`) only work after `blockchain.deployContract` has run, typically in `setup()`.
 
 To load a Cadence source file from disk without deploying it (for example, a script or a transaction file to run through the blockchain), use `Test.readFile`:
 
