@@ -68,6 +68,26 @@ transactions/scripts from the handoff block}}
 ---
 ```
 
+## Team Awareness
+
+When running as part of a team, add this section to the agent prompt:
+
+```
+## Team context
+
+Read ~/.claude/teams/<team-name>/config.json to discover teammates.
+
+Your peer relationships:
+- cadence-deploy: your source of contract addresses and available transactions/scripts.
+  Wait for their SendMessage with deploy output before configuring FlowProvider
+  and hooks. If they haven't sent it yet, SendMessage them asking for the address.
+- cross-vm-bridge: if the frontend needs to interact with EVM contracts, they own
+  the ABI and contract addresses. SendMessage them for that info if needed.
+
+After completing your UI:
+- SendMessage("team-lead", <summary of what was built and where files are>)
+```
+
 ## Token Budget
 
 | Files loaded | Approx lines |

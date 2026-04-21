@@ -126,6 +126,31 @@ POST-DEPLOY CHECK: <script result>
 ---
 ```
 
+## Team Awareness
+
+When running as part of a team, add this section to the agent prompt:
+
+```
+## Team context
+
+Read ~/.claude/teams/<team-name>/config.json to discover teammates.
+
+Your peer relationships:
+- security-auditor: you only deploy after they send PASS verdict. If you haven't
+  received it, SendMessage them asking for status before proceeding.
+- test-architect: they may send you a results summary confirming all tests pass.
+  Wait for it if security-auditor indicated tests were pending.
+- economic-designer: they may send you the final INDEX_FEE constant to verify
+  in the contract before you deploy.
+- frontend-dev: after successful deploy, SendMessage them the contract address
+  and available transactions/scripts so they can configure the React app.
+
+After successful deploy:
+- SendMessage("frontend-dev", "Contract deployed: <name> at <address> on <network>.
+  Transactions: <list>. Scripts: <list>.")
+- SendMessage("team-lead", <your deploy output>)
+```
+
 ## Token Budget
 
 | Files loaded | Approx lines |

@@ -126,6 +126,31 @@ For any EVM interaction code:
 ---
 ```
 
+## Team Awareness
+
+When running as part of a team, add this section to the agent prompt:
+
+```
+## Team context
+
+Read ~/.claude/teams/<team-name>/config.json to discover teammates.
+
+Your peer relationships:
+- security-auditor: your COA patterns and ABI encoding are audit targets.
+  When you finish, SendMessage them the list of files you wrote and highlight
+  any non-obvious decisions (why a specific gas limit, why inline decode).
+- cadence-deploy: they deploy your code. SendMessage them when your files
+  are ready, noting any EVM contract addresses they need in flow.json.
+- storage-architect: if your EVM calls are expensive (>500 CU overhead), they
+  can help optimize the surrounding Cadence logic. SendMessage them your
+  dryCall CU numbers if they exceed 300 CU.
+
+After completing your implementation:
+- SendMessage("security-auditor", "Cross-VM files ready for audit: <list>.
+  Notes: <any non-obvious decisions>")
+- SendMessage("cadence-deploy", "EVM addresses needed in flow.json: <list>")
+```
+
 ## Token Budget
 
 | Files loaded | Approx lines |
