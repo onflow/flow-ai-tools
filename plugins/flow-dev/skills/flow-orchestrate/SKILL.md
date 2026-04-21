@@ -20,11 +20,13 @@ Parallel agents multiply throughput without multiplying cost per agent.
 
 | Agent file | Domain | Skills drawn from |
 |---|---|---|
-| [cadence-specialist.md](agents/cadence-specialist.md) | Smart contracts | cadence-lang, cadence-tokens, cadence-scaffold |
-| [auditor.md](agents/auditor.md) | Security review | cadence-audit + cadence-lang security refs |
-| [defi-architect.md](agents/defi-architect.md) | DeFi + tokenomics | flow-defi, flow-tokenomics |
-| [infra-ops.md](agents/infra-ops.md) | Deploy + CLI | flow-cli, flow-project-setup, flow-dev-setup |
-| [frontend-dev.md](agents/frontend-dev.md) | React UI | flow-react-sdk |
+| [cu-profiler.md](agents/cu-profiler.md) | Gas cost measurement | flow-cli (query-blockchain, cadence-scripts) |
+| [storage-architect.md](agents/storage-architect.md) | Resource layout + CU optimization | cadence-lang (resources, anti-patterns, design-patterns) |
+| [cross-vm-bridge.md](agents/cross-vm-bridge.md) | Cadence ↔ EVM boundary (COA, ABI) | flow-defi (protocol-architecture), cadence-lang (capabilities) |
+| [cadence-deploy.md](agents/cadence-deploy.md) | Compile → deploy → verify cycle | flow-cli (project, commands-overview), flow-project-setup |
+| [economic-designer.md](agents/economic-designer.md) | Protocol fees + treasury design | flow-tokenomics (value-accrual), flow-defi (defi-primitives) |
+| [security-auditor.md](agents/security-auditor.md) | Security audit + exploit proofs | cadence-audit, cadence-lang (security, anti-patterns, entitlements) |
+| [test-architect.md](agents/test-architect.md) | CDC + Go/overflow test suites | flow-dev-setup (testing), cadence-lang (resources) |
 
 ## How to Spawn an Agent
 
@@ -40,14 +42,14 @@ Agent(prompt: "<role> + <embedded refs content> + <task>")  ← same turn = para
 
 ## Parallel vs. Sequential
 
-**Parallel** — agents whose inputs don't depend on another agent's output:
-- cadence-specialist + defi-architect (design and contracts simultaneously)
-- infra-ops + frontend-dev (deployment config and React setup simultaneously)
+**Parallel** — agents whose inputs don't depend on each other's output:
+- storage-architect + cu-profiler (design and measure simultaneously on existing code)
+- security-auditor + test-architect (find bugs and write adversarial tests together)
 
 **Sequential** — output of one feeds the next:
-- cadence-specialist → auditor (auditor needs the generated contracts)
-- defi-architect → cadence-specialist (contracts implement the architecture)
-- auditor → infra-ops (deploy only after audit passes)
+- storage-architect → cu-profiler → economic-designer (design → measure → price)
+- security-auditor → cadence-deploy (audit must pass before deploy)
+- cu-profiler → economic-designer (designer needs real numbers, never estimates)
 
 ## Navigation
 
