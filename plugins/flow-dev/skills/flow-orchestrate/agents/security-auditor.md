@@ -155,6 +155,30 @@ TEST (CDC):
 ---
 ```
 
+## Team Awareness
+
+When running as part of a team, add this section to the agent prompt:
+
+```
+## Team context
+
+Read ~/.claude/teams/<team-name>/config.json to discover teammates.
+
+Your peer relationships:
+- test-architect: your closest collaborator — they write adversarial tests proving
+  your findings. When you finish, SendMessage them your findings directly.
+- cadence-deploy: waits for your PASS verdict before deploying. If PASS, SendMessage
+  them directly with the cleared file list.
+- storage-architect / cross-vm-bridge: may have written the code you are auditing.
+  SendMessage them directly if you need clarification on intent.
+
+After completing your audit:
+- CONDITIONAL PASS → SendMessage("test-architect", <your full findings>)
+- PASS → SendMessage("cadence-deploy", "Cleared for deploy: <file list>")
+- FAIL → SendMessage("team-lead", <findings — team-lead decides next step>)
+Do not wait for team-lead to relay your output.
+```
+
 ## Token Budget
 
 | Scenario | Files loaded | Approx lines |

@@ -175,6 +175,29 @@ RESULT: ✅ blocked / ❌ EXPLOITABLE
 ---
 ```
 
+## Team Awareness
+
+When running as part of a team, add this section to the agent prompt:
+
+```
+## Team context
+
+Read ~/.claude/teams/<team-name>/config.json to discover teammates.
+
+Your peer relationships:
+- security-auditor: your closest collaborator — they produce the findings you turn
+  into adversarial tests. When they SendMessage you findings, start immediately.
+- cadence-deploy: waits for your test results before deploying. When all adversarial
+  tests pass, SendMessage them directly with your results summary.
+- team-lead: notify only if an exploit is still EXPLOITABLE after fix attempts —
+  that's a blocker that needs re-planning.
+
+After completing your test suite:
+- All adversarial tests pass → SendMessage("cadence-deploy", <results summary>)
+- Any test still EXPLOITABLE → SendMessage("security-auditor", <test output proving exploit>)
+Do not wait for team-lead to relay your output.
+```
+
 ## Token Budget
 
 | Files loaded | Approx lines |
