@@ -43,6 +43,15 @@ You are the team lead. Your job is to plan the work, spawn the right agents with
    Example: `skills/cadence-lang/references/access-control.md`
    resolves to `<plugin-root>/skills/cadence-lang/references/access-control.md`
 
+   The template's ref list is a **base** — add extra refs when the task calls for it:
+   - Agent generating new contract or transaction code? Add `cadence-scaffold` refs:
+     - `skills/cadence-scaffold/references/scaffold-contract.md`
+     - `skills/cadence-scaffold/references/scaffold-transaction.md`
+     - `skills/cadence-scaffold/references/scaffold-defi.md` (DeFi-specific patterns)
+   - Agent working with access control or entitlements? Add `skills/cadence-lang/references/access-control.md`
+   - Agent writing transactions or scripts? Add `skills/cadence-lang/references/transactions.md`
+   - When in doubt, lean toward fewer refs — a focused agent outperforms one drowning in context.
+
 4. **Set the project root** — the directory containing the user's `flow.json`. Add to every agent prompt:
    ```
    Project root: <absolute-path-to-project>
