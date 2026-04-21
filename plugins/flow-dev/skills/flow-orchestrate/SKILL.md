@@ -105,6 +105,18 @@ Then execute.
 
 ## When to Use TeamCreate vs parallel Agent()
 
+> **Team mode requires an experimental flag.**
+> Before using TeamCreate or SendMessage, verify it is enabled:
+> ```bash
+> cat ~/.claude/settings.json | grep EXPERIMENTAL_AGENT_TEAMS
+> ```
+> If the key is absent or `false`, add it:
+> ```json
+> { "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" } }
+> ```
+> Without this flag, TeamCreate and SendMessage will not work.
+> **Parallel Agent() calls work without any flag** — use that mode when team setup is not needed.
+
 **Use TeamCreate when:**
 - Agents need to block mid-task waiting for output from a peer (e.g. auditor finds bug → architect fixes → auditor re-audits, all live without returning to main)
 - Workflow has back-and-forth cycles between agents
