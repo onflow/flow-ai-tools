@@ -79,6 +79,35 @@ Teammates and what they own:
 - frontend-dev: React UI with @onflow/react-sdk
 ```
 
+## Announce Your Plan First
+
+Before spawning any agent, output a visible plan so the user knows what is about to happen:
+
+```
+**Execution Plan**
+Phase 0: flow dependencies install (if needed)
+Phase 1 (sequential): <agent> — <why sequential>
+Phase 2 (parallel): <agent> + <agent> — <why parallel, what each does>
+Phase 3 (sequential): <agent> — <depends on phase 2 output>
+Mode: subagents | team — <reason>
+```
+
+Then execute.
+
+## When to Use TeamCreate vs parallel Agent()
+
+**Use TeamCreate when:**
+- Agents need to block mid-task waiting for output from a peer (e.g. auditor finds bug → architect fixes → auditor re-audits, all live without returning to main)
+- Workflow has back-and-forth cycles between agents
+- 4+ agents that need to negotiate state with each other during execution
+- Long-running task where agents must unblock each other independently
+
+**Use parallel Agent() — no TeamCreate — when:**
+- Agents in the same phase work independently on different files
+- Each phase feeds cleanly into the next with no mid-task back-and-forth
+- Simple linear pipeline: A output → B input → C input
+- Short tasks where team setup overhead outweighs the benefit
+
 ## Parallel vs. Sequential
 
 **Parallel** — spawn in the same turn (no dependency between them):
