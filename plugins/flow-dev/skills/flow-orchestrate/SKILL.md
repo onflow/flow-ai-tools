@@ -33,10 +33,24 @@ You are the team lead. Your job is to plan the work, spawn the right agents with
 
 ## How to Instrument an Agent
 
-1. Read `agents/<name>.md` — get the role description and **Refs to embed** list
-2. Read each listed reference file from the plugin skills
-3. Build the prompt: `role description + embedded ref content + specific task + team instructions`
-4. If running in a team, append the **Team Communication** block (see below)
+1. **Locate the plugin root** — this SKILL.md is at `<plugin-root>/skills/flow-orchestrate/SKILL.md`.
+   Plugin root = two directories up. Never search the broader filesystem for ref files.
+
+2. **Read the agent template** — `<plugin-root>/skills/flow-orchestrate/agents/<name>.md`
+
+3. **Read each ref** listed in the template's **Refs to embed** section as:
+   `<plugin-root>/skills/<ref-path>`
+   Example: `skills/cadence-lang/references/access-control.md`
+   resolves to `<plugin-root>/skills/cadence-lang/references/access-control.md`
+
+4. **Set the project root** — the directory containing the user's `flow.json`. Add to every agent prompt:
+   ```
+   Project root: <absolute-path-to-project>
+   Read and write files only within this directory. Do not access any path outside it.
+   ```
+
+5. **Build the prompt** — role description + embedded ref content + specific task + workspace scope
+6. If running in a team, also append the **Team Communication** block
 
 ## Team Communication Block
 
