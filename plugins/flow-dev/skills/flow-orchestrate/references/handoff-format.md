@@ -1,168 +1,161 @@
 # Handoff Format Between Agents
 
-Every agent must end its output with a **Handoff Block** so the next agent in the chain can consume its work without re-reading everything.
+Every agent ends its output with a **Handoff Block**. The next agent reads only this block to know what was done and what it needs to do — it does not re-read the full output.
 
 ## Handoff Block Structure
 
-```markdown
+```
 ---
 ## Handoff
-
 **Agent:** <agent-name>
-**Status:** DONE | BLOCKED | PARTIAL
+**Status:** DONE | PARTIAL | BLOCKED
 **Output files:**
-- path/to/file.cdc — brief description
-- path/to/file.json — brief description
-
-**For next agent (<agent-name>):**
-<2–4 lines: what the next agent needs to know to start immediately>
-
+- <path> — <one-line description>
+**For next agent (<name>):**
+<2–4 lines: exactly what the next agent needs to start immediately>
 **Open issues (if any):**
-- issue 1
-- issue 2
+- <issue>
 ---
 ```
 
-## Per-Agent Handoff Conventions
+**Status meanings:**
+- `DONE` — task complete, next agent can proceed
+- `PARTIAL` — some work done; describe what's missing
+- `BLOCKED` — could not proceed; describe why
 
-### cadence-specialist → auditor
+## Agent-specific handoff examples
 
-```markdown
+### cu-profiler → economic-designer
+```
 ---
 ## Handoff
-
-**Agent:** cadence-specialist
+**Agent:** cu-profiler
 **Status:** DONE
-**Output files:**
-- cadence/contracts/MyNFT.cdc — NFT contract, NonFungibleToken v2, open edition
-- cadence/transactions/MintNFT.cdc — public mint transaction
-- cadence/scripts/GetNFT.cdc — fetch NFT metadata
-
-**For next agent (auditor):**
-Review all 3 files above. Priority: check MintNFT.cdc entitlements and
-MyNFT.cdc resource storage paths. No admin gating on minting — this is
-intentional (open edition). Flag if royalty handling deviates from MetadataViews spec.
-
+**MAX_SAFE_N:** 512
+**FEE_PER_TX:** 0.00089 FLOW
+**FEE_PER_ENTRY:** 0.00000174 FLOW
+**For next agent (economic-designer):**
+Use MAX_SAFE_N=512 and FEE_PER_ENTRY=0.00000174 FLOW as inputs.
+Do not re-measure — use these numbers directly.
+Current FLOW price: $0.72
 **Open issues:**
-- Royalty receiver address is hardcoded — should be configurable via admin resource
+- At N=768 the tx sometimes hits 9,100 CU — treat 512 as safe ceiling
 ---
 ```
 
-### cadence-specialist → infra-ops
-
-```markdown
+### storage-architect → cu-profiler
+```
 ---
 ## Handoff
-
-**Agent:** cadence-specialist
+**Agent:** storage-architect
 **Status:** DONE
 **Output files:**
-- cadence/contracts/MyNFT.cdc
-- cadence/transactions/MintNFT.cdc
-
-**For next agent (infra-ops):**
-Deploy MyNFT to testnet. Contract has no constructor args — plain `flow project deploy`.
-Depends on: NonFungibleToken, MetadataViews (already on testnet, add as dependencies).
-Test with MintNFT.cdc after deploy to verify storage paths work.
-
+- cadence/contracts/Registry.cdc — converted artist registry from [UInt64] to {UInt64: Bool}, borrow moved outside loop
+**CU savings estimate:** ~3,200 CU/tx at N=256 (from dict→array and borrow-outside-loop)
+**For next agent (cu-profiler):**
+Measure Registry.cdc at same sweep as baseline (N=[64,128,256,512]).
+Compare FEE_PER_ENTRY before/after to confirm savings.
 **Open issues:** none
 ---
 ```
 
-### auditor → cadence-specialist (fix cycle)
-
-```markdown
+### security-auditor → cadence-specialist (fix cycle)
+```
 ---
 ## Handoff
-
-**Agent:** auditor
+**Agent:** security-auditor
 **Status:** DONE
-**Verdict:** CONDITIONAL PASS — 2 High findings must be fixed before deploy
+**Verdict:** CONDITIONAL PASS — fix H1 and H2 before deploy
 
 **Findings requiring action:**
-| ID | File | Line | Severity | Issue |
-|----|------|------|----------|-------|
-| H1 | MyNFT.cdc | 45 | High | Missing entitlement on `withdraw` — any account can drain vault |
-| H2 | MintNFT.cdc | 12 | High | No pre-condition on recipient — can mint to zero address |
+| ID | File | Lines | Severity | Issue |
+|----|------|-------|----------|-------|
+| H1 | MyNFT.cdc | 45 | 🟡 High | Missing entitlement on withdraw — any account can drain vault |
+| H2 | MintNFT.cdc | 12 | 🟡 High | No pre-condition on recipient — can mint to zero address |
 
-**For next agent (cadence-specialist):**
-Fix H1 and H2 only. Do not refactor anything else — scope is minimal.
+**For next agent (cadence-specialist or direct edit):**
+Fix H1 and H2 only. Minimal scope — do not refactor anything else.
 After fixes, re-run `flow test` to verify no regressions.
 
-**Low/Medium findings (informational, no action required before deploy):**
-- L1: MyNFT.cdc:78 — `description` field could be `let` instead of `var`
+**Low findings (no action required before deploy):**
+- L1: MyNFT.cdc:78 — description field could be let instead of var
 ---
 ```
 
-### auditor → infra-ops (deploy approved)
-
-```markdown
+### security-auditor → cadence-deploy (cleared)
+```
 ---
 ## Handoff
-
-**Agent:** auditor
+**Agent:** security-auditor
 **Status:** DONE
 **Verdict:** PASS — cleared for testnet deploy
-
-**For next agent (infra-ops):**
+**Audited files:** cadence/contracts/MyNFT.cdc, cadence/transactions/MintNFT.cdc
+**For next agent (cadence-deploy):**
 All Critical and High findings resolved. Safe to deploy to testnet.
-Audited files: cadence/contracts/MyNFT.cdc (v2), cadence/transactions/MintNFT.cdc
-
+No constructor args. Run post-deploy verification script after deploy.
 **Open issues:** none
 ---
 ```
 
-### defi-architect → cadence-specialist
-
-```markdown
+### test-architect → security-auditor (re-audit trigger)
+```
 ---
 ## Handoff
-
-**Agent:** defi-architect
+**Agent:** test-architect
 **Status:** DONE
-**Output:** Architecture document (inline below or in docs/architecture.md)
+**Tests:** 12 total — 7 positive, 5 adversarial
+**Results:** ✅ 11 passed / ❌ 1 failed
 
-**For next agent (cadence-specialist):**
-Implement the lending contract from the architecture doc. Key constraints:
-- Health factor threshold: 1.2 (liquidation at < 1.0)
-- Interest rate model: kink at 80% utilization, base 2% APR, max 100% APR
-- Use COA pattern for EVM composability (see architecture doc §3)
-- DO NOT implement the liquidation bot — that's a separate off-chain component
+EXPLOIT TESTED: H1 (loyalty farming)
+EXPECTED: points ≤ 10.0 after deposit-withdraw cycle
+RESULT: ❌ EXPLOITABLE — points reached 340.0
 
-**Open issues:**
-- Oracle price feed address not yet decided — use placeholder for now
+**For next agent (security-auditor):**
+H1 is still exploitable. Test output above confirms the attack vector.
+Re-audit cadence/contracts/Registry.cdc lines 88–102 specifically.
+**Open issues:** none
 ---
 ```
 
-### infra-ops → frontend-dev
-
-```markdown
+### test-architect → cadence-deploy (all clear)
+```
 ---
 ## Handoff
-
-**Agent:** infra-ops
+**Agent:** test-architect
 **Status:** DONE
-**Output files:**
-- flow.json — configured for testnet, contract address: 0xABCD1234
+**Tests:** 12 total — 7 positive, 5 adversarial
+**Results:** ✅ 12 passed
+**Exploits verified blocked:** H1 (loyalty farming), H2 (unauthorized withdraw)
+**Coverage:** 87% — uncovered: Treasury.emergencyWithdraw (requires multisig setup)
+**For next agent (cadence-deploy):**
+All adversarial tests pass. Safe to deploy.
+Known gap: emergencyWithdraw not covered — requires Go/overflow test with multisig (future).
+**Open issues:** none
+---
+```
 
-**For next agent (frontend-dev):**
-Contract deployed at 0xABCD1234 on testnet.
-FCL config: network=testnet, accessNode=https://rest-testnet.onflow.org
-Wallet: use discovery.authn.endpoint for wallet discovery.
+### cadence-deploy → any consumer
+```
+---
+## Handoff
+**Agent:** cadence-deploy
+**Status:** DONE
+**Deployed contracts:**
+- MyNFT at 0xABCD1234 on testnet
+**Post-deploy check:** ✅ read script returned initialized collection, write tx sealed
+**For next agent (frontend or economic-designer):**
+Contract live at 0xABCD1234 on testnet.
+FCL: network=testnet, accessNode=https://rest-testnet.onflow.org
 Available transactions: MintNFT.cdc, TransferNFT.cdc
 Available scripts: GetNFT.cdc, GetCollection.cdc
-
 **Open issues:** none
 ---
 ```
 
-## Rules for All Agents
+## Rules for all agents
 
-1. **Always include the Handoff Block** — even if status is BLOCKED or PARTIAL
-2. **List every output file** with its path relative to project root
-3. **Be explicit about scope boundaries** — what you did NOT do (so the next agent doesn't assume)
-4. **Flag open issues** even if minor — the orchestrator decides whether to address them
-5. **Status meanings:**
-   - `DONE` — task complete, next agent can proceed
-   - `PARTIAL` — some work done, describe what's missing
-   - `BLOCKED` — could not proceed, describe why (missing input, unclear requirement)
+1. Always include the Handoff Block — even if BLOCKED
+2. List every output file with path relative to project root
+3. Be explicit about scope boundaries — what you did NOT do
+4. Status `DONE` means the next agent can proceed without asking questions
+5. If BLOCKED, describe the exact input that was missing so the orchestrator can fix it
