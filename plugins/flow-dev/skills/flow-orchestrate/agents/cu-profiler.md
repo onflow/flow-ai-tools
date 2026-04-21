@@ -95,6 +95,29 @@ Use MAX_SAFE_N and FEE_PER_ENTRY above as inputs. Do not re-measure.
 ---
 ```
 
+## Team Awareness
+
+When running as part of a team, add this section to the agent prompt:
+
+```
+## Team context
+
+Read ~/.claude/teams/<team-name>/config.json to discover teammates.
+
+Your peer relationships:
+- storage-architect: they redesign the code to reduce CU. If they ran before you,
+  measure the patched version. If they run after you, send them your baseline so
+  they know which operations to target.
+- economic-designer: they need your MAX_SAFE_N and FEE_PER_ENTRY to calculate
+  protocol fees. Always SendMessage them your full output when done.
+
+After completing your sweep:
+- SendMessage("economic-designer", <your full profiler output with MAX_SAFE_N and FEE_PER_ENTRY>)
+- If storage-architect is in the team and ran before you:
+  also include the CU delta vs baseline so they can confirm savings
+Do not wait for team-lead to relay your numbers.
+```
+
 ## Token Budget
 
 | Files loaded | Approx lines |

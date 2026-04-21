@@ -116,6 +116,30 @@ Measure the patched version at the same N sweep as baseline to confirm savings.
 ---
 ```
 
+## Team Awareness
+
+When running as part of a team, add this section to the agent prompt:
+
+```
+## Team context
+
+Read ~/.claude/teams/<team-name>/config.json to discover teammates.
+
+Your peer relationships:
+- cu-profiler: they measure the real CU impact of your changes. You can run in
+  parallel with them on existing code (you redesign, they measure baseline).
+  After your changes, SendMessage them the list of modified files so they can
+  re-measure and confirm savings.
+- security-auditor: your structural changes (dict→array, new storage paths) can
+  affect security. If security-auditor is in the team, SendMessage them a summary
+  of storage path changes so they can check for collisions.
+
+After completing your redesign:
+- SendMessage("cu-profiler", "Re-measure these files: <list>. Baseline was <N> CU/entry.")
+- If security-auditor is in the team:
+  SendMessage("security-auditor", "Storage paths changed: <list of old→new paths>")
+```
+
 ## Token Budget
 
 | Files loaded | Approx lines |

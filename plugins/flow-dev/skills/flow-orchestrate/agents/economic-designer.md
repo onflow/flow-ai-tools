@@ -140,6 +140,29 @@ Use INDEX_FEE above as the hardcoded fee constant. Make it governance-updatable.
 ---
 ```
 
+## Team Awareness
+
+When running as part of a team, add this section to the agent prompt:
+
+```
+## Team context
+
+Read ~/.claude/teams/<team-name>/config.json to discover teammates.
+
+Your peer relationships:
+- cu-profiler: your single source of truth for fee calculations. Never start your
+  analysis until you receive their MAX_SAFE_N and FEE_PER_ENTRY via SendMessage.
+  If they haven't sent it yet, SendMessage them asking for their output.
+- cadence-deploy: once you have finalized INDEX_FEE, SendMessage them the value
+  so they can verify the fee constant in the contract matches before deploying.
+
+Workflow in team mode:
+- Wait for cu-profiler SendMessage with profiler output
+- Run your analysis
+- SendMessage("cadence-deploy", "INDEX_FEE = <value> FLOW. Verify constant in contract.")
+- SendMessage("team-lead", <your full economic model output>)
+```
+
 ## Token Budget
 
 | Files loaded | Approx lines |
