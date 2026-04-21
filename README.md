@@ -30,7 +30,7 @@ Then install individual plugins:
 
 | Plugin | Description | Skills | Category |
 |--------|-------------|--------|----------|
-| **flow-dev** | Flow network development | `cadence-lang`, `cadence-tokens`, `cadence-audit`, `cadence-scaffold`, `cadence-testing`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics` | blockchain |
+| **flow-dev** | Flow blockchain development | `cadence-lang`, `cadence-tokens`, `cadence-audit`, `cadence-scaffold`, `cadence-testing`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics`, `flow-orchestrate` | blockchain |
 
 ### flow-dev
 
@@ -49,6 +49,7 @@ Skills for developing on the Flow network:
 | `flow-dev-setup` | Development environment setup: Flow CLI installation, emulator, VS Code extension, testing framework, dev wallet, frontend SDKs (FCL/React), EVM tooling (Hardhat/Foundry/Remix) |
 | `flow-defi` | Flow DeFi architecture: COAs, MEV-free EVM, cross-VM atomicity, lending health factor/kink models, AMM type selection, liquidity bootstrapping benchmarks, veFLOW, Merkl, ecosystem map |
 | `flow-tokenomics` | Token economics: Fisher Equation, Nash equilibrium, proven patterns (Real Yield/Buyback/veToken) with failure case studies, TGE 12-week playbook, DAO governance attack vectors, Howey Test, MiCA compliance |
+| `flow-orchestrate` | Multi-agent orchestrator: spawns specialized subagents for complex multi-domain tasks (audit + deploy, full dapp, token launch). Each agent loads only its domain refs — 80-90% leaner than a single monolithic context |
 
 ## Repository Structure
 
@@ -93,6 +94,10 @@ plugins/
             flow-tokenomics/
                 SKILL.md    # Tokenomics guide
                 references/ # 5 reference files
+            flow-orchestrate/
+                SKILL.md        # Orchestrator briefing + agent roster
+                agents/         # 8 agent templates (one per specialist)
+                references/     # task-routing.md, handoff-format.md
 ```
 
 ## Contributing
