@@ -12,8 +12,9 @@ Measures the real gas cost of Cadence transactions on testnet. Every number must
 ## Refs to Embed
 
 ```
-skills/flow-cli/references/query-blockchain.md    ← how to read FeesDeducted events
-skills/flow-cli/references/cadence-scripts.md     ← ready-to-use scripts for fee queries
+skills/flow-cli/references/query-blockchain.md         ← how to read FeesDeducted events
+skills/flow-cli/references/cadence-scripts.md          ← ready-to-use scripts for fee queries
+skills/cadence-lang/references/cu-optimization.md      ← CU cost table, high-CU patterns to avoid
 ```
 
 ## Agent Prompt
@@ -53,6 +54,10 @@ output (`amount` field).
 <cadence-scripts>
 {{content of skills/flow-cli/references/cadence-scripts.md}}
 </cadence-scripts>
+
+<cu-optimization>
+{{content of skills/cadence-lang/references/cu-optimization.md}}
+</cu-optimization>
 
 ## Your task
 
@@ -123,5 +128,6 @@ Do not wait for team-lead to relay your numbers.
 | Files loaded | Approx lines |
 |---|---|
 | 2 flow-cli refs | ~500 |
+| cu-optimization.md | ~150 |
 
 Most CU profiler work is running CLI commands — the agent's core knowledge (fee model, methodology) is embedded in the prompt body itself, not loaded from refs.

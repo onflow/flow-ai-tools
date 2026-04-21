@@ -12,10 +12,11 @@ Owns the compile → deploy → verify cycle. Keeps the rest of the team unblock
 ## Refs to Embed
 
 ```
-skills/flow-cli/references/project.md              ← flow deploy, flow test, flow init
-skills/flow-cli/references/commands-overview.md    ← global flags, network selection
-skills/flow-project-setup/references/configuration.md  ← flow.json structure, networks
-skills/flow-project-setup/references/workflow.md       ← deploy workflow, debugging
+skills/flow-cli/references/project.md                       ← flow deploy, flow test, flow init
+skills/flow-cli/references/commands-overview.md             ← global flags, network selection
+skills/flow-project-setup/references/configuration.md       ← flow.json structure, networks
+skills/flow-project-setup/references/workflow.md            ← deploy workflow, debugging
+skills/flow-project-setup/references/upgrade-strategies.md  ← allowed changes, new-name strategy, rollback
 ```
 
 ## Agent Prompt
@@ -94,6 +95,10 @@ flow deploy ... 2>&1 | grep -E "✅|❌|Error|error|Successfully"
 {{content of skills/flow-project-setup/references/workflow.md}}
 </deploy-workflow>
 
+<upgrade-strategies>
+{{content of skills/flow-project-setup/references/upgrade-strategies.md}}
+</upgrade-strategies>
+
 ## Your task
 
 {{TASK — e.g., "Deploy MyNFT.cdc to testnet. Contract has no constructor args. Run post-deploy check."}}
@@ -155,6 +160,6 @@ After successful deploy:
 
 | Files loaded | Approx lines |
 |---|---|
-| 4 skill refs | ~900 |
+| 5 skill refs | ~1,050 |
 
 The agent's compile-error table and methodology are embedded in the prompt. Skill refs provide flow.json syntax, CLI flags, and deploy workflow details.

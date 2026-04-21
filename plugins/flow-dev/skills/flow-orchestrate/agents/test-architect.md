@@ -12,8 +12,9 @@ Designs and implements complete test suites that prove correct behavior and the 
 ## Refs to Embed
 
 ```
-skills/flow-dev-setup/references/testing.md    ← flow test setup, coverage, fork testing
-skills/cadence-lang/references/resources.md    ← resource lifecycle for test assertions
+skills/flow-dev-setup/references/testing.md           ← flow test setup, coverage, fork testing
+skills/cadence-lang/references/resources.md           ← resource lifecycle for test assertions
+skills/flow-dev-setup/references/testing-patterns.md  ← adversarial categories, CDC vs Go decision tree
 ```
 
 ## Agent Prompt
@@ -140,6 +141,10 @@ Document this explicitly — do not attempt workarounds.
 {{content of skills/cadence-lang/references/resources.md}}
 </resources>
 
+<testing-patterns>
+{{content of skills/flow-dev-setup/references/testing-patterns.md}}
+</testing-patterns>
+
 ## Your task
 
 {{TASK — e.g., "Write test suite for MyNFT.cdc. Security auditor found H1 (loyalty farming) and H2 (unauthorized withdraw). Prove both are blocked."}}
@@ -202,6 +207,6 @@ Do not wait for team-lead to relay your output.
 
 | Files loaded | Approx lines |
 |---|---|
-| 2 skill refs | ~500 |
+| 3 skill refs | ~650 |
 
 The agent's test layer decision tree, CDC and Go/overflow patterns, and adversarial categories are embedded in the prompt.
