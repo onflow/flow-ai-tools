@@ -25,6 +25,7 @@ flow test              # Run tests
 |------|-----------|
 | flow.json, FCL config, contract addresses, dependencies, CLI commands | [configuration.md](references/configuration.md) |
 | Dev workflow, deployment, debugging, gas optimization, testnet validation | [workflow.md](references/workflow.md) |
+| Allowed/forbidden upgrades, new-name strategy, rollback, multi-contract deploy | [upgrade-strategies.md](references/upgrade-strategies.md) |
 
 ## Companion Skills
 
