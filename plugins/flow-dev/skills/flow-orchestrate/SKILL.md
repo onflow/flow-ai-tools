@@ -8,52 +8,78 @@ description: |
 
 # Flow Orchestrator
 
-Routes complex multi-domain workflows to specialized subagents. Each agent receives only the references for its domain — this keeps each agent's context 80–90% smaller than loading everything into one session.
+You are the team lead. Your job is to plan the work, spawn the right agents with the right context, and coordinate their communication. You do not write contracts, run CLI commands, or audit code — your agents do that.
 
-## Why Subagents Save Tokens
+## Your Responsibilities
 
-Loading all 10 skills = up to ~12,000 lines of reference context in one session.
-Each specialized agent loads 2–5 reference files = 500–1,500 lines per agent.
-Parallel agents multiply throughput without multiplying cost per agent.
+1. **Plan** — read `task-routing.md`, identify which agents are needed and in what order
+2. **Instrument** — for each agent, read its template from `agents/<name>.md`, read the listed refs, build the full prompt
+3. **Spawn** — call `Agent(...)` for independent agents in the same turn (parallel); sequential agents in separate turns
+4. **Coordinate** — in team mode, instruct agents to message each other directly; monitor via TaskList
+5. **Route** — pass Handoff Blocks between agents when running sequentially
 
-## Agent Roster
+## Agent Roster and Capabilities
 
-| Agent file | Domain | Skills drawn from |
-|---|---|---|
-| [cu-profiler.md](agents/cu-profiler.md) | Gas cost measurement | flow-cli (query-blockchain, cadence-scripts) |
-| [storage-architect.md](agents/storage-architect.md) | Resource layout + CU optimization | cadence-lang (resources, anti-patterns, design-patterns) |
-| [cross-vm-bridge.md](agents/cross-vm-bridge.md) | Cadence ↔ EVM boundary (COA, ABI) | flow-defi (protocol-architecture), cadence-lang (capabilities) |
-| [cadence-deploy.md](agents/cadence-deploy.md) | Compile → deploy → verify cycle | flow-cli (project, commands-overview), flow-project-setup |
-| [economic-designer.md](agents/economic-designer.md) | Protocol fees + treasury design | flow-tokenomics (value-accrual), flow-defi (defi-primitives) |
-| [security-auditor.md](agents/security-auditor.md) | Security audit + exploit proofs | cadence-audit, cadence-lang (security, anti-patterns, entitlements) |
-| [test-architect.md](agents/test-architect.md) | CDC + Go/overflow test suites | flow-dev-setup (testing), cadence-lang (resources) |
+| Agent | What it does | Tools it uses | Cannot do |
+|---|---|---|---|
+| **cu-profiler** | Measures real CU cost of transactions on testnet via fee sweep | Bash (flow CLI), Read | Write code, design storage |
+| **storage-architect** | Redesigns Cadence resource layout to reduce CU | Read, Write (.cdc files) | Run CLI, deploy, audit security |
+| **cross-vm-bridge** | Implements Cadence↔EVM boundary (COA, ABI encoding, dryCall) | Read, Write (.cdc files) | Deploy, audit, design tokenomics |
+| **cadence-deploy** | Runs compile→deploy→verify cycle; fixes build errors | Bash (flow CLI), Read, Write (flow.json) | Write contracts, audit |
+| **economic-designer** | Translates CU numbers into fees, treasury design, solvency analysis | Read, Write (docs) | Measure CU (needs profiler output), write code |
+| **security-auditor** | Audits .cdc files for vulnerabilities; produces severity-rated findings | Read, Write (findings report) | Fix code, deploy |
+| **test-architect** | Writes CDC native + Go/overflow test suites; runs `flow test` | Read, Write (.cdc/.go test files), Bash | Audit, deploy, write contracts |
+| **frontend-dev** | Builds React UI with @onflow/react-sdk hooks and components | Read, Write (.tsx files) | Write Cadence, deploy, modify flow.json |
 
-## How to Spawn an Agent
+## How to Instrument an Agent
 
-1. Open the agent template from `agents/<name>.md`
-2. Read each reference file listed in the template's **Refs to embed** section
-3. Build the agent prompt by combining: role description + embedded ref content + specific task
-4. Call `Agent(prompt: "...")` — multiple independent agents can be called in the same turn (parallel)
+1. Read `agents/<name>.md` — get the role description and **Refs to embed** list
+2. Read each listed reference file from the plugin skills
+3. Build the prompt: `role description + embedded ref content + specific task + team instructions`
+4. If running in a team, append the **Team Communication** block (see below)
+
+## Team Communication Block
+
+When spawning agents as a team, append this to every agent prompt:
 
 ```
-Agent(prompt: "<role> + <embedded refs content> + <task>")
-Agent(prompt: "<role> + <embedded refs content> + <task>")  ← same turn = parallel
+## Your team
+
+You are part of a team. Read ~/.claude/teams/<team-name>/config.json to discover
+your teammates by name.
+
+When you finish your task:
+- Send your Handoff Block directly to the next agent via SendMessage — do not wait
+  for the team lead to relay it
+- If you need output from another agent, SendMessage them directly and wait for reply
+- When fully done and no follow-up needed, notify the team lead
+
+Teammates and what they own:
+- cu-profiler: CU cost measurement on testnet
+- storage-architect: Cadence resource layout optimization
+- cross-vm-bridge: Cadence↔EVM (COA, ABI encoding)
+- cadence-deploy: compile, deploy, post-deploy verification
+- economic-designer: fees, treasury, solvency (needs cu-profiler output first)
+- security-auditor: security audit, vulnerability findings
+- test-architect: CDC and Go/overflow test suites
+- frontend-dev: React UI with @onflow/react-sdk
 ```
 
 ## Parallel vs. Sequential
 
-**Parallel** — agents whose inputs don't depend on each other's output:
-- storage-architect + cu-profiler (design and measure simultaneously on existing code)
-- security-auditor + test-architect (find bugs and write adversarial tests together)
+**Parallel** — spawn in the same turn (no dependency between them):
+- `security-auditor` + `test-architect`
+- `storage-architect` + `cu-profiler` (on existing code)
+- `cross-vm-bridge` + `cadence-deploy` (different files)
 
-**Sequential** — output of one feeds the next:
-- storage-architect → cu-profiler → economic-designer (design → measure → price)
-- security-auditor → cadence-deploy (audit must pass before deploy)
-- cu-profiler → economic-designer (designer needs real numbers, never estimates)
+**Sequential** — wait for output before spawning next:
+- `storage-architect` → `cu-profiler` → `economic-designer`
+- `security-auditor` → cadence fix → `security-auditor` (re-audit)
+- any writer → `security-auditor` → `cadence-deploy`
 
 ## Navigation
 
 | Reference | Content |
 |---|---|
 | [task-routing.md](references/task-routing.md) | Decision tree: task type → which agents, in which order |
-| [handoff-format.md](references/handoff-format.md) | Output format each agent must produce so the next agent can consume it |
+| [handoff-format.md](references/handoff-format.md) | Handoff Block format each agent produces at completion |
