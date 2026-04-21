@@ -17,6 +17,20 @@ Maps task keywords to the right agent combination, order, and parallelism.
 If only **1 type** → spawn that single agent directly, no orchestration needed.
 If **2+ types** → proceed to Step 2.
 
+## Phase 0 — Project dependencies (always check first)
+
+Before spawning any agent that reads or writes `.cdc` files, verify the project has
+standard Flow contracts available locally. If `flow.json` does not list
+`NonFungibleToken`, `FungibleToken`, or `MetadataViews` under `dependencies`, run:
+
+```bash
+flow dependencies install
+```
+
+This resolves standard contracts into the project so agents never need to search the
+filesystem. A missing dependency is the most common cause of agents reading files from
+unrelated projects on the same machine.
+
 ## Step 2 — Select workflow
 
 ### New contract from scratch
