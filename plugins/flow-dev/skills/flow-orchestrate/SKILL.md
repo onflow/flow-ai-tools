@@ -141,6 +141,43 @@ Then execute.
 - `security-auditor` → cadence fix → `security-auditor` (re-audit)
 - any writer → `security-auditor` → `cadence-deploy`
 
+## Team Communication Patterns
+
+When spawning agents that coordinate directly, every agent prompt must define three things:
+
+**1. Shared objective** — what the pair/group is trying to achieve together.
+**2. Stop condition** — how each agent knows the objective is complete.
+**3. Max cycles** — how many rounds before escalating to the lead.
+
+Without these, agents loop indefinitely because they don't know when they're done.
+
+### Pipeline agents (linear, no back-and-forth)
+Each agent has one role: produce output and pass it forward. Never wait for a reply from the agent you sent to.
+```
+architect → coder → auditor → lead
+```
+Direction is always forward. If auditor needs clarification from architect, it asks the lead — the lead decides whether to re-engage architect.
+
+### Collaborative agents (back-and-forth allowed)
+Two agents working toward a shared goal (e.g. dev + bug-finder) CAN message each other directly, but must have an explicit contract:
+
+```
+Shared objective: bug-finder identifies issues, dev fixes them.
+Stop condition:   bug-finder confirms all fixes are correct → both report to lead.
+Max cycles:       3 rounds. If unresolved after 3, both send status to lead
+                  and the lead decides how to proceed.
+```
+
+The max-cycles rule is key: it gives the lead (typically a larger model) the opportunity to guide the team when agents get stuck, rather than letting them loop forever.
+
+### Proactive coordination (encouraged)
+Agents can and should send unsolicited useful information to peers — this is good coordination, not a loop:
+- coder notices a pattern auditor should know about → `team_message` auditor with a heads-up
+- cu-profiler sees an unexpected CU spike → `team_message` storage-architect proactively
+
+The rule: **send useful information forward, never wait for acknowledgement**.
+Waiting for a reply from someone you just messaged is what creates loops.
+
 ## Navigation
 
 | Reference | Content |
