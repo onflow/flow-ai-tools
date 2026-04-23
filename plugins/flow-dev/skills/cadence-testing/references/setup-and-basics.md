@@ -41,7 +41,7 @@ Every contract that a test imports needs a `testing` alias under the contract's 
 }
 ```
 
-The testing framework reserves the address range `0x0000000000000005` through `0x000000000000000E` for user contract aliases. Assign each contract a unique address in that range — collisions cause deployment conflicts in the test blockchain.
+The testing framework reserves the address range `0x0000000000000005` through `0x000000000000000E` for user contract aliases. Assign each contract a unique address in that range — collisions cause deployment conflicts in the test environment.
 
 Standard library contracts such as `FungibleToken`, `NonFungibleToken`, `MetadataViews`, and `ViewResolver` get implicit testing aliases. You do not need to add them to `flow.json` aliases to import them from a test file — the framework deploys the standard contracts into the test blockchain automatically when they are imported.
 
@@ -82,7 +82,7 @@ Group related tests in one file rather than sharding them across many: every fil
 
 A test file can define up to five lifecycle functions. All are optional, but a file is only useful if it defines at least one `testXxx` function.
 
-- `setup()` — runs once before any test in the file. Typical work: create the blockchain, create accounts, deploy contracts under test.
+- `setup()` — runs once before any test in the file. Typical work: create accounts, deploy contracts under test.
 - `beforeEach()` — runs before every `testXxx` function. Typical work: reset mutable state established in `setup()`, or re-seed a clean fixture.
 - `afterEach()` — runs after every `testXxx` function. Typical work: teardown or invariant checks.
 - `testXxx()` — a test case. The name must begin with `test`. Takes no parameters and returns no value. Each `testXxx` is reported independently.
@@ -98,8 +98,6 @@ A lifecycle skeleton looks like this:
 
 ```cadence
 import Test
-
-access(all) let blockchain = Test.newEmulatorBlockchain()
 
 access(all) fun setup() {
     // Deploy contracts and build the shared fixture.
@@ -123,7 +121,7 @@ access(all) fun tearDown() {
 
 ## Imports
 
-Every test file starts with `import Test`. The `Test` contract is built into Cadence, so you do not need to add it to `flow.json` — the import just brings its types and helpers into scope. Without this line, references like `Test.newEmulatorBlockchain` and `Test.expect` will not resolve.
+Every test file starts with `import Test`. The `Test` contract is built into Cadence, so you do not need to add it to `flow.json` — the import just brings its types and helpers into scope. Without this line, references like `Test.createAccount` and `Test.expect` will not resolve.
 
 Contracts under test are imported by name using the string-import form:
 
@@ -131,7 +129,7 @@ Contracts under test are imported by name using the string-import form:
 import "Counter"
 ```
 
-The `import` statement resolves against the `testing` alias when the test file is parsed. Calls into the contract (from `executeScript` or `executeTransaction`) only work after `blockchain.deployContract` has run, typically in `setup()`.
+The `import` statement resolves against the `testing` alias when the test file is parsed. Calls into the contract (from `executeScript` or `executeTransaction`) only work after `Test.deployContract` has run, typically in `setup()`.
 
 To load a Cadence source file from disk without deploying it (for example, a script or a transaction file to run through the blockchain), use `Test.readFile`:
 
@@ -148,11 +146,10 @@ Once a contract is deployed via `deployContract`, you can `import "ContractName"
 ```cadence
 import Test
 
-access(all) let blockchain = Test.newEmulatorBlockchain()
-access(all) let admin = blockchain.createAccount()
+access(all) let admin = Test.createAccount()
 
 access(all) fun setup() {
-    let err = blockchain.deployContract(
+    let err = Test.deployContract(
         name: "Counter",
         path: "../contracts/Counter.cdc",
         arguments: []
@@ -162,13 +159,17 @@ access(all) fun setup() {
 
 access(all) fun testInitialCountIsZero() {
     let script = Test.readFile("../scripts/get_count.cdc")
-    let result = blockchain.executeScript(script, [])
+    let result = Test.executeScript(script, [])
     Test.expect(result, Test.beSucceeded())
     Test.assertEqual(0 as Int, result.returnValue! as! Int)
 }
 ```
 
-A few things to notice. The blockchain and the admin account are declared as file-level `access(all) let` bindings so every lifecycle function in the file can reach them. `setup()` deploys the contract and asserts the deployment error is `nil` — without this assertion a silent deployment failure would surface later as a confusing script error. The `testInitialCountIsZero` test loads a script from disk, runs it against the blockchain, checks the execution succeeded, and then unwraps the return value with a forced cast.
+A few things to notice. The admin account is declared as a file-level `access(all) let` binding so every lifecycle function in the file can reach it. `setup()` deploys the contract and asserts the deployment error is `nil` — without this assertion a silent deployment failure would surface later as a confusing script error. The `testInitialCountIsZero` test loads a script from disk, runs it against the blockchain, checks the execution succeeded, and then unwraps the return value with a forced cast.
+
+The value returned by `Test.createAccount()` has type `Test.TestAccount`. Use that type name when you need to declare a typed parameter or field — for example, a helper that accepts an account argument should be written `fun fund(account: Test.TestAccount)` rather than the chain-runtime `Account` type.
+
+`TestAccount` exposes the `address`, `publicKey`, and other fields needed to construct transactions and scripts during a test run.
 
 ## Running the Example
 
@@ -193,8 +194,8 @@ Use `flow test --cover` to enable coverage reporting; the framework tracks which
 ## Common Setup Pitfalls
 
 - Forgetting the `testing` alias in `flow.json`. The test fails at import resolution with a message like "cannot find contract" before any lifecycle function runs. Add the contract to `aliases.testing` with an address in the `0x5`–`0xE` range.
-- Paths passed to `Test.readFile` and `blockchain.deployContract` are relative to the test file itself, not to the project root. From `cadence/tests/Counter_test.cdc`, the contract lives at `../contracts/Counter.cdc`. Running `flow test` from a different working directory does not change this.
+- Paths passed to `Test.readFile` and `Test.deployContract` are relative to the test file itself, not to the project root. From `cadence/tests/Counter_test.cdc`, the contract lives at `../contracts/Counter.cdc`. Running `flow test` from a different working directory does not change this.
 - `setup()` and `beforeEach()` errors are not automatically reported as test failures. Always capture the result of `deployContract` (and similar operations) and assert with `Test.expect(err, Test.beNil())` so a broken fixture surfaces as a clear failure rather than a cascade of unrelated test errors later.
-- Reusing a single `blockchain` binding across tests without resetting state. If a test mutates contract storage, subsequent tests see the mutation. Either use `beforeEach()` to restore state, or call `blockchain.reset()` to return to a clean snapshot before each test.
+- Not resetting state between tests — mutations from one test leak into the next. Either use `beforeEach()` to restore state, or call `Test.reset(to: setupHeight)` to rewind to a clean snapshot.
 - Naming a test function something other than `testXxx`. The framework silently skips it. If a "test" never seems to run, check that its name starts with the literal prefix `test`.
 - Mixing up file-level `let` bindings with per-test state. Anything declared `access(all) let` at the top of the file is initialized once when the file is loaded and shared by every test. For per-test scratch state, declare locals inside the `testXxx` function instead.
