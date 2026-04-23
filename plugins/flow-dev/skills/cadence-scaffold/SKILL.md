@@ -29,8 +29,6 @@ All generated code must follow:
 4. Descriptive panic messages with interpolated values
 5. Events for significant state changes
 6. Complete `init()` with all state initialized
-7. Doc comments (`///`) on the generated types and callable functions
-8. Inline `//` comments in function bodies where logic, resource movement, or security decisions are non-obvious
 
 ## Companion Skills
 

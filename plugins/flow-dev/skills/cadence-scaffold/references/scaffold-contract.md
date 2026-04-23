@@ -121,4 +121,4 @@ After generating:
 - Add inline comments explaining security decisions for each access modifier and entitlement choice.
 - Add inline comments anywhere resource movement, capability publication, or invariant enforcement would otherwise be hard to follow.
 
-> **See also:** `cadence-lang` skill → `access-control.md` and `entitlements.md` for access rules, `design-patterns.md` for naming and storage patterns, `anti-patterns.md` for what to avoid. For NFT contracts, see `cadence-tokens` skill → `nft-standards.md`. Use `cadence-audit` skill to review generated code before deployment. Use `flow-cli` skill to deploy with `flow accounts add-contract`.
+> **See also:** `cadence-lang` skill → `documentation.md` for docstring and inline comment conventions, `access-control.md` and `entitlements.md` for access rules, `design-patterns.md` for naming and storage patterns, `anti-patterns.md` for what to avoid. For NFT contracts, see `cadence-tokens` skill → `nft-standards.md`. Use `cadence-audit` skill to review generated code before deployment. Use `flow-cli` skill to deploy with `flow accounts add-contract`.
