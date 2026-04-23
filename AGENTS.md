@@ -9,6 +9,23 @@ This repository is a Claude Code plugin marketplace for the Flow blockchain ecos
 one plugin, `flow-dev`, containing ten skills that provide domain knowledge for Cadence and Flow
 development. Content is Markdown only — there is no code to build, compile, or test.
 
+**Target users**: Cadence/Flow developers who install this marketplace into Claude Code to get
+specialized assistance with smart contract development, auditing, querying, and deployment.
+
+## How Skills Work
+
+Skills use a three-level progressive disclosure system:
+
+1. **Metadata** (~100 words) — The `name` and `description` in YAML frontmatter. Always loaded
+   into the agent's context. This is how the agent decides whether to activate a skill.
+2. **SKILL.md body** (~200 words) — Loaded when the skill triggers. Contains overview, quick
+   start, and a navigation map pointing to reference files.
+3. **Reference files** (200–300 lines each) — Loaded on demand when the agent needs detailed
+   information on a specific topic.
+
+This design keeps context efficient: metadata is always present, the skill body loads only when
+relevant, and references load only when needed for the specific task.
+
 ## Repository Layout
 
 ```
@@ -19,7 +36,7 @@ plugins/flow-dev/
         SKILL.md                         Skill entry point with YAML frontmatter
         references/                      Topic-focused markdown loaded on demand
 scripts/install.sh                       One-liner installer (Flow CLI + MCP + plugin)
-CLAUDE.md                                Full authoring guide for contributors
+CLAUDE.md                                Symlink to AGENTS.md (backwards compat)
 README.md                                User-facing install + skill catalog
 CODEOWNERS                               PR review ownership (all paths)
 ```
@@ -45,8 +62,25 @@ It contains exactly these ten skills (each has its own `SKILL.md` plus a `refere
 | `flow-defi` | 4 |
 | `flow-tokenomics` | 5 |
 
-Descriptions and trigger phrases live in each `SKILL.md` frontmatter. The routing table in
-`CLAUDE.md` maps developer intents to primary skills.
+Descriptions and trigger phrases live in each `SKILL.md` frontmatter.
+
+## Skill Routing Guide
+
+When a developer asks for help, use this table to determine which skill(s) to activate:
+
+| Developer need | Primary skill | May also need |
+|---|---|---|
+| Write/understand Cadence code (syntax, types, patterns) | `cadence-lang` | |
+| Build an NFT or FT token contract | `cadence-tokens` | `cadence-lang` |
+| Review or audit existing Cadence code | `cadence-audit` | `cadence-lang` |
+| Generate a new contract, transaction, or DeFi tx from scratch | `cadence-scaffold` | `cadence-lang`, `cadence-tokens` |
+| Build React frontend on Flow | `flow-react-sdk` | |
+| Set up a Flow project, configure flow.json, deploy | `flow-project-setup` | |
+| Install dev tools (Flow CLI, emulator, VS Code, EVM tooling) | `flow-dev-setup` | `flow-project-setup` |
+| Design or architect a DeFi protocol on Flow | `flow-defi` | |
+| Design token economics for a Flow protocol | `flow-tokenomics` | `flow-defi`, `cadence-tokens` |
+| Write unit tests for Cadence contracts | `cadence-testing` | `cadence-lang` |
+| Debug failing Cadence tests / add coverage | `cadence-testing` | `cadence-lang`, `cadence-audit` |
 
 ## Install and Validate Commands
 
@@ -70,12 +104,12 @@ End-user install flow (from `scripts/install.sh` and `README.md`):
 - **SKILL.md frontmatter is required.** Each skill needs YAML with `name` and `description`.
   The `description` must include both trigger phrases and (when relevant) non-trigger
   redirects to the correct skill — see existing skills for the pattern.
-- **Reference files stay 200–300 lines.** Per `CLAUDE.md`: if a topic exceeds 300 lines,
-  split into multiple files rather than truncating.
+- **Reference files stay 200–300 lines.** If a topic exceeds 300 lines, split into multiple
+  files rather than truncating.
 - **Cadence 1.0 syntax only.** All Cadence code examples in skill content must follow
-  Cadence 1.0 (`CLAUDE.md` § Reference files).
+  Cadence 1.0. Include `✅` / `❌` patterns where applicable.
 - **Register a new skill in three places.** Create `SKILL.md` + `references/`, update the
-  routing table in `CLAUDE.md`, update the skill catalog in `README.md`.
+  Skill Routing Guide table above, update the skill catalog in `README.md`.
 - **Register a new plugin in four places.** Create `plugins/<name>/.claude-plugin/plugin.json`,
   add skills under `skills/`, add an entry to the `plugins` array in
   `.claude-plugin/marketplace.json`, update `README.md`.
@@ -87,5 +121,13 @@ End-user install flow (from `scripts/install.sh` and `README.md`):
 
 - `scripts/install.sh` — public one-liner endpoint referenced from the README; breaking
   changes affect existing users running the curl command.
-</content>
-</invoke>
+
+## Content Sources
+
+Skills in this marketplace were derived from:
+
+- [onflow/cadence-rules](https://github.com/onflow/cadence-rules) — Cadence language rules,
+  security patterns, DeFi Actions framework
+- [onflow/flow-cli](https://github.com/onflow/flow-cli) — Flow CLI query patterns and FindLabs API
+- Flow official documentation — cadence-lang.org, developers.flow.com
+- Security audit best practices for Cadence smart contracts
