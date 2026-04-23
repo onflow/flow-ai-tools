@@ -2,18 +2,18 @@
 
 Events are the contract's public log of state changes. Every `emit SomeEvent(...)` statement a contract executes becomes part of the permanent record of the block it ran in, and clients (indexers, frontends, other contracts) depend on that record to reconstruct what happened. A test that only asserts on return values or storage state is missing half the story — if the contract claims a transaction should emit `Deposited`, the test should say so. Events are the observable API that external consumers rely on, so treating them as first-class assertions keeps the test honest about what the contract is supposed to expose.
 
-Logs, produced by `log(...)` calls inside transactions, scripts, or contract functions, are for debugging. The testing framework captures them alongside events and exposes them through `blockchain.logs`, but a production contract rarely relies on them and neither should your tests — reserve log inspection for diagnosing why a test is misbehaving, not for encoding the behaviour under test.
+Logs, produced by `log(...)` calls inside transactions, scripts, or contract functions, are for debugging. The testing framework captures them alongside events and exposes them through `Test.logs`, but a production contract rarely relies on them and neither should your tests — reserve log inspection for diagnosing why a test is misbehaving, not for encoding the behaviour under test.
 
-The distinction between the two is enforced purely by convention, not by the runtime. Both survive through a full block commit, both accumulate across the whole test run, and both get rewound by `blockchain.reset`. What separates them is intent: events document durable contract-level behaviour and are part of the contract's external interface, while logs are ephemeral diagnostic output that might change or disappear during any refactor. Testing that respects this distinction produces assertions that survive refactors and break only when the contract's actual externally observable behaviour changes.
+The distinction between the two is enforced purely by convention, not by the runtime. Both survive through a full block commit, both accumulate across the whole test run, and both get rewound by `Test.reset`. What separates them is intent: events document durable contract-level behaviour and are part of the contract's external interface, while logs are ephemeral diagnostic output that might change or disappear during any refactor. Testing that respects this distinction produces assertions that survive refactors and break only when the contract's actual externally observable behaviour changes.
 
 ## Reading All Events
 
 ```cadence
-let all = blockchain.events()
+let all = Test.events()
 Test.expect(all, Test.haveElementCount(3))
 ```
 
-`blockchain.events()` returns `[AnyStruct]` — every event emitted since the blockchain was created, in the order they were emitted. The entries are the event structs themselves; to read fields, cast each entry to its concrete event type. Events accumulate across the entire history of the blockchain unless you call `blockchain.reset(height:)`, which rewinds them along with the rest of the state.
+`Test.events()` returns `[AnyStruct]` — every event emitted since the test file started running, in the order they were emitted. The entries are the event structs themselves; to read fields, cast each entry to its concrete event type. Events accumulate across the entire history of the test file unless you call `Test.reset(to:)`, which rewinds them along with the rest of the state.
 
 Because the standard contracts deployed during the framework's bootstrap (`FungibleToken`, `NonFungibleToken`, account setup) also emit events, a raw `events()` call at the start of a test typically includes a dozen or more entries that have nothing to do with your contract. Use `eventsOfType` instead whenever the assertion cares about a specific event — it keeps the test from coupling to framework internals that can change between Flow CLI releases.
 
@@ -24,11 +24,11 @@ One legitimate use of raw `events()` is a sanity-check at the very top of a new 
 ## Filtering by Type
 
 ```cadence
-let incs = blockchain.eventsOfType(Type<Counter.Incremented>())
+let incs = Test.eventsOfType(Type<Counter.Incremented>())
 Test.expect(incs, Test.haveElementCount(1))
 ```
 
-`blockchain.eventsOfType(type:)` returns only the events whose runtime type matches the given `Type` value. Construct the type with `Type<Contract.EventName>()` when the event is declared inside an imported contract — the test file must have `import "Counter"` at the top for `Counter.Incremented` to resolve as a type.
+`Test.eventsOfType(type:)` returns only the events whose runtime type matches the given `Type` value. Construct the type with `Type<Contract.EventName>()` when the event is declared inside an imported contract — the test file must have `import "Counter"` at the top for `Counter.Incremented` to resolve as a type.
 
 The returned array is `[AnyStruct]`, same as `events()`, so each entry still needs an explicit downcast before you can read its fields. The cast is safe because the filter already narrowed the type; the downcast is mechanical.
 
@@ -57,7 +57,7 @@ The contract address in a testing-framework event type string comes from the `te
 The canonical shape for "this transaction emitted exactly one `Incremented` event with `newValue: 1`":
 
 ```cadence
-let events = blockchain.eventsOfType(Type<Counter.Incremented>())
+let events = Test.eventsOfType(Type<Counter.Incremented>())
 Test.expect(events, Test.haveElementCount(1))
 let evt = events[0] as! Counter.Incremented
 Test.assertEqual(1 as Int, evt.newValue)
@@ -84,16 +84,16 @@ let tx = Test.Transaction(
     signers: [admin],
     arguments: []
 )
-let result = blockchain.executeTransaction(tx)
+let result = Test.executeTransaction(tx)
 Test.expect(result, Test.beSucceeded())
 
-let events = blockchain.eventsOfType(Type<Counter.Incremented>())
+let events = Test.eventsOfType(Type<Counter.Incremented>())
 Test.expect(events, Test.haveElementCount(1))
 let evt = events[0] as! Counter.Incremented
 Test.assertEqual(1 as Int, evt.newValue)
 
 let script = Test.readFile("../scripts/get_count.cdc")
-let readBack = blockchain.executeScript(script, [])
+let readBack = Test.executeScript(script, [])
 Test.expect(readBack, Test.beSucceeded())
 Test.assertEqual(1 as Int, readBack.returnValue! as! Int)
 ```
@@ -107,8 +107,8 @@ When the transaction emits the same event type multiple times, compare against t
 When a transaction emits several events and the test cares about their relative order or joint contents:
 
 ```cadence
-let incs = blockchain.eventsOfType(Type<Counter.Incremented>())
-let rsts = blockchain.eventsOfType(Type<Counter.Reset>())
+let incs = Test.eventsOfType(Type<Counter.Incremented>())
+let rsts = Test.eventsOfType(Type<Counter.Reset>())
 Test.expect(incs, Test.haveElementCount(2))
 Test.expect(rsts, Test.haveElementCount(1))
 
@@ -121,7 +121,7 @@ let resetEvt = rsts[0] as! Counter.Reset
 Test.assertEqual(0 as Int, resetEvt.newValue)
 ```
 
-`eventsOfType` preserves emission order within a single type, so `incs[0]` is always the first `Incremented` the blockchain saw. Cross-type ordering (did the `Reset` happen before or after the first `Incremented`?) requires reading from raw `events()` and comparing positions, which is almost always a sign the assertion is over-specified. If the contract's correctness depends on the interleaving, assert on the resulting state instead of on the event order — state is what users observe, and event ordering can change during benign refactors.
+`eventsOfType` preserves emission order within a single type, so `incs[0]` is always the first `Incremented` the test's in-process emulator saw. Cross-type ordering (did the `Reset` happen before or after the first `Incremented`?) requires reading from raw `events()` and comparing positions, which is almost always a sign the assertion is over-specified. If the contract's correctness depends on the interleaving, assert on the resulting state instead of on the event order — state is what users observe, and event ordering can change during benign refactors.
 
 A multiplex test that exercises two transactions in sequence and asserts on the combined event trail reads cleanly with per-type filters: each filter gives a clean list, each list is asserted independently, and the test stays readable even as the number of event types grows.
 
@@ -130,7 +130,7 @@ Order-sensitive assertions are most useful when the sequence is part of the cont
 A closely related pattern is asserting on event field sequences across related events. When a transaction emits several `Transferred` events as part of a batch operation, the sequence of `amount` values or `recipient` addresses is often the assertion the test wants to make:
 
 ```cadence
-let xfers = blockchain.eventsOfType(Type<Counter.Transferred>())
+let xfers = Test.eventsOfType(Type<Counter.Transferred>())
 Test.expect(xfers, Test.haveElementCount(3))
 let first = xfers[0] as! Counter.Transferred
 let second = xfers[1] as! Counter.Transferred
@@ -145,19 +145,19 @@ Project the field of interest out of each event and compare the resulting scalar
 ## Reading Logs
 
 ```cadence
-let lines = blockchain.logs()
+let lines = Test.logs()
 Test.expect(lines, Test.contain("counter incremented"))
 ```
 
-`blockchain.logs()` returns `[String]` — every `log(...)` line emitted by transactions, scripts, and contract functions since the blockchain was created (or since the last `reset`). Logs are useful during development: sprinkle `log(...)` calls in a contract under investigation, run the test, inspect `blockchain.logs()` to see what the runtime printed.
+`Test.logs()` returns `[String]` — every `log(...)` line emitted by transactions, scripts, and contract functions since the test file started running (or since the last `reset`). Logs are useful during development: sprinkle `log(...)` calls in a contract under investigation, run the test, inspect `Test.logs()` to see what the runtime printed.
 
 Do not promote logs to primary test assertions. Logs are a debugging affordance, not a contract's public API — a refactor that removes a stray `log` call silently breaks a test that asserts on it, and the fix is always to delete the assertion rather than to restore the log. When the test needs to observe a state change, emit an event for it and assert on the event instead.
 
-Like events, logs accumulate across the whole blockchain history and are cleared by `reset`. Framework bootstrap rarely logs anything, so `logs()` is usually quieter than `events()`, but that is not a guarantee — filter by substring (`Test.contain`) rather than by exact element count if you want the assertion to be resilient.
+Like events, logs accumulate across the whole test file's history and are cleared by `reset`. Framework bootstrap rarely logs anything, so `logs()` is usually quieter than `events()`, but that is not a guarantee — filter by substring (`Test.contain`) rather than by exact element count if you want the assertion to be resilient.
 
-A practical workflow for using logs as a debugging aid: add a `log("value: ".concat(x.toString()))` inside the contract function you are investigating, run the failing test, print `blockchain.logs()` from the test body, and read the captured output. Once the bug is understood, remove the `log` call before committing — leaving debug logs in production Cadence code bloats every transaction that invokes the function and adds nothing at runtime that an event could not already express. The testing framework does not enforce this discipline; it's a convention you enforce with code review.
+A practical workflow for using logs as a debugging aid: add a `log("value: ".concat(x.toString()))` inside the contract function you are investigating, run the failing test, print `Test.logs()` from the test body, and read the captured output. Once the bug is understood, remove the `log` call before committing — leaving debug logs in production Cadence code bloats every transaction that invokes the function and adds nothing at runtime that an event could not already express. The testing framework does not enforce this discipline; it's a convention you enforce with code review.
 
-Logs can also be handy when the test runner itself needs a breadcrumb. Calling `log` from inside a test body prints the message to `blockchain.logs()` alongside contract logs, which is useful in a long test where the failure does not pin down which phase produced it. Treat this as temporary scaffolding rather than a permanent part of the test — once the test passes reliably, the log calls should come out.
+Logs can also be handy when the test runner itself needs a breadcrumb. Calling `log` from inside a test body prints the message to `Test.logs()` alongside contract logs, which is useful in a long test where the failure does not pin down which phase produced it. Treat this as temporary scaffolding rather than a permanent part of the test — once the test passes reliably, the log calls should come out.
 
 The `Test.contain` matcher checks substring membership when applied to a `String` array, so an assertion like `Test.expect(lines, Test.contain("counter incremented"))` accepts any log line whose text contains the substring `counter incremented`. This is more forgiving than a full-string match and usually the right level of specificity for logs, which tend to embed runtime values that change between runs. If the test genuinely needs an exact-match assertion on a log line, pair the substring check with a count check or a direct `assertEqual` against a specific index — but prefer the substring idiom when the intent is "something like this was logged" rather than "exactly this was logged".
 
@@ -166,11 +166,10 @@ The `Test.contain` matcher checks substring membership when applied to a `String
 The interaction between `reset` and the event log is worth stating separately because it is the single most common source of confusion for tests that use `beforeEach`. The sketch below is the same pattern described in the emulation reference, applied specifically to events:
 
 ```cadence
-access(all) let blockchain = Test.newEmulatorBlockchain()
 access(all) var setupHeight: UInt64 = 0
 
 access(all) fun setup() {
-    let err = blockchain.deployContract(
+    let err = Test.deployContract(
         name: "Counter",
         path: "../contracts/Counter.cdc",
         arguments: []
@@ -180,11 +179,11 @@ access(all) fun setup() {
 }
 
 access(all) fun beforeEach() {
-    blockchain.reset(height: setupHeight)
+    Test.reset(to: setupHeight)
 }
 ```
 
-After the `reset` call, `blockchain.events()` still contains every event emitted during `setup()` — the contract's `ContractInitialized` event, any bootstrap events from standard library setup, anything the test file's file-level `createAccount` calls produced. Those events are at heights at or before `setupHeight`, so the reset preserves them. Events emitted during the previous `testXxx` are at heights after `setupHeight` and are discarded.
+After the `reset` call, `Test.events()` still contains every event emitted during `setup()` — the contract's `ContractInitialized` event, any bootstrap events from standard library setup, anything the test file's file-level `createAccount` calls produced. Those events are at heights at or before `setupHeight`, so the reset preserves them. Events emitted during the previous `testXxx` are at heights after `setupHeight` and are discarded.
 
 This means the event assertions inside a test only need to worry about the events that test itself produced, plus any deploy-time events from `setup()`. Filter with `eventsOfType` or count against a baseline captured at the end of `setup()` to skip over the latter cleanly.
 
@@ -195,13 +194,13 @@ access(all) var baselineIncs: Int = 0
 
 access(all) fun setup() {
     // ... deploy contracts ...
-    baselineIncs = blockchain.eventsOfType(Type<Counter.Incremented>()).length
+    baselineIncs = Test.eventsOfType(Type<Counter.Incremented>()).length
     setupHeight = getCurrentBlock().height
 }
 
 access(all) fun testIncrementEmits() {
     // ... run the transaction ...
-    let incs = blockchain.eventsOfType(Type<Counter.Incremented>())
+    let incs = Test.eventsOfType(Type<Counter.Incremented>())
     Test.assertEqual(baselineIncs + 1, incs.length)
 }
 ```
@@ -211,9 +210,9 @@ Most tests avoid this complexity by using `reset` in `beforeEach` so each test s
 ## Pitfalls
 
 - **Events emitted during `setup()` leak into `events()` in your tests.** Contract `init` blocks often emit events (`ContractInitialized`, mint events, capability publication), and the standard library bootstrap emits several of its own. A naked `events()` call at the top of a test sees all of them. Use `eventsOfType` to focus on the contract under test, or capture the event count at the end of `setup()` and compare deltas in each test.
-- **`reset(height)` rewinds events too.** If your test calls `blockchain.reset(height: 0)` (or any height earlier than the deployment height), the deploy-time events are gone along with the deployment itself. Capture `setupHeight` at the end of `setup()` and reset to that height in `beforeEach()` — the deployment events stay, and only per-test events are discarded.
+- **`reset(to:)` rewinds events too.** If your test calls `Test.reset(to: 0)` (or any height earlier than the deployment height), the deploy-time events are gone along with the deployment itself. Capture `setupHeight` at the end of `setup()` and reset to that height in `beforeEach()` — the deployment events stay, and only per-test events are discarded.
 - **Type string casing matters.** `A.0000000000000007.Counter.Incremented` and `A.0000000000000007.counter.incremented` are different types. `Type<Counter.Incremented>()` handles this for you, so prefer it over constructing type strings by hand. If you must write a type string manually, match the contract's declared casing exactly — a silent mismatch produces an empty filtered array, not an error.
 - **Comparing addresses with the `0x` prefix.** An event field declared `from: Address` is an `Address` value, not a `String`, and `Address` equality works without string manipulation — prefer `Test.assertEqual(admin.address, evt.from)` over any string form. If you must stringify (for logging or interop), use `.toString()`, which returns the canonical `0x`-prefixed form, and make sure both sides of the comparison use the same prefix and leading-zero convention.
 - **Forgetting to downcast before reading fields.** An entry pulled from `events()` or `eventsOfType` is still typed as `AnyStruct` — a direct `.newValue` access on the `AnyStruct` value fails to compile. The `as! Counter.Incremented` step is required; once the cast succeeds, every field is typed and accessible.
 - **Asserting on the full `events()` list when `eventsOfType` would do.** A raw `events()` assertion couples the test to unrelated bootstrap events and breaks the next time the framework adds or removes one. Filter first, assert second — the test becomes an order of magnitude more stable.
-- **Confusing `log` output with event output.** `log("a value was set")` does not emit an event, even if the message looks like an event name. It only writes to `blockchain.logs()`. If the intent is for off-chain consumers to observe the state change, the contract must declare an event and `emit` it; no amount of log-level message crafting substitutes for a real event.
+- **Confusing `log` output with event output.** `log("a value was set")` does not emit an event, even if the message looks like an event name. It only writes to `Test.logs()`. If the intent is for off-chain consumers to observe the state change, the contract must declare an event and `emit` it; no amount of log-level message crafting substitutes for a real event.
