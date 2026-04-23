@@ -1,44 +1,51 @@
 # Blockchain Emulation
 
-Emulation is what makes the Cadence testing framework more than a unit-test harness: every test file runs against a full in-process Flow runtime with real accounts, real contracts, real transactions, real events, and a clock you can advance at will. The `Test` contract exposes a single factory that returns this runtime; everything else in this reference is a method on the blockchain object returned from `Test.newEmulatorBlockchain()`.
+Emulation is what makes the Cadence testing framework more than a unit-test harness: every test file runs against a full in-process Flow runtime with real accounts, real contracts, real transactions, real events, and a clock you can advance at will. The `Test` contract exposes this runtime directly; everything else in this reference is a method called on `Test`.
 
 The runtime is deliberately deterministic. Block production is driven by explicit calls, time only moves when you tell it to, and nothing schedules itself in the background. That determinism is what makes the framework useful for regression tests — a passing run today will still pass a year from now unless the contract changes.
 
-The emulator lives entirely in the test process. It has no network, no mempool, and no staking; it does not talk to testnet or mainnet, does not persist state between `flow test` invocations, and never exposes an RPC endpoint. Think of it as a pure function from "sequence of `blockchain.*` calls" to "final chain state" — which is why the same test file always produces the same result on the same code.
+The emulator lives entirely in the test process. It has no network, no mempool, and no staking; it does not talk to testnet or mainnet, does not persist state between `flow test` invocations, and never exposes an RPC endpoint. Think of it as a pure function from "sequence of `Test.*` calls" to "final chain state" — which is why the same test file always produces the same result on the same code.
 
-## Creating the Blockchain
+## The Test API
 
 ```cadence
 import Test
-
-access(all) let blockchain = Test.newEmulatorBlockchain()
 ```
 
-Declare the blockchain at the top of the test file as an `access(all) let`. Every lifecycle function in the file — `setup`, `beforeEach`, every `testXxx` — shares the same binding, which is almost always what you want: the contracts deployed during `setup()` need to be visible to the tests that follow. Declaring it inside `setup()` is legal but forces you to pass the blockchain down as a parameter or stash it in another file-level variable, which buys nothing and costs clarity.
+Every method in this reference is called directly on the `Test` contract — there is no `blockchain` binding to create or pass around. One implicit emulator instance exists per test file; it persists across every `setup`, `beforeEach`, and `testXxx` in that file until the file ends, or until `Test.reset(to:)` rewinds it to an earlier height.
 
-A single blockchain is reusable across every test in the file. Reset state between tests with `blockchain.reset(height:)` rather than building a fresh blockchain per test — `newEmulatorBlockchain` is not free, and redeploying the same fixture on every test adds seconds to every run.
+A single emulator instance is reusable across every test in the file. Reset state between tests with `Test.reset(to:)` rather than trying to spin up a clean instance per test — redeploying the same fixture on every test adds seconds to every run.
 
 ## Accounts
 
 ```cadence
-access(all) let admin = blockchain.createAccount()
-access(all) let user = blockchain.createAccount()
+access(all) let admin = Test.createAccount()
+access(all) let user = Test.createAccount()
 ```
 
-`blockchain.createAccount()` returns an `Account` value with two fields: `address: Address` and `publicKey: PublicKey`. The address is allocated deterministically from the blockchain's service account, and each call hands out the next address in sequence. Bind accounts at the file level when they participate in every test, or inside a test when they are only relevant to that case.
+`Test.createAccount()` returns a `TestAccount` value with two fields: `address: Address` and `publicKey: PublicKey`. The address is allocated deterministically from the blockchain's service account, and each call hands out the next address in sequence. Bind accounts at the file level when they participate in every test, or inside a test when they are only relevant to that case.
 
-`blockchain.serviceAccount()` returns the implicit account that owns the protocol contracts and holds the testing framework's privileged keys. Transactions signed by the service account can deploy core contracts or manipulate accounts that user accounts cannot; most tests only need it when setting up fixtures that rely on system-level authority.
+`Test.serviceAccount()` returns the implicit account that owns the protocol contracts and holds the testing framework's privileged keys. Transactions signed by the service account can deploy core contracts or manipulate accounts that user accounts cannot; most tests only need it when setting up fixtures that rely on system-level authority.
 
 Accounts are just keys plus an address — storage and capabilities live on them only after a transaction writes to them. A freshly created account has no fungible token vault, no NFT collection, and no resources at all until your test (or the contract's `init`) puts something there.
 
 A common pattern is to give every persistent role its own file-level account binding (`admin`, `minter`, `user`, `attacker`) and keep one-off accounts as locals inside the test that needs them. The names then read as documentation in the test body — `Test.Transaction(..., signers: [attacker], ...)` is self-explanatory in a way that `signers: [account3]` is not.
 
-The address that `createAccount` returns is determined by the order of allocation across the lifetime of the blockchain, not by the test that triggered the allocation. Two test files that each call `createAccount` first see the same address for their respective `admin` accounts, but a single file that creates two accounts in `setup()` sees those two addresses in the order they were created. Do not hard-code those addresses in tests — read them from the `Account` value's `address` field and the test stays correct as the fixture evolves.
+The address that `createAccount` returns is determined by the order of allocation across the lifetime of the blockchain, not by the test that triggered the allocation. Two test files that each call `createAccount` first see the same address for their respective `admin` accounts, but a single file that creates two accounts in `setup()` sees those two addresses in the order they were created. Do not hard-code those addresses in tests — read them from the `TestAccount` value's `address` field and the test stays correct as the fixture evolves.
+
+### Looking Up an Existing Account
+
+```cadence
+let service = Test.serviceAccount()
+let sameAccount = Test.getAccount(address: service.address)
+```
+
+`Test.getAccount(address: Address)` returns the `TestAccount` for a previously-created address. It is useful inside helper functions that only have an `Address` to work with — a transaction result, an event payload, or the service account's address pulled from a configuration — and need to re-acquire the full `TestAccount` value to pass into a subsequent `Test.Transaction`. The account must already exist; `getAccount` does not create one.
 
 ## Deploying Contracts
 
 ```cadence
-let err = blockchain.deployContract(
+let err = Test.deployContract(
     name: "Counter",
     path: "../contracts/Counter.cdc",
     arguments: []
@@ -46,7 +53,7 @@ let err = blockchain.deployContract(
 Test.expect(err, Test.beNil())
 ```
 
-`blockchain.deployContract(name:path:arguments:)` returns an optional `Error?`. A `nil` return means the deployment succeeded; a non-`nil` value carries the compile or runtime error. Always assert on the result — a silent deployment failure surfaces later as a confusing "contract not found" error from `executeScript` or `executeTransaction`, and debugging that is far more painful than a clear `Test.beNil` failure at setup.
+`Test.deployContract(name:path:arguments:)` returns an optional `Error?`. A `nil` return means the deployment succeeded; a non-`nil` value carries the compile or runtime error. Always assert on the result — a silent deployment failure surfaces later as a confusing "contract not found" error from `executeScript` or `executeTransaction`, and debugging that is far more painful than a clear `Test.beNil` failure at setup.
 
 The `path` is relative to the test file, not to the project root. The `arguments` array is passed to the contract's `init` in declaration order, typed as `[AnyStruct]`. The deployed contract is registered under the `testing` alias declared in `flow.json`, so it becomes importable by name (`import "Counter"`) from the test file and from any scripts or transactions the test runs.
 
@@ -54,31 +61,17 @@ When a contract under test imports another contract, the dependency must be depl
 
 Cyclic imports are not legal at deployment time — Cadence resolves a contract's imports before its `init` runs, so two contracts that import each other cannot both be deployed in any order. If you find yourself wanting that, the right fix is almost always to extract the shared types or interfaces into a third contract that both import.
 
-## Import Address Configuration
-
-```cadence
-blockchain.useConfiguration(Test.Configuration(addresses: {
-    "Counter": 0x0000000000000099
-}))
-```
-
-`blockchain.useConfiguration` overrides the default import-resolution table for the blockchain. The typical reason to reach for it is a test that needs to deploy a contract at a specific address — for example, asserting that two contracts imported from different source paths end up at the expected canonical addresses, or standing up a fixture that hard-codes an address in a script.
-
-Most tests do not need this. The `testing` aliases in `flow.json` already handle the common case, and `blockchain.deployContract` respects them automatically. Reach for `useConfiguration` only when the default address the framework would assign is wrong for the scenario you are testing.
-
-Call `useConfiguration` before any `deployContract` that should be affected by it — the configuration only rebinds imports that resolve after it's set. Calling it late is a silent no-op for contracts that have already been deployed.
-
 ## Executing Scripts
 
 ```cadence
 let script = Test.readFile("../scripts/get_count.cdc")
-let result = blockchain.executeScript(script, [])
+let result = Test.executeScript(script, [])
 Test.expect(result, Test.beSucceeded())
 let count = result.returnValue! as! Int
 Test.assertEqual(0, count)
 ```
 
-`blockchain.executeScript(code:arguments:)` runs a Cadence script against the current blockchain state and returns a `ScriptResult` with `status`, an optional `returnValue`, and an optional `error`. Assert on success first with `Test.expect(result, Test.beSucceeded())` — that matcher renders the underlying error if the script reverted, which makes failures diagnosable without re-running.
+`Test.executeScript(code:arguments:)` runs a Cadence script against the current blockchain state and returns a `ScriptResult` with `status`, an optional `returnValue`, and an optional `error`. Assert on success first with `Test.expect(result, Test.beSucceeded())` — that matcher renders the underlying error if the script reverted, which makes failures diagnosable without re-running.
 
 The `code` argument is the script's source as a `String`. Most tests load it from disk with `Test.readFile`, which keeps the script under version control alongside the rest of the project. For one-off assertions, an inline string literal is fine, but anything reused across tests should live in its own `.cdc` file so the same script can be exercised from `flow scripts execute` against the emulator or a live network without divergence.
 
@@ -95,26 +88,37 @@ let tx = Test.Transaction(
     signers: [admin],
     arguments: []
 )
-let result = blockchain.executeTransaction(tx)
+let result = Test.executeTransaction(tx)
 Test.expect(result, Test.beSucceeded())
 ```
 
 `Test.Transaction` bundles the source, the authorizer addresses, the signer accounts, and the arguments. The `authorizers` list matches the `prepare` block of the transaction; the `signers` list is the set of accounts whose keys authorise the transaction (often the same set). For a transaction with a single `prepare(acct: auth(Storage) &Account)`, pass `authorizers: [admin.address]` and `signers: [admin]`.
 
-A transaction whose `prepare` block declares two parameters needs two entries in `authorizers` (in order) and the matching `Account` values in `signers`. Multi-authorizer transactions are uncommon outside of escrow and atomic-swap patterns, but when they appear the symmetry between the two lists is what the framework checks — a length mismatch fails the transaction with an authorisation error before any contract code runs.
+A transaction whose `prepare` block declares two parameters needs two entries in `authorizers` (in order) and the matching `TestAccount` values in `signers`. Multi-authorizer transactions are uncommon outside of escrow and atomic-swap patterns, but when they appear the symmetry between the two lists is what the framework checks — a length mismatch fails the transaction with an authorisation error before any contract code runs.
 
-`blockchain.executeTransaction` submits the transaction, commits a block, and returns a `TransactionResult` that behaves the same as a `ScriptResult` for assertion purposes: `Test.beSucceeded`, `Test.beFailed`, and `result.error!.message` all work identically. Events emitted by the transaction become visible via `blockchain.events` and `blockchain.eventsOfType` after the call returns, and any `log` statements the transaction or its callees executed surface in `blockchain.logs`.
+`Test.executeTransaction` submits the transaction, commits a block, and returns a `TransactionResult` that behaves the same as a `ScriptResult` for assertion purposes: `Test.beSucceeded`, `Test.beFailed`, and `result.error!.message` all work identically. Events emitted by the transaction become visible via `Test.events` and `Test.eventsOfType` after the call returns, and any `log` statements the transaction or its callees executed surface in `Test.logs`.
 
 Argument values in the `arguments` array must match the transaction's declared parameter types exactly. Cadence does not coerce between numeric widths, so a transaction expecting a `UInt64` rejects a plain `42` (which the parser infers as `Int`). Cast at the call site — `42 as UInt64` — to keep type errors at the test boundary instead of hidden inside the transaction prelude.
+
+## Batch Execution
+
+```cadence
+let results = Test.executeTransactions([tx1, tx2, tx3])
+Test.expect(results[0], Test.beSucceeded())
+Test.expect(results[1], Test.beSucceeded())
+Test.expect(results[2], Test.beSucceeded())
+```
+
+`Test.executeTransactions(transactions: [Transaction])` runs every transaction in order, commits a single block containing all of them, and returns a `[TransactionResult]` aligned by index with the input. Use it when the test cares that a group of transactions lands in the same block — for example, asserting that a later transaction in the batch sees state written by an earlier one — without managing the queue manually.
 
 ## Queued Execution
 
 ```cadence
-blockchain.addTransaction(tx1)
-blockchain.addTransaction(tx2)
-let r1 = blockchain.executeNextTransaction()
-let r2 = blockchain.executeNextTransaction()
-blockchain.commitBlock()
+Test.addTransaction(tx1)
+Test.addTransaction(tx2)
+let r1 = Test.executeNextTransaction()
+let r2 = Test.executeNextTransaction()
+Test.commitBlock()
 ```
 
 `addTransaction` enqueues a transaction without running it. `executeNextTransaction` pops the head of the queue, executes it, and returns its `TransactionResult`. `commitBlock` finalises the current block, producing a block boundary that the transactions ran inside.
@@ -128,11 +132,10 @@ Note also that `executeNextTransaction` returns the result for the popped transa
 ## State Reset (Snapshot Isolation)
 
 ```cadence
-access(all) let blockchain = Test.newEmulatorBlockchain()
 access(all) var setupHeight: UInt64 = 0
 
 access(all) fun setup() {
-    let err = blockchain.deployContract(
+    let err = Test.deployContract(
         name: "Counter",
         path: "../contracts/Counter.cdc",
         arguments: []
@@ -142,11 +145,11 @@ access(all) fun setup() {
 }
 
 access(all) fun beforeEach() {
-    blockchain.reset(height: setupHeight)
+    Test.reset(to: setupHeight)
 }
 ```
 
-`blockchain.reset(height:)` rewinds the blockchain to the given block height, discarding every transaction, event, and storage change that happened after it. Capturing the height at the end of `setup()` and resetting to it in `beforeEach()` gives each test a clean fixture without redeploying contracts — a meaningful speedup for test files with many cases that share one deployment.
+`Test.reset(to:)` rewinds the blockchain to the given block height, discarding every transaction, event, and storage change that happened after it. Capturing the height at the end of `setup()` and resetting to it in `beforeEach()` gives each test a clean fixture without redeploying contracts — a meaningful speedup for test files with many cases that share one deployment.
 
 Without a reset, state from one test leaks into the next. A test that mutates a counter to 5 and runs before a test that asserts the counter starts at 0 silently makes both tests meaningless.
 
@@ -156,16 +159,16 @@ The snapshot-per-test pattern composes well with `Test.expectFailure` and revert
 
 ```cadence
 // Advance one day.
-blockchain.moveTime(by: 86400.0)
+Test.moveTime(by: 86400.0)
 // Optionally commit a block so getCurrentBlock().height advances too.
-blockchain.commitBlock()
+Test.commitBlock()
 ```
 
-`blockchain.moveTime(by:)` advances the blockchain's clock by the given number of seconds, expressed as `Fix64`. The parameter label is `by`, and the argument is in seconds — not milliseconds, not blocks. Use it to test vesting schedules, expiration deadlines, rate limits, and anything else that reads `getCurrentBlock().timestamp`.
+`Test.moveTime(by:)` advances the blockchain's clock by the given number of seconds, expressed as `Fix64`. The parameter label is `by`, and the argument is in seconds — not milliseconds, not blocks. Use it to test vesting schedules, expiration deadlines, rate limits, and anything else that reads `getCurrentBlock().timestamp`.
 
 `moveTime` and `commitBlock` are complementary, not interchangeable. `commitBlock` advances the block height but not the wall clock — it's the right tool when a contract cares about block numbers. `moveTime` advances the wall clock but not the block height — it's the right tool when a contract cares about timestamps. If the contract reads both `getCurrentBlock().height` and `getCurrentBlock().timestamp`, move time and then commit a block, in that order.
 
-`Fix64` accepts negative values, so `blockchain.moveTime(by: -3600.0)` rewinds the clock by an hour. That can be useful for testing a contract's behaviour around boundary conditions, but it can also surprise contracts that assume time only moves forward — use it with care, and only for the specific assertion that needs it.
+`Fix64` accepts negative values, so `Test.moveTime(by: -3600.0)` rewinds the clock by an hour. That can be useful for testing a contract's behaviour around boundary conditions, but it can also surprise contracts that assume time only moves forward — use it with care, and only for the specific assertion that needs it.
 
 ## Mocking via Contract Substitution
 
@@ -174,7 +177,7 @@ Cadence has no traditional mocking framework — no monkey-patching, no interfac
 A price-oracle consumer, for example, can be tested against a stub oracle that returns a constant price:
 
 ```cadence
-let err = blockchain.deployContract(
+let err = Test.deployContract(
     name: "PriceOracle",
     path: "../tests/mocks/ConstantPriceOracle.cdc",
     arguments: [42.0 as UFix64]
@@ -193,9 +196,8 @@ Mocks live alongside tests, not alongside production code — a conventional loc
 ## Common Pitfalls
 
 - **Forgetting to assert `Test.beNil()` on the `deployContract` return.** Silent deploy failures surface later as "contract not found" errors during `executeScript`, which are hard to trace back to the real cause. Every `deployContract` call deserves a matching `Test.expect(err, Test.beNil())` immediately after it.
-- **Reusing a blockchain across tests without `reset`.** State from one test bleeds into the next, turning a passing suite into an order-dependent mess. Either reset to a snapshot height in `beforeEach()` or accept the cost of a fresh blockchain per test.
+- **Reusing the emulator across tests without `reset`.** State from one test bleeds into the next, turning a passing suite into an order-dependent mess. Capture a snapshot height at the end of `setup()` and call `Test.reset(to:)` in `beforeEach()` so every test starts from the same known fixture.
 - **Assuming `moveTime` advances block height.** It does not. If the contract reads `getCurrentBlock().height`, call `commitBlock()` after `moveTime` to advance both clocks. Likewise, `commitBlock` on its own does not move the wall clock, so a contract reading `timestamp` will see the same value across many committed blocks unless `moveTime` is used explicitly.
-- **Mixing file-level and per-test accounts carelessly.** A file-level `access(all) let admin = blockchain.createAccount()` is created once when the test file loads, before any `setup()` runs. That is usually fine, but any storage the admin has is wiped the first time `blockchain.reset(height:)` rolls the chain back to a height earlier than the account's creation — make sure accounts you want to persist are created before the height you later reset to.
-- **Relative paths that point at the wrong directory.** `Test.readFile` and `blockchain.deployContract` resolve paths relative to the test file itself, not the `flow test` invocation directory. Running the same tests from `cadence/tests/` and from the project root produces identical results — but a path written with the project root in mind breaks as soon as a test file moves into a subfolder.
+- **Mixing file-level and per-test accounts carelessly.** A file-level `access(all) let admin = Test.createAccount()` is created once when the test file loads, before any `setup()` runs. That is usually fine, but any storage the admin has is wiped the first time `Test.reset(to:)` rolls the chain back to a height earlier than the account's creation — make sure accounts you want to persist are created before the height you later reset to.
+- **Relative paths that point at the wrong directory.** `Test.readFile` and `Test.deployContract` resolve paths relative to the test file itself, not the `flow test` invocation directory. Running the same tests from `cadence/tests/` and from the project root produces identical results — but a path written with the project root in mind breaks as soon as a test file moves into a subfolder.
 - **Forgetting that `executeTransaction` already commits a block.** A test that calls `executeTransaction` and then immediately calls `commitBlock` ends up with an extra empty block at the end, which usually does no harm but can throw off assertions that count blocks. Reach for the queued API only when the explicit block-boundary control is the point.
-- **Calling `useConfiguration` after the contracts are deployed.** The configuration only takes effect for imports resolved after it is set; contracts already on-chain keep the address they were deployed at. If you need a non-default address, configure first, then deploy.
