@@ -6,8 +6,8 @@ when working in this repository. It is loaded into agent context automatically �
 ## Overview
 
 This repository is a Claude Code plugin marketplace for the Flow blockchain ecosystem. It ships
-one plugin, `flow-dev`, containing ten skills that provide domain knowledge for Cadence and Flow
-development. Content is Markdown only — there is no code to build, compile, or test.
+one plugin, `flow-dev`, containing eleven skills that provide domain knowledge for Cadence and
+Flow development. Content is Markdown only — there is no code to build, compile, or test.
 
 **Target users**: Cadence/Flow developers who install this marketplace into Claude Code to get
 specialized assistance with smart contract development, auditing, querying, and deployment.
@@ -47,7 +47,7 @@ One plugin is registered in `.claude-plugin/marketplace.json`:
 
 - **flow-dev** (`plugins/flow-dev/`) — v1.0.0, category `blockchain`
 
-It contains exactly these ten skills (each has its own `SKILL.md` plus a `references/` directory):
+It contains exactly these eleven skills (each has its own `SKILL.md` plus a `references/` directory):
 
 | Skill | Reference count |
 |---|---|
@@ -55,6 +55,7 @@ It contains exactly these ten skills (each has its own `SKILL.md` plus a `refere
 | `cadence-tokens` | 3 |
 | `cadence-audit` | 2 |
 | `cadence-scaffold` | 3 |
+| `cadence-testing` | 6 |
 | `flow-react-sdk` | 4 |
 | `flow-project-setup` | 2 |
 | `flow-cli` | 5 |
