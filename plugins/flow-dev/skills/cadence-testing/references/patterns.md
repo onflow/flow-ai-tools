@@ -58,13 +58,13 @@ The Assert section is the only place where a failure message should surface, whi
 
 ## Test Isolation
 
-Two isolation patterns exist, each with a clear tradeoff. Pick one per file and stick with it — mixing them inside a single file is a common source of order-dependent bugs.
+Two isolation patterns exist, each with a clear tradeoff. Pick one per file and stick with it — mixing them inside a single file is a common source of order-dependent bugs. The emulator is implicit per test file now, so both patterns share the same underlying blockchain; the difference is in how each test re-establishes the starting state.
 
-**Fresh blockchain per test.** Create a new `Test.newEmulatorBlockchain()` in `beforeEach()` and redeploy every contract. Most isolated option available — no state leaks between tests because nothing carries over. Slowest, because the deployment cost is paid on every test. Right when the test file has only a handful of tests, or when the contracts are small and fast to deploy.
+**Snapshot and reset (recommended).** Deploy contracts in `setup()`, capture the height at the end of `setup()` into a file-scope `access(all) var setupHeight: UInt64`, and call `Test.reset(to: setupHeight)` in `beforeEach()`. The fixture is built once and then rewound between tests, which is typically an order of magnitude faster than redeploying. Requires discipline: anything declared `access(all) let` at file scope (accounts, capability bindings) must be created before the snapshot height, or the reset invalidates it. This is the default for files with more than a handful of cases.
 
-**Shared blockchain + `reset(height)`.** Create the blockchain at file scope, deploy contracts in `setup()`, capture the height at the end of `setup()`, and call `blockchain.reset(height: setupHeight)` in `beforeEach()`. The fixture is built once and then rewound between tests, which is typically an order of magnitude faster than redeploying. Requires discipline: anything declared `access(all) let` at file scope (accounts, capability bindings) must be created before the snapshot height, or the reset invalidates it.
+**Per-test setup.** Deploy contracts once in `setup()` and structure each `testXxx` so it creates a fresh subject account, or re-seeds an existing subject's storage with a transaction, as the first lines of the test body. Nothing is rewound between tests, so shared fixtures accumulate state; the pattern works when most tests touch only a small, well-scoped subset of that state and a full reset would be overkill. Right when the file has only a handful of tests, or when each test's subject is naturally disjoint from the others.
 
-Snapshot-per-test is the default for files with more than a handful of cases. Fresh-per-test is the default for tiny files or for tests that deliberately mutate the contract set itself.
+Snapshot-and-reset is the default for most files. Per-test setup is the default when the file's tests are naturally disjoint and the per-test seeding is cheaper than a full state rewind.
 
 Once you have picked a pattern, resist the temptation to reach for the other one in a single "just this one test" exception — the exception is how order-dependent bugs enter the file. If a particular test genuinely needs a different isolation model, promote it to its own file with its own lifecycle functions rather than forking the convention mid-file.
 
@@ -102,14 +102,14 @@ The canonical shape for a negative access-control test is a transaction signed b
 
 ```cadence
 access(all) fun testNonOwnerCannotPause() {
-    let other = blockchain.createAccount()
+    let other = Test.createAccount()
     let tx = Test.Transaction(
         code: Test.readFile("../transactions/pause.cdc"),
         authorizers: [other.address],
         signers: [other],
         arguments: []
     )
-    let result = blockchain.executeTransaction(tx)
+    let result = Test.executeTransaction(tx)
     Test.expect(result, Test.beFailed())
     Test.assert(
         result.error!.message.contains("admin entitlement required"),
@@ -126,7 +126,7 @@ For entitlements specifically, test both the authorised path (caller holds the e
 
 When a contract has multiple admin roles (minter, pauser, upgrader), spell out one test per role per gate. Bundling "any non-admin cannot call X" into a single test saves keystrokes but hides which specific rejection path is broken when the contract's access logic regresses.
 
-Access control tests are also the place where a dedicated `attacker` account binding earns its name. A file-level `access(all) let attacker = blockchain.createAccount()` used as the signer of every negative test reads as documentation in the test body — the reader sees `signers: [attacker]` and knows immediately which role the test is exercising.
+Access control tests are also the place where a dedicated `attacker` account binding earns its name. A file-level `access(all) let attacker = Test.createAccount()` used as the signer of every negative test reads as documentation in the test body — the reader sees `signers: [attacker]` and knows immediately which role the test is exercising.
 
 ## Testing Pre/Post Conditions
 
@@ -140,7 +140,7 @@ access(all) fun testWithdrawRejectsZeroAmount() {
         signers: [user],
         arguments: [0.0 as UFix64]
     )
-    let result = blockchain.executeTransaction(tx)
+    let result = Test.executeTransaction(tx)
     Test.expect(result, Test.beFailed())
     Test.assert(
         result.error!.message.contains("amount must be positive"),
@@ -171,8 +171,8 @@ Field assertions on events should be narrow. Assert on the fields the test speci
 
 Flaky tests are tests that pass sometimes and fail sometimes for reasons unrelated to the code under test. A few habits keep the suite deterministic:
 
-- Do not read wall-clock time from tests. `getCurrentBlock().timestamp` inside a test closure returns real time and drifts between runs; use `blockchain.moveTime(by:)` to set the clock to a known value before the assertion runs.
-- Do not depend on implicit block height ordering. Two transactions queued through `addTransaction` land in the same block until an explicit `commitBlock` closes the block; rely on `reset` or `commitBlock` to pin the block boundary your assertion cares about.
+- Do not read wall-clock time from tests. `getCurrentBlock().timestamp` inside a test closure returns real time and drifts between runs; use `Test.moveTime(by:)` to set the clock to a known value before the assertion runs.
+- Do not depend on implicit block height ordering. Two transactions queued through `addTransaction` land in the same block until an explicit `commitBlock` closes the block; rely on `Test.reset(to:)` or `commitBlock` to pin the block boundary your assertion cares about.
 - Pin event counts per type, not totals. `eventsOfType(...)` filters out the bootstrap events that the framework emits during setup, and those counts can change when the Flow CLI ships a new version. Raw `events()` counts will drift; typed counts will not.
 - Use `--seed <fixed>` in CI to make random ordering deterministic. Pair it with `--random` locally to catch order-dependent bugs before they reach CI.
 
@@ -188,7 +188,7 @@ A handful of patterns look reasonable up close but corrode the suite over time:
 
 - **Over-mocking.** Deploying a fake for every dependency makes the test setup balloon and hides integration bugs that only appear when real contracts compose. Prefer real contracts when they are cheap to deploy; reach for a mock only when the real dependency has heavy setup (oracles, external price feeds) or when the test specifically needs to control the dependency's return value.
 - **Assertion-free tests.** A test that runs a transaction and checks only that it did not panic is barely a test — it catches type errors the compiler already caught. Every test body should contain at least one assertion on the observable it actually cares about.
-- **Tests that only pass in a specific run order.** If rearranging two tests makes one of them fail, the file has leaked state between them. Fix the leak with `reset` or a fresh blockchain; do not paper over it by documenting a required order.
+- **Tests that only pass in a specific run order.** If rearranging two tests makes one of them fail, the file has leaked state between them. Fix the leak with `Test.reset(to:)` or tighter per-test setup; do not paper over it by documenting a required order.
 - **Very long test functions.** A test that performs five distinct scenarios is five tests masquerading as one. Split them — each scenario's failure then names itself in the CLI output instead of hiding behind a generic parent name.
 - **Testing Cadence itself.** Assertions like `Test.assertEqual(1, 1)` or `Test.assert(true)` test nothing about the contract under review. If the body of a test does not mention a symbol from the contract or a result from the blockchain, it does not belong in the suite.
 
