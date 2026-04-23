@@ -12,8 +12,8 @@ Generated Cadence code should be documented, especially when it introduces new c
 ## Markdown Support
 
 - Cadence doc comments support Markdown. Use standard Markdown formatting when it improves readability.
-- Prefer `**bold labels**`, bullet lists, and inline code over ad hoc annotation syntax.
-- Do not use `@param` or `@return`. The reviewed PR discussion explicitly rejects that format because the LSP does not render it well.
+- Use inline code, emphasis, and bullet lists where they improve readability.
+- Keep Markdown simple so generated documentation remains structured and readable.
 
 ## How To Write Doc Comments
 
@@ -40,30 +40,36 @@ access(all) contract Escrow {
 Function documentation has three parts, in order:
 
 1. Description: one or more sentences explaining what the function does. If the function can panic or has caller-visible side effects, say so here.
-2. `**Parameters**` block: only include this when the function takes parameters. Put `**Parameters**` on its own doc-comment line, then add one bullet per parameter using inline code for the parameter name followed by its description.
-3. `**Returns**` block: only include this when the function returns a non-`Void` value. Put `**Returns**` inline with a prose description of the returned value.
+2. Parameter tags: when the function takes parameters, document each one with `@param`, followed by the parameter name, a colon, and the parameter description.
+3. Return tag: when the function returns a non-`Void` value, document it with `@return`, followed by a prose description of the returned value.
 
 Separate blocks with blank doc-comment lines.
 
 ```cadence
-/// Consumes one unit of allowance and creates a new yield vault.
-/// Panics if allowance is exhausted.
+/// This is the description of the function. This function adds two values.
 ///
-/// **Parameters**
-/// - `name`: Name of the registered strategy to create a vault for.
+/// @param a: First integer value to add
+/// @param b: Second integer value to add
+/// @return Addition of the two arguments `a` and `b`
 ///
-/// **Returns** A new `YieldVault` to be saved in the caller's storage.
-access(all) fun createYieldVault(name: String): @{FlowYieldVaultsInterfaces.YieldVault} {
+access(all) fun add(a: Int, b: Int): Int {
     // ...
 }
 ```
 
-For short functions where the description already explains the parameters and return value in prose, the `**Parameters**` and `**Returns**` blocks can be omitted.
+Do not mix description text with parameter or return documentation after the tags have started.
 
 ```cadence
-/// Returns `|numer - denom| / denom`, or `0.0` when `denom = 0`.
-/// Used to compare `|1 - (numer / denom)|` without `UFix64` underflow.
-view access(all) fun absDeviationFromOne(_ numer: UFix64, _ denom: UFix64): UFix64 {
+/// This is the description of the function.
+///
+/// @param a: First integer value to add
+/// @param b: Second integer value to add
+///
+/// This function adds two values. However, this is not the proper way to document it.
+/// This part of the description is not in the proper place.
+///
+/// @return Addition of the two arguments `a` and `b`
+access(all) fun add(a: Int, b: Int): Int {
     // ...
 }
 ```
@@ -88,7 +94,7 @@ access(all) fun fulfill(orderID: UInt64) {
 
 ## Best Practices
 
-- Avoid Markdown headings (`#`, `##`) and horizontal rules inside doc comments. Use `**Parameters**` and `**Returns**` when you need section-like structure.
-- Keep the description at the top. Do not interleave description text with the `**Parameters**` or `**Returns**` blocks.
-- Put `**Returns**` after `**Parameters**`.
-- When a function panics, say so in the description instead of inventing a separate panic block.
+- Avoid headings and horizontal rules inside doc comments. The `docgen` README warns they can conflict with generated output structure.
+- Keep the function description at the top and keep `@param` / `@return` documentation grouped below it.
+- Use inline code when referring to identifiers such as parameter names and function names.
+- When a function panics, say so in the description.
