@@ -21,7 +21,7 @@ plugins/flow-dev/
 scripts/install.sh                       One-liner installer (Flow CLI + MCP + plugin)
 CLAUDE.md                                Full authoring guide for contributors
 README.md                                User-facing install + skill catalog
-CODEOWNERS                               @onflow/flow-engineering owns everything
+CODEOWNERS                               PR review ownership (all paths)
 ```
 
 ## Plugin and Skills
@@ -81,7 +81,7 @@ End-user install flow (from `scripts/install.sh` and `README.md`):
   `.claude-plugin/marketplace.json`, update `README.md`.
 - **`.gitignore` excludes `.claude` and `docs/plans/`.** Don't commit local Claude state or
   planning documents.
-- **Ownership.** `CODEOWNERS` routes every path to `@onflow/flow-engineering`.
+- **Ownership.** `CODEOWNERS` routes every path to the team listed there for PR review.
 
 ## Files Not to Modify
 
