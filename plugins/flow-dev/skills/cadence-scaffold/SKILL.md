@@ -36,3 +36,4 @@ All generated code must follow:
 - **`cadence-tokens`** — Consult when scaffolding NFT or FT contracts for standard interface requirements and MetadataViews.
 - **`cadence-audit`** — Run an audit on generated code to verify it follows security best practices before the user deploys.
 - **`flow-cli`** — Use to deploy and test scaffolded contracts and transactions.
+- **`cadence-testing`** — Use to write tests for any scaffolded contract or transaction before deployment.

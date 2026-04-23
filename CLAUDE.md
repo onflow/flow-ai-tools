@@ -32,6 +32,7 @@ plugins/
             cadence-tokens/     # NFT/FT token development (3 references)
             cadence-audit/      # Security audit & review (2 references)
             cadence-scaffold/   # Code generation templates (3 references)
+            cadence-testing/    # Testing framework guide (6 references)
             flow-project-setup/ # Project config & deployment (2 references)
             flow-cli/           # Flow CLI commands & scripts (4 references)
             flow-react-sdk/     # React frontend on Flow (4 references)
@@ -56,6 +57,8 @@ When a developer asks for help, use this table to determine which skill(s) to ac
 | Install dev tools (Flow CLI, emulator, VS Code, EVM tooling) | `flow-dev-setup` | `flow-project-setup` |
 | Design or architect a DeFi protocol on Flow | `flow-defi` | |
 | Design token economics for a Flow protocol | `flow-tokenomics` | `flow-defi`, `cadence-tokens` |
+| Write unit tests for Cadence contracts | `cadence-testing` | `cadence-lang` |
+| Debug failing Cadence tests / add coverage | `cadence-testing` | `cadence-lang`, `cadence-audit` |
 
 ## Key Conventions
 

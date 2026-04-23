@@ -30,7 +30,7 @@ Then install individual plugins:
 
 | Plugin | Description | Skills | Category |
 |--------|-------------|--------|----------|
-| **flow-dev** | Flow network development | `cadence-lang`, `cadence-tokens`, `cadence-audit`, `cadence-scaffold`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics` | blockchain |
+| **flow-dev** | Flow network development | `cadence-lang`, `cadence-tokens`, `cadence-audit`, `cadence-scaffold`, `cadence-testing`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics` | blockchain |
 
 ### flow-dev
 
@@ -42,6 +42,7 @@ Skills for developing on the Flow network:
 | `cadence-tokens` | NFT and FT token development: NonFungibleToken/FungibleToken interface conformance, MetadataViews integration, collection patterns, modular NFT architectures |
 | `cadence-audit` | Smart contract audit and review: security vulnerabilities, severity-rated findings, structured review format, project-wide audit workflow |
 | `cadence-scaffold` | Interactive code generation: scaffold production-ready contracts, transactions, and DeFi transactions with proper security patterns |
+| `cadence-testing` | Cadence unit testing: Test contract API, assertions and matchers, blockchain emulation, events, coverage, `flow test`, testing patterns |
 | `flow-react-sdk` | React frontend development: FlowProvider setup, Cadence hooks (query, mutate, auth, events), Cross-VM hooks (EVM bridging, batch transactions), UI components (Connect, TransactionButton, NftCard) |
 | `flow-project-setup` | Flow project configuration: flow.json setup, FCL frontend integration, CLI workflow, deployment, debugging, gas optimization, testnet validation |
 | `flow-cli` | Flow CLI reference: full command list, account management, query blockchain (accounts/blocks/events/transactions), Cadence script recipes, MCP server setup |
@@ -71,6 +72,9 @@ plugins/
             cadence-scaffold/
                 SKILL.md    # Code generation guide
                 references/ # 3 reference files
+            cadence-testing/
+                SKILL.md    # Testing framework guide
+                references/ # 6 reference files
             flow-react-sdk/
                 SKILL.md    # React SDK guide
                 references/ # 4 reference files
