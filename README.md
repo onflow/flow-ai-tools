@@ -1,6 +1,6 @@
 # flow-ai-tools — Claude Code Plugin for Flow Network Development
 
-AI tools for the [the Flow network](https://github.com/onflow) ecosystem. These [Claude Code](https://claude.ai/code) plugins provide domain-specific skills that help Claude Code write better Cadence and Flow code.
+AI tools for the [Flow network](https://github.com/onflow) ecosystem. These [Claude Code](https://claude.ai/code) plugins provide domain-specific skills that help Claude Code write better Cadence and Flow code.
 
 ## Quick Start
 
@@ -30,7 +30,7 @@ Then install individual plugins:
 
 | Plugin | Description | Skills | Category |
 |--------|-------------|--------|----------|
-| **flow-dev** | the Flow network development | `cadence-lang`, `cadence-tokens`, `cadence-audit`, `cadence-scaffold`, `cadence-testing`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics` | blockchain |
+| **flow-dev** | Flow network development | `cadence-lang`, `cadence-tokens`, `cadence-audit`, `cadence-scaffold`, `cadence-testing`, `flow-react-sdk`, `flow-project-setup`, `flow-cli`, `flow-dev-setup`, `flow-defi`, `flow-tokenomics` | blockchain |
 
 ### flow-dev
 
@@ -124,6 +124,7 @@ plugins/
 1. Create `plugins/<plugin-name>/skills/<skill-name>/SKILL.md`
 2. Add YAML frontmatter with `name` and `description`
 3. Write the skill body with patterns, code examples, and common mistakes
+
 ## About Flow
 
 This repo is part of the [Flow network](https://flow.com), a Layer 1 blockchain built for consumer applications, AI agents, and DeFi at scale.
