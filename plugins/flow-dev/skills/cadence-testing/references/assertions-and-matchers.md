@@ -73,7 +73,7 @@ Test.expect(feeBps, Test.beLessThan(100 as UInt16))
 Matches when the candidate is `nil`. This is the canonical check after `deployContract` or after any helper that returns an optional error — a `nil` return means success.
 
 ```cadence
-let err = blockchain.deployContract(name: "Counter", path: "../contracts/Counter.cdc", arguments: [])
+let err = Test.deployContract(name: "Counter", path: "../contracts/Counter.cdc", arguments: [])
 Test.expect(err, Test.beNil())
 ```
 
@@ -82,7 +82,7 @@ Test.expect(err, Test.beNil())
 Matches when the candidate (an array, dictionary, or string) has no elements. Prefer `beEmpty` over `haveElementCount(0)` when the intent is "nothing happened" — the rendered failure message reads more naturally.
 
 ```cadence
-let events = blockchain.eventsOfType(Type<Counter.Incremented>())
+let events = Test.eventsOfType(Type<Counter.Incremented>())
 Test.expect(events, Test.beEmpty())
 ```
 
@@ -91,7 +91,7 @@ Test.expect(events, Test.beEmpty())
 Matches when the candidate has exactly the given number of elements. Useful for asserting how many events a transaction emitted or how many entries a script returned.
 
 ```cadence
-let events = blockchain.eventsOfType(Type<Counter.Incremented>())
+let events = Test.eventsOfType(Type<Counter.Incremented>())
 Test.expect(events, Test.haveElementCount(2))
 ```
 
@@ -109,7 +109,7 @@ Test.expect(names, Test.contain("alice"))
 Matches a `ScriptResult` or `TransactionResult` whose status is success. Prefer this over inspecting `result.status` by hand — the failure message includes the underlying error, which turns an otherwise opaque "assertion failed" into a line pointing at the revert reason.
 
 ```cadence
-let result = blockchain.executeScript(source, [])
+let result = Test.executeScript(source, [])
 Test.expect(result, Test.beSucceeded())
 ```
 
@@ -118,7 +118,7 @@ Test.expect(result, Test.beSucceeded())
 Matches a `ScriptResult` or `TransactionResult` whose status is failure. Typically followed by an assertion on `result.error!.message` to pin down which failure mode you were expecting.
 
 ```cadence
-let result = blockchain.executeScript(badSource, [])
+let result = Test.executeScript(badSource, [])
 Test.expect(result, Test.beFailed())
 ```
 
@@ -210,7 +210,7 @@ Test.expectFailure(fun(): Void {
 **Blockchain panics** — a transaction or script that reverts on the blockchain returns a `TransactionResult` or `ScriptResult` whose `status` is failure; it does not propagate a panic into the test. Inspect the result directly:
 
 ```cadence
-let result = blockchain.executeScript(source, [])
+let result = Test.executeScript(source, [])
 Test.expect(result, Test.beFailed())
 Test.assert(result.error!.message.contains("not authorized"),
     message: "unexpected error: ".concat(result.error!.message))
@@ -228,6 +228,6 @@ Across all of these idioms, the rule of thumb is the same: assert on the smalles
 - **Using `assertEqual` across types that don't implement `Equatable`.** The framework compares with `==`, so non-`Equatable` composite types (structs without an explicit conformance, resources) will not compare usefully. Assert on a scalar projection of the value instead, or write a `Test.newMatcher` that extracts the fields you care about and compares each one explicitly.
 - **Overly specific `expectFailure` substrings.** A substring like `"not authorized: 0xabcdef0123456789 attempted to withdraw 100.0"` breaks the moment the contract changes its error formatting — or worse, the moment a different caller runs the test. Match on the shortest substring that identifies the specific failure mode ("not authorized") and leave the rest out.
 - **Forgetting to unwrap `result.error`.** After `Test.expect(result, Test.beFailed())`, `result.error` is non-`nil` — but still typed as an optional. Use `result.error!.message` (or bind it with `if let err = result.error`) when building the substring assertion, otherwise the test fails with a confusing optional-dereference error rather than the matcher message you intended.
-- **Using `Test.expectFailure` for a blockchain call.** `blockchain.executeScript` and `blockchain.executeTransaction` return a result — they do not panic from the test's perspective even when the underlying call reverts. Wrapping them in `expectFailure` makes the test pass for the wrong reason: the closure returns normally, which is itself a failure of `expectFailure`. Use `Test.expect(result, Test.beFailed())` for blockchain calls and reserve `expectFailure` for code that panics in the test process itself.
+- **Using `Test.expectFailure` for a blockchain call.** `Test.executeScript` and `Test.executeTransaction` return a result — they do not panic from the test's perspective even when the underlying call reverts. Wrapping them in `expectFailure` makes the test pass for the wrong reason: the closure returns normally, which is itself a failure of `expectFailure`. Use `Test.expect(result, Test.beFailed())` for blockchain calls and reserve `expectFailure` for code that panics in the test process itself.
 - **Re-running the same matcher inside a loop without rebinding.** Matchers are plain values; they hold no per-call state. But if you assemble a matcher inside a loop with `and`/`or`, make sure you reset the accumulator between iterations, otherwise the conjunction grows with each pass and eventually rejects everything.
 - **Omitting the `message` on `Test.assert` for compound predicates.** A bare `Test.assert(a > 0 && b < 100 && c.contains("x"))` failure says only "assertion failed". Supply a short message that names the expectation so a CI failure is legible without opening the test file — or, better, convert the compound into a `Test.expect` with combined matchers so the matcher renders the failure for you.

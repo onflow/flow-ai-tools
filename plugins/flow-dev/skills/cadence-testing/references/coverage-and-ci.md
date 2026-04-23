@@ -66,7 +66,7 @@ Branch coverage and statement coverage are different numbers, and `flow test --c
 
 The JSON profile format is a map from contract identifier to an array of line-by-line hit counts, which makes it straightforward to diff between runs or to feed into a custom dashboard. The LCOV profile is line-oriented text that most third-party coverage viewers (Codecov, Coveralls, the VS Code Coverage Gutters extension) consume directly. Pick the format that fits the consumer; the underlying data is the same.
 
-When tests use `blockchain.reset(height:)` to roll back state between cases, coverage continues to accumulate across the full run — `reset` rolls back chain state, not the coverage tracker. A suite that aggressively resets still contributes all of its executed lines to the final percentage, which is the right behaviour: the goal is to know which statements ran at least once, not which statements ran in the most recent snapshot.
+When tests use `Test.reset(to:)` to roll back state between cases, coverage continues to accumulate across the full run — `reset` rolls back chain state, not the coverage tracker. A suite that aggressively resets still contributes all of its executed lines to the final percentage, which is the right behaviour: the goal is to know which statements ran at least once, not which statements ran in the most recent snapshot.
 
 ## Deterministic Ordering
 
@@ -93,8 +93,6 @@ Fork mode boots the emulator with state copied from a live Flow network, so a te
 #test_fork(network: "mainnet", height: nil)
 
 import Test
-
-access(all) let blockchain = Test.newEmulatorBlockchain()
 ```
 
 `height: nil` forks from the latest sealed block at the time of the run. Pass a specific `UInt64` to pin the fork to a historical height — the canonical way to write regression tests against known-good on-chain state. Mixing pinned and unpinned tests in the same suite is fine; each test file with a pragma gets its own forked blockchain at whatever height the pragma specifies.
