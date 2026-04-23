@@ -117,3 +117,5 @@ After generating, add comments explaining:
 - Intent and safety rationale for each connector
 - Why token order was reversed (if applicable)
 - What the post-condition verifies
+
+Also add `///` doc comments for the transaction and helper functions so the generated code is self-documenting.

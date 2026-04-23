@@ -16,6 +16,16 @@ Write secure, correct Cadence code by following these rules. Cadence uses resour
 2. **Resource safety** — resources exist in one place, must be explicitly moved (`<-`) or destroyed
 3. **Capability-based security** — access delegated through unforgeable, revocable capabilities
 4. **Explicit over implicit** — force developers to make security decisions
+5. **Document generated code** — add Cadence doc comments for public-facing types and functions, plus focused inline comments for non-obvious logic and security decisions
+
+## Documentation Rules
+
+When you generate or rewrite Cadence code:
+
+- Add doc comments (`///`) to contracts, resources, structs, events, and functions that a reader needs to understand or call.
+- Describe purpose and behavior, not syntax. Mention invariants, access assumptions, or side effects when they matter.
+- Add inline `//` comments inside function bodies for non-obvious logic, phase boundaries, resource moves, capability usage, and security-sensitive checks.
+- Do not spam comments on trivial statements. Prefer a few high-signal comments over line-by-line narration.
 
 ## Navigation Map
 
