@@ -47,7 +47,7 @@ One plugin is registered in `.claude-plugin/marketplace.json`:
 
 - **flow-dev** (`plugins/flow-dev/`) — v1.0.0, category `blockchain`
 
-It contains exactly these eleven skills (each has its own `SKILL.md` plus a `references/` directory):
+It contains exactly these twelve skills (each has its own `SKILL.md` plus a `references/` directory):
 
 | Skill | Reference count |
 |---|---|
@@ -62,6 +62,7 @@ It contains exactly these eleven skills (each has its own `SKILL.md` plus a `ref
 | `flow-dev-setup` | 8 |
 | `flow-defi` | 4 |
 | `flow-tokenomics` | 5 |
+| `flow-orchestrate` | 10 |
 
 Descriptions and trigger phrases live in each `SKILL.md` frontmatter.
 
@@ -82,6 +83,7 @@ When a developer asks for help, use this table to determine which skill(s) to ac
 | Design token economics for a Flow protocol | `flow-tokenomics` | `flow-defi`, `cadence-tokens` |
 | Write unit tests for Cadence contracts | `cadence-testing` | `cadence-lang` |
 | Debug failing Cadence tests / add coverage | `cadence-testing` | `cadence-lang`, `cadence-audit` |
+| Multi-domain task: audit + deploy, full dapp, token launch end-to-end | `flow-orchestrate` | spawns sub-skills as needed |
 
 ## Install and Validate Commands
 
