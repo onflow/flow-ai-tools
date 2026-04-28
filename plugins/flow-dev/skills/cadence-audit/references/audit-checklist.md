@@ -126,6 +126,63 @@
 - Verify complete transfers (assert residual balance == 0.0)
 - Size withdrawals by sink capacity when immediately depositing
 
+## Cross-VM and DeFi Advanced Checks
+
+### Stuck State / Missing Emergency Exit
+- Does any `burnCallback` or `closeCallback` assert against an external system (EVM vault, bridge, oracle)?
+- If that external system fails permanently, can the vault ever be closed? Is there an admin emergency exit with a grace period (e.g., >7 days stuck → force close allowed)?
+- Pattern: `assert(pendingRedeem == nil)` in `burnCallback` but `clearRedeemRequest` also calls EVM → if EVM is paused, both paths fail and funds are trapped.
+
+### Cross-VM Timing Races
+- Is the timelock snapshot taken at `requestRedeem` time and never re-queried?
+- If the EVM vault admin changes the timelock after the request but before `claimRedeem`, the scheduled timestamp is stale.
+- Fix: re-query current EVM timelock at claim time and use `max(scheduledTimestamp, currentTime + newTimelock)`.
+
+### Lingering EVM Approvals
+- After a successful `claimRedeem`, is the ERC20 approval (`approve(spender, amount)`) revoked?
+- ERC4626 `redeem()` does not consume ERC20 allowance — if not revoked, future shares in the same vault + compromised COA = unauthorized redemption.
+- Fix: call `_evmApprove(spender, amount: 0)` immediately after successful `claimRedeem`.
+
+### EVM Call Result Not Validated
+- Every `coa.call()` and `EVM.dryCall()` returns `EVM.Result`. Is `result.status == EVM.Status.successful` checked before trusting `result.data`?
+- Unchecked EVM failure = silent state divergence between Cadence and EVM.
+
+### Bridge Precision Loss (UFix64 ↔ uint256)
+- UFix64 has 8 decimal places. EVM ERC20 tokens typically use 18. Conversion without explicit ×10^10 scaling truncates or inflates amounts.
+- Dust accumulates across calls into exploitable value at volume.
+- Fix: explicit scaling on every Cadence↔EVM conversion. Round against the user (floor on deposit, ceiling on withdrawal).
+- HackenProof Flow bug bounty classifies this as Critical.
+
+### Fixed-Point Overflow in AMM Liquidity (Cetus-class)
+- Cetus DEX (Sui, May 2025, $223M): unchecked bit-shift in liquidity delta math. Same pattern applies to any Cadence AMM with custom fixed-point scaling.
+- Does any bit-shift or scaling operation have a correct bit-width guard (not just value bounds)?
+- Can a flash-add max liquidity + immediate remove expose a divergence between deposit requirement and withdrawal entitlement?
+
+### access(account) Co-Deploy Escalation
+- `access(account)` exposes fields to ALL contracts on the same Flow account.
+- A future contract upgrade on that account (or compromised key) gains full read/write access to all `access(account)` state across every co-deployed contract.
+- Dec 27, 2025 exploit deployed ~40 malicious contracts to amplify this vector.
+- Audit: enumerate all `access(account)` fields. Verify all contracts on that account are equally trusted. Verify upgrade requires multi-sig.
+
+### Burnable.burnCallback() Griefing via External Token
+- Any protocol that accepts arbitrary `FungibleToken` vaults and destroys them can be griefed by a token whose `burnCallback()` panics or executes unexpected state changes inside the protocol's own transaction.
+- Is `Burner.burn(<-vault)` called on vaults received from external sources without type verification?
+- Fix: only destroy vaults of explicitly allowlisted token types. Never call `Burner.burn()` on caller-supplied vaults without type verification.
+
+### Cross-VM Bridge as Exploit Exit — No Rate Limit
+- Dec 27, 2025 ($3.9M): attacker minted counterfeit FLOW → bridged to Flow EVM → bridged to Ethereum before validators halted. All in one block sequence.
+- Does the protocol interact with the EVM bridge? Is there a per-block or per-transaction volume cap? Is there an admin pause callable within seconds?
+- Any mint/inflate exploit can exit via the bridge faster than governance can react.
+
+### Contract Initializer Argument Type Smuggling
+- Dec 27, 2025: `account.contracts.add()` accepted arguments where calling context treated them as value types but initializer treated them as resources → resources copied instead of moved → infinite mint. Patched in Cadence v1.8.9.
+- Audit: any deployment/upgrade transaction that passes attachments, `PublicKey` wrappers, or nested composites as initializer arguments. Verify static type == dynamic type for all complex arguments.
+
+### Use-After-Free via Retained Reference After Resource Destroy
+- Halborn 2021: Cadence allowed method calls on a resource reference after the resource was destroyed. Runtime-patched.
+- In multi-contract systems: if contract A holds a borrowed reference from contract B's storage, and B destroys the resource via a separate path, the reference in A is stale.
+- Verify no live cross-contract reference exists to a resource before it is destroyed.
+
 ## Optimization
 
 ### Storage Operations
