@@ -130,18 +130,18 @@
 
 ### Stuck State / Missing Emergency Exit
 - Does any `burnCallback` or `closeCallback` assert against an external system (EVM vault, bridge, oracle)?
-- If that external system fails permanently, can the vault ever be closed? Is there an admin emergency exit with a grace period (e.g., >7 days stuck → force close allowed)?
-- Pattern: `assert(pendingRedeem == nil)` in `burnCallback` but `clearRedeemRequest` also calls EVM → if EVM is paused, both paths fail and funds are trapped.
+- If that external system fails permanently, can the vault ever be closed? Is there an admin emergency exit with a grace period (e.g., >7 days stuck → force close)?
+- Pattern: closing a vault asserts a pending operation is nil, but cancelling that operation also calls EVM → if EVM is paused, both close and cancel fail, funds are permanently trapped.
 
 ### Cross-VM Timing Races
-- Is the timelock snapshot taken at `requestRedeem` time and never re-queried?
-- If the EVM vault admin changes the timelock after the request but before `claimRedeem`, the scheduled timestamp is stale.
-- Fix: re-query current EVM timelock at claim time and use `max(scheduledTimestamp, currentTime + newTimelock)`.
+- In deferred operations (request phase → claim phase): is the timelock or deadline captured once at request time and never re-queried?
+- If the external system changes its timelock after the request but before the claim, the stored timestamp is stale — claim executes too early (EVM reverts) or too late (user waits unnecessarily).
+- Fix: re-query the current external timelock at claim time and use `max(storedTimestamp, currentTime + currentTimelock)`.
 
 ### Lingering EVM Approvals
-- After a successful `claimRedeem`, is the ERC20 approval (`approve(spender, amount)`) revoked?
-- ERC4626 `redeem()` does not consume ERC20 allowance — if not revoked, future shares in the same vault + compromised COA = unauthorized redemption.
-- Fix: call `_evmApprove(spender, amount: 0)` immediately after successful `claimRedeem`.
+- After completing an EVM-side redemption or transfer, is the ERC20 approval (`approve(spender, amount)`) explicitly revoked?
+- ERC4626 `redeem()` does not consume ERC20 allowance — an unrewoked approval persists. If the user later deposits more shares and the spender COA is compromised, unauthorized redemption becomes possible.
+- Fix: send a zero-approval call immediately after a successful EVM redemption completes.
 
 ### EVM Call Result Not Validated
 - Every `coa.call()` and `EVM.dryCall()` returns `EVM.Result`. Is `result.status == EVM.Status.successful` checked before trusting `result.data`?
