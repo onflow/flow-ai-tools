@@ -109,4 +109,6 @@ After generating, add inline comments explaining:
 - What each phase does
 - Security rationale for access patterns
 
-> **See also:** `cadence-lang` skill → `transactions.md` for phase rules, `entitlements.md` for account entitlement patterns, `conditions.md` for pre/post condition syntax, `capabilities.md` for capability setup patterns. Use `flow-cli` skill to test with `flow transactions send`.
+Also add `///` doc comments for the transaction and any helper functions so the intent and call expectations are explicit.
+
+> **See also:** `cadence-lang` skill → `documentation.md` for docstring and inline comment conventions, `transactions.md` for phase rules, `entitlements.md` for account entitlement patterns, `conditions.md` for pre/post condition syntax, `capabilities.md` for capability setup patterns. Use `flow-cli` skill to test with `flow transactions send`.

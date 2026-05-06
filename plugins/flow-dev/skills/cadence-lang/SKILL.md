@@ -16,6 +16,7 @@ Write secure, correct Cadence code by following these rules. Cadence uses resour
 2. **Resource safety** — resources exist in one place, must be explicitly moved (`<-`) or destroyed
 3. **Capability-based security** — access delegated through unforgeable, revocable capabilities
 4. **Explicit over implicit** — force developers to make security decisions
+5. **Document generated code** — follow the Cadence documentation conventions in the relevant reference docs
 
 ## Navigation Map
 
@@ -27,6 +28,7 @@ Read the relevant reference file based on your task:
 | Resource lifecycle, move operator | [resources.md](references/resources.md) |
 | Contract structure, init, deployment | [contracts.md](references/contracts.md) |
 | Transaction phases, entitlements | [transactions.md](references/transactions.md) |
+| Documentation conventions | [documentation.md](references/documentation.md) |
 | Interfaces, intersection types | [interfaces.md](references/interfaces.md) |
 | Account storage, keys, capabilities | [accounts.md](references/accounts.md) |
 | References, authorized refs | [references.md](references/references.md) |
