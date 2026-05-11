@@ -125,6 +125,56 @@ access(all) resource Minter {
 
 Similarly, avoid emitting events from struct initializers.
 
+## Anti-Pattern 6: access(account) in Multi-Contract Accounts
+
+**Problem**: `access(account)` grants access to ALL contracts on the same Flow account — not just the declaring contract. A future contract upgrade or compromised key exposes all `access(account)` state.
+
+```cadence
+// ❌ Any contract on this account can read/write this field
+access(account) var totalSupply: UFix64
+access(account) var adminNonce: UInt64
+```
+
+**Real-world risk**: Dec 27, 2025 exploit deployed malicious contracts to an account to amplify access. If sensitive state is `access(account)`, any co-deployed contract is a lateral movement path.
+
+**Fix**: Prefer `access(self)` for fields that only the declaring contract needs. Use `access(account)` only when cross-contract access within the account is genuinely required AND all co-deployed contracts are equally trusted.
+```cadence
+// ✅ Only this contract can access
+access(self) var totalSupply: UFix64
+
+// ✅ If cross-contract access is needed, document why and what contracts share the account
+access(account) var sharedNonce: UInt64  // Shared with ContractB on same account (multi-sig upgrades only)
+```
+
+**Audit**: For every `access(account)` field, list which contracts share the account and whether any of them can be upgraded independently.
+
+## Anti-Pattern 7: Burner.burn() on External Token Vaults
+
+**Problem**: Accepting arbitrary `FungibleToken` vaults and destroying them via `Burner.burn()` lets an attacker grief the protocol with a malicious `burnCallback()`.
+
+```cadence
+// ❌ burnCallback() of unknown token type runs in THIS transaction
+access(all) fun rejectDeposit(vault: @{FungibleToken.Vault}) {
+    Burner.burn(<-vault)  // Attacker controls burnCallback — can panic or modify state
+}
+```
+
+**Why dangerous**: Cadence 1.0 `Burner.Burnable` interface lets any token define custom logic on destruction. A maliciously crafted token's `burnCallback()` runs inside the protocol's transaction context, potentially causing panic (DoS) or unexpected state changes.
+
+**Fix**: Validate token type against an allowlist before destroying. Return rejected vaults to the sender rather than destroying them.
+```cadence
+// ✅ Only destroy known, trusted token types
+access(all) fun rejectDeposit(vault: @{FungibleToken.Vault}) {
+    assert(vault.isInstance(Type<@FlowToken.Vault>()), message: "Unsupported token type")
+    Burner.burn(<-vault)
+}
+
+// ✅ Even better: return instead of destroy
+access(all) fun rejectDeposit(vault: @{FungibleToken.Vault}): @{FungibleToken.Vault} {
+    return <-vault  // Caller handles disposal
+}
+```
+
 ## Detection Checklist
 
 - [ ] Functions accepting `auth(...) &Account` parameters
@@ -134,3 +184,5 @@ Similarly, avoid emitting events from struct initializers.
 - [ ] State modifications in struct initializers
 - [ ] Event emissions in struct initializers
 - [ ] Over-use of `access(all)` modifier
+- [ ] `access(account)` fields without documenting which co-deployed contracts share the account
+- [ ] `Burner.burn()` called on externally-supplied vaults without token type validation
