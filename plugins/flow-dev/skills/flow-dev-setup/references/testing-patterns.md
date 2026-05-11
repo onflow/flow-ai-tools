@@ -32,6 +32,19 @@ Every contract needs tests in all applicable categories before deploy:
 | Capability abuse | Using capability after revocation; copying from `access(all)` fields |
 | Scheduling attacks | Calling scheduled transaction handlers directly without scheduler entitlement |
 
+## Cadence Test File Hard Constraints
+
+These constraints apply to every `_test.cdc` file. Violating any of them causes tests to be silently dropped from `flow test` output without a useful error:
+
+| Constraint | Wrong | Correct |
+|---|---|---|
+| No `Test.newBlockchain()` | `let bc = Test.newBlockchain()` | Use `Test.createAccount()` directly |
+| No triple-quoted strings | `` let code = """...""" `` | `Test.readFile("../transactions/X.cdc")` |
+| No `Test.Account` type annotation | `var acct: Test.Account!` | `let acct = Test.createAccount()` |
+| Inline scripts must be one line | multi-line string literal | single short expression or `Test.readFile()` |
+
+**Count check:** After writing the file, run `flow test`. Count the test names in output. Count `access(all) fun test*()` in the file. They must match. If not — the file has a silent error; fix before proceeding.
+
 ## CDC Native — Adversarial Pattern
 
 ```cadence

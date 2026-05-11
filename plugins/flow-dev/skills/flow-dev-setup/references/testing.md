@@ -125,6 +125,59 @@ You can also use a pragma in test files:
 #test_fork(network: "mainnet", height: nil)
 ```
 
+## Common Mistakes That Silently Drop Tests
+
+These errors cause the framework to skip tests without a clear error message — the test count in output will be less than the number of `test*` functions in the file.
+
+### ❌ `Test.newBlockchain()` — does not exist
+```cadence
+// WRONG — API does not exist; compile fails silently
+access(all) let blockchain = Test.newBlockchain()
+```
+```cadence
+// CORRECT — use Test functions directly at module level
+access(all) let account = Test.createAccount()
+```
+
+### ❌ Multi-line inline Cadence strings (heredocs)
+Cadence does not support triple-quoted strings. Embedding long Cadence code inline as a string literal will fail to parse.
+```cadence
+// WRONG — Cadence has no triple-quote syntax
+let code = """
+    access(all) fun main(): Int { return 1 }
+"""
+```
+```cadence
+// CORRECT — use Test.readFile() for transactions and scripts
+let result = Test.executeTransaction(
+    code: Test.readFile("../transactions/Mint.cdc"),
+    args: [],
+    signers: [signer]
+)
+```
+If you must inline a script, keep it to a single short line:
+```cadence
+let result = Test.executeScript(code: "access(all) fun main(): Int { return 1 }", args: [])
+```
+
+### ❌ Wrong module-level variable type for accounts
+`Test.createAccount()` returns an opaque value — store the `.address` if you only need the address later:
+```cadence
+// CORRECT — store full account for use as signer
+access(all) let owner = Test.createAccount()
+
+// CORRECT — store only address if you don't need to sign
+access(all) let ownerAddr: Address = Test.createAccount().address
+```
+
+### Verification rule — count must match
+After writing N test functions, `flow test` output must list exactly N test names.
+If you wrote 8 tests and only 3 appear, the file has a parse or check error — run:
+```bash
+flow test --name testSpecificName   # isolate which test fails to load
+```
+Do not report a test suite as complete until the reported count equals the written count.
+
 ## Documentation
 
 - Official docs: https://developers.flow.com/tools/flow-cli/tests
