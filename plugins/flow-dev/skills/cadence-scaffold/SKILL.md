@@ -2,7 +2,7 @@
 name: cadence-scaffold
 description: |
   Generate production-ready Cadence smart contracts, transactions, and DeFi transactions from scratch following security-first standards. Scaffolds secure code with proper access control, entitlements, events, storage paths, and phase discipline.
-  TRIGGER when: creating new Cadence contracts, generating transactions, scaffolding DeFi transactions, building smart contracts from scratch, "generate contract", "create transaction", "scaffold", "new contract", "new transaction", "build a contract for", "write me a contract", "help me create a", "template for", "boilerplate", "starter contract", "create an NFT contract", "generate a transfer transaction".
+  TRIGGER when: creating new Cadence contracts, generating transactions, scaffolding DeFi transactions, building smart contracts from scratch, "generate contract", "create transaction", "scaffold", "new contract", "new transaction", "build a contract for", "write me a contract", "help me create a", "template for", "boilerplate", "starter contract", "create an NFT contract", "generate a transfer transaction", "scaffold randomness", "commit-reveal template", "RandomConsumer setup".
   DO NOT TRIGGER when: reviewing or auditing existing code (use cadence-audit), asking about Cadence syntax or language rules (use cadence-lang), configuring flow.json (use flow-project-setup).
 ---
 
@@ -19,6 +19,7 @@ Determine what the user needs and follow the appropriate reference:
 | Smart contract (NFT, FT, general, admin) | [scaffold-contract.md](references/scaffold-contract.md) |
 | Transaction (transfer, setup, mint, multi-sig) | [scaffold-transaction.md](references/scaffold-transaction.md) |
 | DeFi Actions transaction (restake, swap, auto-balance) | [scaffold-defi.md](references/scaffold-defi.md) |
+| Secure randomness (native roll, beacon, commit-reveal, PRG) | [secure-randomness.md](references/secure-randomness.md) |
 
 ## General Principles
 

@@ -208,3 +208,5 @@ const { data: randoms } = useFlowRevertibleRandom({
 ```
 
 Values are deterministic per block — same call in same block returns same values. For unpredictable randomness, use commit-reveal scheme in transactions.
+
+> **Do NOT use for economic outcomes.** A frontend can re-query a script for free until it sees a favorable value. Restrict this hook to cosmetic UI (animations, demo dice). For payouts, raffles, NFT trait reveals, or anything tied to user value, use the on-chain commit-reveal pattern (see [use-flow-revertible-random.md](./use-flow-revertible-random.md) and the `cadence-lang` randomness reference).
