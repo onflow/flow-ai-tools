@@ -121,4 +121,6 @@ access(all) fun getRandomSeed(blockHeight: UInt64): [UInt8] {
 
 **DeFi applications:** Fair lottery/raffle contracts, randomized NFT drops, prediction market resolution.
 
+> For any user-facing payout, do NOT use `revertibleRandom()` in the same transaction — the caller can revert on a bad roll. Use the commit-reveal flow via `RandomConsumer` + `Xorshift128plus`. Full API reference, decision matrix, and templates: [`cadence-lang/references/randomness.md`](../../cadence-lang/references/randomness.md), [`cadence-scaffold/references/secure-randomness.md`](../../cadence-scaffold/references/secure-randomness.md).
+
 > **See also:** `defi-primitives.md` for building blocks (lending models, AMM selection).
