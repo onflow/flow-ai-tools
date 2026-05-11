@@ -2,6 +2,19 @@
 
 Flow exposes three randomness primitives. Pick the right one for your threat model — they trade off latency against the abort-on-bad-roll attack.
 
+## Can you get randomness the caller cannot revert on?
+
+Yes, via the commit-reveal pattern with `RandomConsumer`. The caller commits
+at block N (locking their wager) before the beacon for that block exists.
+The reveal at block N+1 reads the now-committed beacon and produces a
+deterministic result. Re-running the reveal yields the same number, so
+reverting it is pointless. Anyone can submit the reveal, so the caller
+cannot skip it either.
+
+For anything tied to user value, use this pattern. `revertibleRandom()`
+alone is safe only when the caller has no incentive to revert on a bad
+roll.
+
 ## Decision matrix
 
 | API | Latency | Safe against abort-on-bad-roll? | Use when |
