@@ -82,6 +82,7 @@ When a developer asks for help, use this table to determine which skill(s) to ac
 | Design token economics for a Flow protocol | `flow-tokenomics` | `flow-defi`, `cadence-tokens` |
 | Write unit tests for Cadence contracts | `cadence-testing` | `cadence-lang` |
 | Debug failing Cadence tests / add coverage | `cadence-testing` | `cadence-lang`, `cadence-audit` |
+| Generate random numbers on Flow (revertibleRandom, commit-reveal, VRF) | `cadence-lang` | `cadence-audit`, `cadence-scaffold`, `flow-react-sdk` |
 
 ## Install and Validate Commands
 
