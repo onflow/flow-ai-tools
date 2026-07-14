@@ -31,6 +31,7 @@ Install and configure the tools needed for Flow blockchain development. Each ref
 | Start and configure the Flow Emulator (ports, persistence, fork mode) | [emulator.md](references/emulator.md) |
 | Install Cadence VS Code extension for editor support | [vscode-extension.md](references/vscode-extension.md) |
 | Set up testing framework, run tests, coverage, fork testing | [testing.md](references/testing.md) |
+| CDC vs Go/overflow decision tree, adversarial test categories, coverage interpretation | [testing-patterns.md](references/testing-patterns.md) |
 | Set up dev wallet for local frontend auth testing | [dev-wallet.md](references/dev-wallet.md) |
 | Install FCL or React SDK for frontend integration | [frontend-sdk.md](references/frontend-sdk.md) |
 | Set up Cadence MCP server for AI-assisted development | [cadence-mcp.md](references/cadence-mcp.md) |

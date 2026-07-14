@@ -39,6 +39,7 @@ Read the relevant reference file based on your task:
 | Security best practices | [security-best-practices.md](references/security-best-practices.md) |
 | Anti-patterns to avoid | [anti-patterns.md](references/anti-patterns.md) |
 | Design patterns | [design-patterns.md](references/design-patterns.md) |
+| CU cost by operation, optimization patterns, MAX_SAFE_N methodology | [cu-optimization.md](references/cu-optimization.md) |
 
 For security-sensitive tasks, also read `security-best-practices.md` and `anti-patterns.md`.
 

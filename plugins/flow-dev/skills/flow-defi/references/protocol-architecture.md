@@ -122,3 +122,78 @@ access(all) fun getRandomSeed(blockHeight: UInt64): [UInt8] {
 **DeFi applications:** Fair lottery/raffle contracts, randomized NFT drops, prediction market resolution.
 
 > **See also:** `defi-primitives.md` for building blocks (lending models, AMM selection).
+
+---
+
+## Cross-VM Failure Modes
+
+Understanding what happens when the EVM component of an atomic transaction fails.
+
+### Atomicity Guarantee
+
+A Cadence transaction containing EVM calls is atomic at the Cadence level:
+- If the Cadence transaction panics, all state changes (Cadence + EVM) are reverted.
+- If an EVM call fails, the EVM state change is reverted, but **Cadence execution continues** unless you explicitly check the result and panic.
+
+```cadence
+let result = coa.call(to: evmAddr, data: calldata, gasLimit: 100000, value: EVM.Balance(attoflow: 0))
+
+// result.status is NOT automatically checked — you must handle failure explicitly
+if result.status != EVM.Status.successful {
+    panic("EVM call failed: ".concat(result.errorCode.toString()))
+}
+```
+
+Failing to check `result.status` means the Cadence transaction succeeds and its state changes persist even when the EVM call silently failed.
+
+### EVM.Status Values
+
+| Status | Meaning |
+|--------|---------|
+| `EVM.Status.successful` | EVM call executed and committed |
+| `EVM.Status.failed` | EVM call reverted — EVM state unchanged |
+| `EVM.Status.invalid` | Malformed call (bad calldata, insufficient gas) |
+
+### Gas Exhaustion
+
+If `gasLimit` is too low for the EVM call, the call fails with `EVM.Status.failed` and the gas is consumed. The Cadence transaction continues unless you panic on failure.
+
+Conservative gas defaults:
+- Simple view call: `50_000`
+- Array read (N ≤ 1024): `3_000_000`
+- State-mutating call: `100_000`
+
+### Handling Partial Batch Failures
+
+When batching multiple EVM calls in one Cadence transaction, decide upfront whether partial success is acceptable:
+
+```cadence
+// All-or-nothing: panic on any failure
+for call in calls {
+    let result = coa.call(to: call.to, data: call.data, gasLimit: call.gas, value: EVM.Balance(attoflow: 0))
+    if result.status != EVM.Status.successful {
+        panic("batch aborted at call ".concat(call.label).concat(": ").concat(result.errorCode.toString()))
+    }
+}
+
+// Best-effort: log failures, continue
+var failedCalls: [String] = []
+for call in calls {
+    let result = coa.call(to: call.to, data: call.data, gasLimit: call.gas, value: EVM.Balance(attoflow: 0))
+    if result.status != EVM.Status.successful {
+        failedCalls.append(call.label)
+    }
+}
+```
+
+### CU Interaction with EVM Calls
+
+EVM calls consume Cadence CU in addition to EVM gas:
+
+| Call type | Cadence CU overhead |
+|-----------|---------------------|
+| `EVM.dryCall` simple view | ~50–100 CU |
+| `EVM.dryCall` large array return | ~200–800 CU |
+| `coa.call` state mutating | ~200–500 CU |
+
+Both EVM gas and Cadence CU must stay within budget. A transaction that stays under 9,999 CU but exceeds the EVM `gasLimit` will have the EVM call fail silently (unless you panic on `result.status`).
